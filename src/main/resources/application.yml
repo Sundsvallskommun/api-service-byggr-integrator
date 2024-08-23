@@ -1,6 +1,10 @@
 #========================================
 # General settings
 #========================================
+integration:
+  byggr:
+    connect-timeout-in-seconds: 10
+    read-timeout-in-seconds: 60
 logging:
   level:
     root: INFO
@@ -10,4 +14,4 @@ openapi:
   version: '@project.version@'
 spring:
   application:
-    name: template
+    name: api-service-byggr-integrator
