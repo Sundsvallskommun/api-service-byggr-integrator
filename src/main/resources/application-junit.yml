@@ -1,6 +1,8 @@
 #========================================
 # Test profile settings (junit tests)
 #========================================
-logging:
-  level:
-    root: DEBUG
+integration:
+  byggr:
+    url: http://somehost.com
+    connect-timeout-in-seconds: 1
+    read-timeout-in-seconds: 2

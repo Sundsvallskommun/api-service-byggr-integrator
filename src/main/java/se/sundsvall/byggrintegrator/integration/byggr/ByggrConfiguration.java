@@ -14,23 +14,24 @@ import feign.soap.SOAPErrorDecoder;
 import jakarta.xml.soap.SOAPConstants;
 
 @Import(FeignConfiguration.class)
-public class ByggrIntegratorConfiguration {
+public class ByggrConfiguration {
 
 	public static final String CLIENT_ID = "byggr";
 
-	public static final JAXBContextFactory JAXB_CONTEXT_FACTORY = new JAXBContextFactory.Builder().build();
+	private static final JAXBContextFactory JAXB_CONTEXT_FACTORY = new JAXBContextFactory.Builder().build();
+	private static final SOAPEncoder.Builder SOAP_ENCODER_BUILDER = new SOAPEncoder.Builder()
+		.withFormattedOutput(false)
+		.withJAXBContextFactory(JAXB_CONTEXT_FACTORY)
+		.withSOAPProtocol(SOAPConstants.SOAP_1_1_PROTOCOL)
+		.withWriteXmlDeclaration(true);
+
 
 	@Bean
 	public FeignBuilderCustomizer feignBuilderCustomizer(final ByggrProperties byggrProperties) {
 		return FeignMultiCustomizer.create()
 			.withDecoder(new SOAPDecoder(JAXB_CONTEXT_FACTORY))
+			.withEncoder(SOAP_ENCODER_BUILDER.build())
 			.withErrorDecoder(new SOAPErrorDecoder())
-			.withEncoder(new SOAPEncoder.Builder()
-				.withFormattedOutput(false)
-				.withJAXBContextFactory(JAXB_CONTEXT_FACTORY)
-				.withSOAPProtocol(SOAPConstants.SOAP_1_1_PROTOCOL)
-				.withWriteXmlDeclaration(true)
-				.build())
 			.withRequestTimeoutsInSeconds(byggrProperties.connectTimeoutInSeconds(), byggrProperties.readTimeoutInSeconds())
 			.composeCustomizersToOne();
 	}
