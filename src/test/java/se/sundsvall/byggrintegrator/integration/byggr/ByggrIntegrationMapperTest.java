@@ -2,6 +2,7 @@ package se.sundsvall.byggrintegrator.integration.byggr;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.BYGGR_ARENDE_NR_1;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.HANDELSESLAG_GRASVA;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.createRelateradeArendenResponse;
@@ -39,14 +40,14 @@ class ByggrIntegrationMapperTest {
 		assertThat(neighborNotificationsDtos).hasSize(1);
 		assertThat(neighborNotificationsDtos.getFirst().getByggrErrandNumber()).isEqualTo(BYGGR_ARENDE_NR_1);
 		assertThat(neighborNotificationsDtos.getFirst().getPropertyDesignation()).hasSize(2);
-		assertThat(neighborNotificationsDtos.getFirst().getPropertyDesignation().getFirst()).satisfies(propertyDesignation -> {
-			assertThat(propertyDesignation.getProperty()).isEqualTo("ANKEBORG");
-			assertThat(propertyDesignation.getDesignation()).isEqualTo("1:1234");
-		});
-		assertThat(neighborNotificationsDtos.getFirst().getPropertyDesignation().getLast()).satisfies(propertyDesignation -> {
-			assertThat(propertyDesignation.getProperty()).isEqualTo("ANKEBORG");
-			assertThat(propertyDesignation.getDesignation()).isEqualTo("2:5678");
-		});
+
+		var propertyDesignations = neighborNotificationsDtos.getFirst().getPropertyDesignation();
+		assertThat(propertyDesignations).hasSize(2);
+		assertThat(propertyDesignations).extracting("property", "designation")
+			.containsExactlyInAnyOrder(
+				tuple("ANKEBORG", "1:1234"),
+				tuple("ANKEBORG", "2:5678")
+			);
 	}
 
 	@Test

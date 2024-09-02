@@ -36,9 +36,6 @@ class ByggrIntegratorResourceTest {
 	private ByggrIntegratorService mockByggrIntegratorService;
 
 	@Autowired
-	private ByggrIntegratorResource resource;
-
-	@Autowired
 	private WebTestClient webTestClient;
 
 	private static final String VALID_IDENTIFIER = "190101011234";

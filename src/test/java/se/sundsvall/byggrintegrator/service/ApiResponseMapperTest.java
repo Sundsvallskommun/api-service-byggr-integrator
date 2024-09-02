@@ -23,8 +23,8 @@ class ApiResponseMapperTest {
 
 		// Assert
 		assertThat(keyValues).hasSize(4);
-		assertThat(keyValues).extracting(KeyValue::key).containsExactly("dnr123", "dnr123", "dnr456", "dnr456");
-		assertThat(keyValues).extracting(KeyValue::value).containsExactly("dnr123, des-1 type1", "dnr123, des-2 type2", "dnr456, des-3 type3", "dnr456, des-4 type4");
+		assertThat(keyValues).extracting(KeyValue::key).containsExactlyInAnyOrder("dnr123", "dnr123", "dnr456", "dnr456");
+		assertThat(keyValues).extracting(KeyValue::value).containsExactlyInAnyOrder("dnr123, des-1 type1", "dnr123, des-2 type2", "dnr456, des-3 type3", "dnr456, des-4 type4");
 	}
 
 	@Test

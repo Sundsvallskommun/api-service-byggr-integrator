@@ -1,6 +1,5 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -55,19 +54,14 @@ public class ByggrIntegrationMapper {
 				.flatMap(Collection::stream)
 			.toList();
 
-		List<NeighborhoodNotificationsDto> neighborhoodNotificationsDtoList = new ArrayList<>();
-
 		// Collect the info we want from errands that have a valid event
-		errands.forEach(arende -> {
-			if(hasValidHandelseList(arende.getHandelseLista().getHandelse())) {
-				neighborhoodNotificationsDtoList.add(NeighborhoodNotificationsDto.builder()
+		return errands.stream()
+			.filter(arende -> hasValidHandelseList(arende.getHandelseLista().getHandelse()))
+				.map(arende -> NeighborhoodNotificationsDto.builder()
 					.withByggrErrandNumber(arende.getDnr())
 					.withPropertyDesignation(mapToPropertyDesignations(arende.getObjektLista().getAbstractArendeObjekt()))
-				.build());
-			}
-		});
-
-		return neighborhoodNotificationsDtoList;
+						.build())
+			.toList();
 	}
 
 	/**

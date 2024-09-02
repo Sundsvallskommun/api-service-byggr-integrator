@@ -1,6 +1,5 @@
 package se.sundsvall.byggrintegrator.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -12,13 +11,10 @@ import se.sundsvall.byggrintegrator.model.NeighborhoodNotificationsDto;
 public class ApiResponseMapper {
 
 	public List<KeyValue> mapToKeyValueResponseList(List<NeighborhoodNotificationsDto> errands) {
-		List<KeyValue> response = new ArrayList<>();
-
-		errands.forEach(
-			errand -> errand.getPropertyDesignation().forEach(
-				designation -> response.add(mapToKeyValue(errand.getByggrErrandNumber(), designation))));
-
-		return response;
+		return errands.stream()
+			.flatMap(errand -> errand.getPropertyDesignation().stream()
+				.map(designation -> mapToKeyValue(errand.getByggrErrandNumber(), designation)))
+			.toList();
 	}
 
 	private KeyValue mapToKeyValue(String dnr, NeighborhoodNotificationsDto.PropertyDesignation designation) {

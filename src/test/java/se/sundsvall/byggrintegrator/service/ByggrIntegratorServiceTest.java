@@ -67,7 +67,7 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegration).getErrandsFromByggr(IDENTIFIER, ROLES);
 		verify(mockByggrIntegrationMapper).mapToNeighborhoodNotificationsDto(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class));
 		verify(mockApiResponseMapper).mapToKeyValueResponseList(anyList());
-		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper);
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper);
 	}
 
 	@Test
@@ -87,7 +87,7 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegration).getErrandsFromByggr(IDENTIFIER, ROLES);
 		verify(mockByggrIntegrationMapper).mapToNeighborhoodNotificationsDto(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class));
 		verify(mockApiResponseMapper).mapToKeyValueResponseList(emptyList());
-		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper);
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper);
 	}
 
 	@Test
@@ -106,7 +106,6 @@ class ByggrIntegratorServiceTest {
 
 		verify(mockByggrIntegration).getRoles();
 		verifyNoMoreInteractions(mockByggrIntegration);
-		verifyNoInteractions(mockByggrIntegrationMapper, mockApiResponseMapper);
-
+		verifyNoInteractions(mockByggrIntegrationMapper, mockApiResponseMapper, mockApiResponseMapper);
 	}
 }
