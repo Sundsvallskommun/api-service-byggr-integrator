@@ -43,14 +43,18 @@ class ByggrIntegratorResourceTest {
 	private static final String INVALID_MUNICIPALITY_ID = "invalid municipality";
 	private static final String INVALID_IDENTIFIER = "invalid identifier";
 
-	private static final String NEIGHBOR_NOTIFICATION_URL = "/{municipalityId}/byggr/neighborhood-notification/{identifier}/errands";
+	private static final String NEIGHBORHOOD_NOTIFICATION_URL = "/{municipalityId}/byggr/neighborhood-notification/{identifier}/errands";
+	private static final String APPLICANT_URL = "/{municipalityId}/byggr/applicant/{identifier}/errands";
 
+	// ****************************************************************
+	// Neighborhood resources tests
+	// ****************************************************************
 	@Test
 	void testFindNeighborhoodNotifications() {
 		when(mockByggrIntegratorService.findNeighborhoodNotifications(anyString())).thenReturn(List.of(new KeyValue("key", "value")));
 
-		var responseBody = webTestClient.get()
-			.uri(NEIGHBOR_NOTIFICATION_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
+		final var responseBody = webTestClient.get()
+			.uri(NEIGHBORHOOD_NOTIFICATION_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
 			.exchange()
 			.expectStatus().isOk()
 			.expectBodyList(KeyValue.class)
@@ -68,8 +72,8 @@ class ByggrIntegratorResourceTest {
 
 	@Test
 	void testFindNeighborhoodNotifications_faultyMunicipalityId_shouldThrowException() {
-		var responseBody = webTestClient.get()
-			.uri(NEIGHBOR_NOTIFICATION_URL, INVALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
+		final var responseBody = webTestClient.get()
+			.uri(NEIGHBORHOOD_NOTIFICATION_URL, INVALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -81,15 +85,15 @@ class ByggrIntegratorResourceTest {
 		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
 		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
-				.containsExactlyInAnyOrder(tuple("findNeighborhoodNotifications.municipalityId", "not a valid municipality ID"));
+			.containsExactlyInAnyOrder(tuple("findNeighborhoodNotifications.municipalityId", "not a valid municipality ID"));
 
 		verifyNoInteractions(mockByggrIntegratorService);
 	}
 
 	@Test
 	void testFindNeighborhoodNotifications_faultyIdentifier_shouldThrowException() {
-		var responseBody = webTestClient.get()
-			.uri(NEIGHBOR_NOTIFICATION_URL, VALID_MUNICIPALITY_ID, INVALID_IDENTIFIER)
+		final var responseBody = webTestClient.get()
+			.uri(NEIGHBORHOOD_NOTIFICATION_URL, VALID_MUNICIPALITY_ID, INVALID_IDENTIFIER)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -108,8 +112,8 @@ class ByggrIntegratorResourceTest {
 
 	@Test
 	void testFindNeighborhoodNotifications_faultyMunicipalityIdAndIdentifier_shouldThrowException() {
-		var responseBody = webTestClient.get()
-			.uri(NEIGHBOR_NOTIFICATION_URL, INVALID_MUNICIPALITY_ID, INVALID_IDENTIFIER)
+		final var responseBody = webTestClient.get()
+			.uri(NEIGHBORHOOD_NOTIFICATION_URL, INVALID_MUNICIPALITY_ID, INVALID_IDENTIFIER)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -136,8 +140,8 @@ class ByggrIntegratorResourceTest {
 			.withDetail("404 Detail")
 			.build());
 
-		var responseBody = webTestClient.get()
-			.uri(NEIGHBOR_NOTIFICATION_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
+		final var responseBody = webTestClient.get()
+			.uri(NEIGHBORHOOD_NOTIFICATION_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
 			.exchange()
 			.expectStatus().isNotFound()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -154,4 +158,91 @@ class ByggrIntegratorResourceTest {
 		verify(mockByggrIntegratorService).findNeighborhoodNotifications(VALID_IDENTIFIER);
 		verifyNoMoreInteractions(mockByggrIntegratorService);
 	}
+
+	// ****************************************************************
+	// Applicant resources tests
+	// ****************************************************************
+	@Test
+	void testFindApplicantErrands() {
+		when(mockByggrIntegratorService.findApplicantErrands(anyString())).thenReturn(List.of(new KeyValue("key", "value")));
+
+		final var responseBody = webTestClient.get()
+			.uri(APPLICANT_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
+			.exchange()
+			.expectStatus().isOk()
+			.expectBodyList(KeyValue.class)
+			.hasSize(1)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getFirst().key()).isEqualTo("key");
+		assertThat(responseBody.getFirst().value()).isEqualTo("value");
+
+		verify(mockByggrIntegratorService).findApplicantErrands(VALID_IDENTIFIER);
+		verifyNoMoreInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void testFindApplicantErrands_faultyMunicipalityId_shouldThrowException() {
+		final var responseBody = webTestClient.get()
+			.uri(APPLICANT_URL, INVALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("findApplicantErrands.municipalityId", "not a valid municipality ID"));
+
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void testFindApplicantErrands_faultyIdentifier_shouldThrowException() {
+		final var responseBody = webTestClient.get()
+			.uri(APPLICANT_URL, VALID_MUNICIPALITY_ID, INVALID_IDENTIFIER)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("findApplicantErrands.identifier", "Invalid personal or organization number"));
+
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void testFindApplicantErrands_faultyMunicipalityIdAndIdentifier_shouldThrowException() {
+		final var responseBody = webTestClient.get()
+			.uri(APPLICANT_URL, INVALID_MUNICIPALITY_ID, INVALID_IDENTIFIER)
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(
+				tuple("findApplicantErrands.identifier", "Invalid personal or organization number"),
+				tuple("findApplicantErrands.municipalityId", "not a valid municipality ID"));
+
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
 }

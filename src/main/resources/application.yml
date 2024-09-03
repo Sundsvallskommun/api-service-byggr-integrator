@@ -5,6 +5,9 @@ integration:
   byggr:
     connect-timeout-in-seconds: 10
     read-timeout-in-seconds: 60
+    mapper:
+      applicant:
+        roles: SOK
 logging:
   level:
     root: INFO

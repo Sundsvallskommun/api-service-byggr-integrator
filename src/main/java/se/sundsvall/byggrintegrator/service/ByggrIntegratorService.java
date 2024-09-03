@@ -1,5 +1,7 @@
 package se.sundsvall.byggrintegrator.service;
 
+import static se.sundsvall.byggrintegrator.service.LegalIdUtility.addHyphen;
+
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ public class ByggrIntegratorService {
 	}
 
 	public List<KeyValue> findNeighborhoodNotifications(String identifier) {
-		var roles = byggrIntegration.getRoles();
+		final var roles = byggrIntegration.getRoles();
 		if (CollectionUtils.isEmpty(roles)) {
 			throw Problem.builder()
 				.withStatus(Status.NOT_FOUND)
@@ -34,9 +36,19 @@ public class ByggrIntegratorService {
 				.build();
 		}
 
-		var neighborNotifications = byggrIntegration.getErrandsFromByggr(identifier, roles);
+		final var matches = byggrIntegration.getErrandsFromByggr(addHyphen(identifier), roles); // Add hyphen to identifier as ByggR integration formats legal id that way
 
-		var byggrErrandList = byggrIntegrationMapper.mapToNeighborhoodNotificationsDto(neighborNotifications);
+		final var byggrErrandList = byggrIntegrationMapper.mapToNeighborhoodNotifications(matches);
+
+		return apiResponseMapper.mapToKeyValueResponseList(byggrErrandList);
+	}
+
+	public List<KeyValue> findApplicantErrands(String identifier) {
+		final var identifierWithHyphen = addHyphen(identifier); // Add hyphen to identifier as ByggR integration formats legal id that way
+
+		final var matches = byggrIntegration.getErrandsFromByggr(identifierWithHyphen, null);
+
+		final var byggrErrandList = byggrIntegrationMapper.mapToApplicantErrands(matches, identifierWithHyphen);
 
 		return apiResponseMapper.mapToKeyValueResponseList(byggrErrandList);
 	}
