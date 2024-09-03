@@ -1,6 +1,7 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
@@ -21,18 +22,18 @@ public class ByggrIntegration {
 	}
 
 	public GetRelateradeArendenByPersOrgNrAndRoleResponse getErrandsFromByggr(String identifier, List<String> roles) {
-		var request = byggrIntegrationMapper.mapToGetRelateradeArendenRequest(identifier)
+		final var request = byggrIntegrationMapper.mapToGetRelateradeArendenRequest(identifier)
 			.withArendeIntressentRoller(rolesToArrayOfString(roles));
 
 		return byggrClient.getRelateradeArendenByPersOrgNrAndRole(request);
 	}
 
 	private ArrayOfString rolesToArrayOfString(List<String> roles) {
-		return new ArrayOfString().withString(roles);
+		return Objects.isNull(roles) ? null : new ArrayOfString().withString(roles);
 	}
 
 	public List<String> getRoles() {
-		var roller = byggrClient.getRoller(byggrIntegrationMapper.createGetRolesRequest());
+		final var roller = byggrClient.getRoller(byggrIntegrationMapper.createGetRolesRequest());
 
 		return Optional.ofNullable(roller.getGetRollerResult())
 			.map(result -> result.getRoll().stream()

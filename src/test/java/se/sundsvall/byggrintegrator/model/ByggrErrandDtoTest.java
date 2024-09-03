@@ -13,11 +13,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-class NeighborhoodNotificationsDtoTest {
+class ByggrErrandDtoTest {
 
 	@Test
 	void testBean() {
-		assertThat(NeighborhoodNotificationsDto.class, allOf(
+		assertThat(ByggrErrandDto.class, allOf(
 			hasValidBeanConstructor(),
 			hasValidGettersAndSetters(),
 			hasValidBeanHashCode(),
@@ -27,7 +27,7 @@ class NeighborhoodNotificationsDtoTest {
 
 	@Test
 	void testInnerClassBean() {
-		assertThat(NeighborhoodNotificationsDto.PropertyDesignation.class, allOf(
+		assertThat(ByggrErrandDto.PropertyDesignation.class, allOf(
 			hasValidBeanConstructor(),
 			hasValidGettersAndSetters(),
 			hasValidBeanHashCode(),
@@ -41,12 +41,12 @@ class NeighborhoodNotificationsDtoTest {
 		var designation = "designation";
 		var property = "property";
 
-		var propertyDesignation = NeighborhoodNotificationsDto.PropertyDesignation.builder()
+		var propertyDesignation = ByggrErrandDto.PropertyDesignation.builder()
 			.withDesignation(designation)
 			.withProperty(property)
 			.build();
 
-		var dto = NeighborhoodNotificationsDto.builder()
+		var dto = ByggrErrandDto.builder()
 			.withByggrErrandNumber(dnr)
 			.withPropertyDesignation(List.of(propertyDesignation))
 			.build();
@@ -60,11 +60,11 @@ class NeighborhoodNotificationsDtoTest {
 
 	@Test
 	void testNoDirtOnCreatedBean() {
-		assertThat(NeighborhoodNotificationsDto.builder().build()).isNotNull().hasAllNullFieldsOrProperties();
+		assertThat(ByggrErrandDto.builder().build()).isNotNull().hasAllNullFieldsOrProperties();
 	}
 
 	@Test
 	void testNoDirtOnCreatedInnerBean() {
-		assertThat(NeighborhoodNotificationsDto.PropertyDesignation.builder().build()).isNotNull().hasAllNullFieldsOrProperties();
+		assertThat(ByggrErrandDto.PropertyDesignation.builder().build()).isNotNull().hasAllNullFieldsOrProperties();
 	}
 }

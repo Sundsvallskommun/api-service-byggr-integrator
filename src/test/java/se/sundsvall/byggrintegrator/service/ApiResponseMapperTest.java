@@ -1,7 +1,7 @@
 package se.sundsvall.byggrintegrator.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static se.sundsvall.byggrintegrator.TestObjectFactory.generateNeighborNotificationsDtos;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.generateByggrErrandDtos;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ class ApiResponseMapperTest {
 	@Test
 	void testMapNeighborNotificationsDtosToKeyValueList() {
 		// Arrange
-		var errands = generateNeighborNotificationsDtos();
+		var errands = generateByggrErrandDtos();
 
 		// Act
 		var keyValues = apiResponseMapper.mapToKeyValueResponseList(errands);
