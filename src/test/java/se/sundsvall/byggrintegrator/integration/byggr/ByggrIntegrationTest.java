@@ -62,8 +62,10 @@ class ByggrIntegrationTest {
 
 		assertThat(getRelateradeArendenByPersOrgNrAndRoleCaptor.getValue().getPersOrgNr()).isEqualTo(identifier);
 		assertThat(getRelateradeArendenByPersOrgNrAndRoleCaptor.getValue().getArendeIntressentRoller()).satisfiesAnyOf(list -> {
+			assertThat(role).isNull();
 			assertThat(list).isNull();
 		}, list -> {
+			assertThat(role).isNotNull();
 			assertThat(list.getString()).hasSize(1);
 			assertThat(list.getString()).isEqualTo(roles);
 		});
