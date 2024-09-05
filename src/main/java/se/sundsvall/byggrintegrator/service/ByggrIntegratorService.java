@@ -1,9 +1,9 @@
 package se.sundsvall.byggrintegrator.service;
 
+import static java.util.Optional.ofNullable;
 import static se.sundsvall.byggrintegrator.service.LegalIdUtility.addHyphen;
 
 import java.util.List;
-import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -58,14 +58,12 @@ public class ByggrIntegratorService {
 	public Weight getErrandType(String dnr) {
 		final var errand = byggrIntegration.getErrand(dnr);
 
-		if (Objects.isNull(errand)) {
-			throw Problem.builder()
+		return ofNullable(errand)
+			.map(apiResponseMapper::mapToWeight)
+			.orElseThrow(() -> Problem.builder()
 				.withStatus(Status.NOT_FOUND)
 				.withTitle(Status.NOT_FOUND.getReasonPhrase())
 				.withDetail("No errand with diary number %s was found".formatted(dnr))
-				.build();
-		}
-
-		return apiResponseMapper.mapToWeight(errand);
+				.build());
 	}
 }
