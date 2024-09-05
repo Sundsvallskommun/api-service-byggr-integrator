@@ -7,11 +7,17 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 import generated.se.sundsvall.arendeexport.ArrayOfString;
+import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.Roll;
+import jakarta.xml.soap.SOAPFault;
+import jakarta.xml.ws.soap.SOAPFaultException;
 
 @Component
 public class ByggrIntegration {
+
+	private static final String SOAP_FAULT_PREFIX_ERRAND_NOT_FOUND = "Arende not found for dnr";
+	private static final String EMPTY_STRING = "";
 
 	private final ByggrClient byggrClient;
 	private final ByggrIntegrationMapper byggrIntegrationMapper;
@@ -21,7 +27,7 @@ public class ByggrIntegration {
 		this.byggrIntegrationMapper = byggrIntegrationMapper;
 	}
 
-	public GetRelateradeArendenByPersOrgNrAndRoleResponse getErrandsFromByggr(String identifier, List<String> roles) {
+	public GetRelateradeArendenByPersOrgNrAndRoleResponse getErrands(String identifier, List<String> roles) {
 		final var request = byggrIntegrationMapper.mapToGetRelateradeArendenRequest(identifier)
 			.withArendeIntressentRoller(rolesToArrayOfString(roles));
 
@@ -41,5 +47,23 @@ public class ByggrIntegration {
 				.map(Roll::getRollKod)
 				.toList())
 			.orElse(List.of());
+	}
+
+	public GetArendeResponse getErrand(String dnr) {
+		try {
+			return byggrClient.getArende(byggrIntegrationMapper.mapToGetArendeRequest(dnr));
+		} catch (final SOAPFaultException e) {
+			if (extractFaultString(e).startsWith(SOAP_FAULT_PREFIX_ERRAND_NOT_FOUND)) {
+				return null;
+			}
+
+			throw e;
+		}
+	}
+
+	private String extractFaultString(final SOAPFaultException e) {
+		return Optional.ofNullable(e.getFault())
+			.map(SOAPFault::getFaultString)
+			.orElse(EMPTY_STRING);
 	}
 }

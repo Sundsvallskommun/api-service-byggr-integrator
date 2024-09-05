@@ -43,12 +43,12 @@ class ByggrIntegratorResourceTest {
 	private static final String INVALID_MUNICIPALITY_ID = "invalid municipality";
 	private static final String INVALID_IDENTIFIER = "invalid identifier";
 
-	private static final String NEIGHBORHOOD_NOTIFICATION_URL = "/{municipalityId}/byggr/neighborhood-notification/{identifier}/errands";
-	private static final String APPLICANT_URL = "/{municipalityId}/byggr/applicant/{identifier}/errands";
+	private static final String NEIGHBORHOOD_NOTIFICATION_URL = "/{municipalityId}/neighborhood-notification/{identifier}/errands";
+	private static final String APPLICANT_URL = "/{municipalityId}/applicant/{identifier}/errands";
 
-	// ****************************************************************
+	// ----------------------------------------------------------------
 	// Neighborhood resources tests
-	// ****************************************************************
+	// ----------------------------------------------------------------
 	@Test
 	void testFindNeighborhoodNotifications() {
 		when(mockByggrIntegratorService.findNeighborhoodNotifications(anyString())).thenReturn(List.of(new KeyValue("key", "value")));
@@ -159,9 +159,9 @@ class ByggrIntegratorResourceTest {
 		verifyNoMoreInteractions(mockByggrIntegratorService);
 	}
 
-	// ****************************************************************
+	// ----------------------------------------------------------------
 	// Applicant resources tests
-	// ****************************************************************
+	// ----------------------------------------------------------------
 	@Test
 	void testFindApplicantErrands() {
 		when(mockByggrIntegratorService.findApplicantErrands(anyString())).thenReturn(List.of(new KeyValue("key", "value")));

@@ -1,6 +1,7 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.when;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeArendenResponse;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
@@ -21,9 +23,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import generated.se.sundsvall.arendeexport.GetArende;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
 import generated.se.sundsvall.arendeexport.GetRoller;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
+import jakarta.xml.soap.SOAPConstants;
+import jakarta.xml.soap.SOAPFactory;
+import jakarta.xml.ws.soap.SOAPFaultException;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrIntegrationTest {
@@ -36,6 +42,9 @@ class ByggrIntegrationTest {
 
 	@Captor
 	private ArgumentCaptor<GetRelateradeArendenByPersOrgNrAndRole> getRelateradeArendenByPersOrgNrAndRoleCaptor;
+
+	@Captor
+	private ArgumentCaptor<GetArende> getArendeCaptor;
 
 	@InjectMocks
 	private ByggrIntegration integration;
@@ -53,7 +62,7 @@ class ByggrIntegrationTest {
 		when(mockByggrClient.getRelateradeArendenByPersOrgNrAndRole(any())).thenReturn(generateRelateradeArendenResponse());
 
 		// Act
-		final var errands = integration.getErrandsFromByggr(identifier, roles);
+		final var errands = integration.getErrands(identifier, roles);
 
 		// Assert
 		verify(mockByggrIntegrationMapper).mapToGetRelateradeArendenRequest(identifier);
@@ -108,5 +117,71 @@ class ByggrIntegrationTest {
 		verify(mockByggrIntegrationMapper).createGetRolesRequest();
 		verify(mockByggrClient).getRoller(any(GetRoller.class));
 		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrClient);
+	}
+
+	@Test
+	void testGetErrand() {
+		// Arrange
+		final var dnr = "dnr";
+		final var response = OBJECT_FACTORY.createGetArendeResponse();
+
+		when(mockByggrIntegrationMapper.mapToGetArendeRequest(dnr)).thenCallRealMethod();
+		when(mockByggrClient.getArende(any(GetArende.class))).thenReturn(response);
+
+		// Act
+		final var errand = integration.getErrand(dnr);
+
+		// Verify and assert
+		verify(mockByggrIntegrationMapper).mapToGetArendeRequest(dnr);
+		verify(mockByggrClient).getArende(getArendeCaptor.capture());
+		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrClient);
+
+		assertThat(getArendeCaptor.getValue().getDnr()).isEqualTo(dnr);
+		assertThat(errand).isEqualTo(response);
+	}
+
+	@Test
+	void testGetErrand_soapFaultNotFound() throws Exception {
+		// Arrange
+		final var dnr = "diaryNumber";
+		final var soapfault = SOAPFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL).createFault();
+		soapfault.addFaultReasonText("Arende not found for dnr diaryNumber", Locale.ENGLISH);
+
+		when(mockByggrIntegrationMapper.mapToGetArendeRequest(dnr)).thenCallRealMethod();
+		when(mockByggrClient.getArende(any(GetArende.class))).thenThrow(new SOAPFaultException(soapfault));
+
+		// Act
+		assertThat(integration.getErrand(dnr)).isNull();
+
+		// Verify and assert
+		verify(mockByggrIntegrationMapper).mapToGetArendeRequest(dnr);
+		verify(mockByggrClient).getArende(getArendeCaptor.capture());
+		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrClient);
+
+		assertThat(getArendeCaptor.getValue().getDnr()).isEqualTo(dnr);
+	}
+
+	@Test
+	void testGetErrand_otherSoapFaultThanNotFound() throws Exception {
+		// Arrange
+		final var dnr = "diaryNumber";
+		final var reasonText = "Other reason";
+		final var soapfault = SOAPFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL).createFault();
+		soapfault.addFaultReasonText(reasonText, Locale.ENGLISH);
+
+		when(mockByggrIntegrationMapper.mapToGetArendeRequest(dnr)).thenCallRealMethod();
+		when(mockByggrClient.getArende(any(GetArende.class))).thenThrow(new SOAPFaultException(soapfault));
+
+		// Act
+		final var exception = assertThrows(SOAPFaultException.class, () -> integration.getErrand(dnr));
+
+		// Verify and assert
+		verify(mockByggrIntegrationMapper).mapToGetArendeRequest(dnr);
+		verify(mockByggrClient).getArende(getArendeCaptor.capture());
+		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrClient);
+
+		assertThat(getArendeCaptor.getValue().getDnr()).isEqualTo(dnr);
+		assertThat(exception).isInstanceOf(SOAPFaultException.class);
+		assertThat(exception.getFault().getFaultReasonText(Locale.ENGLISH)).isEqualTo(reasonText);
 	}
 }
