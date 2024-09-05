@@ -49,5 +49,5 @@ hs_err_pid*
 .env
 
 # Spring
-application-default.properties
+application-default.*
 

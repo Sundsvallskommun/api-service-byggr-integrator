@@ -20,7 +20,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode
-public class NeighborhoodNotificationsDto {
+public class ByggrErrandDto {
 	private String byggrErrandNumber;
 	private List<PropertyDesignation> propertyDesignation;
 
