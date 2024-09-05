@@ -1,0 +1,23 @@
+{
+	"name": "api-byggr-read-errands",
+	"request": {
+		"method": "POST",
+		"urlPath": "/api-byggr/endpoint",
+		"headers": {
+			"Content-Type": {
+				"equalTo": "text/xml;charset=UTF-8"
+			}
+		},
+        "bodyPatterns" : [{
+          "equalToXml" : "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body><GetRelateradeArendenByPersOrgNrAndRole xmlns=\"www.tekis.se/ServiceContract\"><persOrgNr>19010203-1234</persOrgNr><statusfilter>Aktiv</statusfilter></GetRelateradeArendenByPersOrgNrAndRole></SOAP-ENV:Body></SOAP-ENV:Envelope>"
+	    }]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/xml"
+		},
+		"status": 200,
+		"bodyFileName": "test01_readApplicantErrands/responses/api-byggr-read-errands-response.xml"
+		}
+	}
+}

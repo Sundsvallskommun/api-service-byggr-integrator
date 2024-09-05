@@ -7,15 +7,15 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ActiveProfiles;
 
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
-@Disabled // TODO: This will be implemented in task UF-9617
 @WireMockAppTestSuite(files = "classpath:/applicantIT/", classes = Application.class)
+@ActiveProfiles("it")
 class ApplicantIT extends AbstractAppTest {
 
 	private static final String RESPONSE_FILE = "response.json";

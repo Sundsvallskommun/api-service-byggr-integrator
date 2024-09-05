@@ -1,6 +1,14 @@
 #========================================
 # Test profile settings (IT tests)
 #========================================
+integration:
+  byggr:
+    url: http://localhost:${wiremock.server.port}/api-byggr/endpoint
+    connect-timeout-in-seconds: 5
+    read-timeout-in-seconds: 30
+    mapper:
+      applicant:
+        roles: SOK
 logging:
   level:
     root: DEBUG
