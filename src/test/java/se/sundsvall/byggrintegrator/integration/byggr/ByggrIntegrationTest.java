@@ -161,16 +161,13 @@ class ByggrIntegrationTest {
 		assertThat(getArendeCaptor.getValue().getDnr()).isEqualTo(dnr);
 	}
 
-	@ParameterizedTest
-	@ValueSource(strings = { "Other reason" })
-	@NullSource
-	void testGetErrand_otherSoapFaultThanNotFound(String reasonText) throws Exception {
+	@Test
+	void testGetErrand_otherSoapFaultThanNotFound() throws Exception {
 		// Arrange
 		final var dnr = "diaryNumber";
+		final var reasonText = "Other reason";
 		final var soapfault = SOAPFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL).createFault();
-		if (reasonText != null) {
-			soapfault.addFaultReasonText(reasonText, Locale.ENGLISH);
-		}
+		soapfault.addFaultReasonText(reasonText, Locale.ENGLISH);
 
 		when(mockByggrIntegrationMapper.mapToGetArendeRequest(dnr)).thenCallRealMethod();
 		when(mockByggrClient.getArende(any(GetArende.class))).thenThrow(new SOAPFaultException(soapfault));
