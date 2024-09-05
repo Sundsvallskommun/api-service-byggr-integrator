@@ -17,6 +17,7 @@ import generated.se.sundsvall.arendeexport.Arende;
 import generated.se.sundsvall.arendeexport.ArendeFastighet;
 import generated.se.sundsvall.arendeexport.ArendeIntressent;
 import generated.se.sundsvall.arendeexport.ArrayOfString2;
+import generated.se.sundsvall.arendeexport.GetArende;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.GetRoller;
@@ -51,6 +52,11 @@ public class ByggrIntegrationMapper {
 		return OBJECT_FACTORY.createGetRelateradeArendenByPersOrgNrAndRole()
 			.withStatusfilter(StatusFilter.AKTIV)
 			.withPersOrgNr(id);
+	}
+
+	public GetArende mapToGetArendeRequest(String dnr) {
+		return OBJECT_FACTORY.createGetArende()
+			.withDnr(dnr);
 	}
 
 	/**

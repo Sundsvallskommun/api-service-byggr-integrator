@@ -123,4 +123,17 @@ class ByggrIntegrationMapperTest {
 			assertThat(errand.getByggrErrandNumber()).isEqualTo("BYGG 2024-000234");
 		});
 	}
+
+	@Test
+	void testMapToGetArendeRequest() {
+		// Arrange
+		final var dnr = "diaryNumber";
+
+		// Act
+		final var request = mapper.mapToGetArendeRequest(dnr);
+
+		// Assert
+		assertThat(request.getDnr()).isEqualTo(dnr);
+	}
+
 }

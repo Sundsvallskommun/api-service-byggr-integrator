@@ -9,6 +9,3 @@ integration:
     mapper:
       applicant:
         roles: SOK
-logging:
-  level:
-    root: DEBUG

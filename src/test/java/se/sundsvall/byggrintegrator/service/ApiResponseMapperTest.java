@@ -1,12 +1,14 @@
 package se.sundsvall.byggrintegrator.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeResponse;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateByggrErrandDtos;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import se.sundsvall.byggrintegrator.TestObjectFactory;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 
 class ApiResponseMapperTest {
@@ -16,10 +18,10 @@ class ApiResponseMapperTest {
 	@Test
 	void testMapNeighborNotificationsDtosToKeyValueList() {
 		// Arrange
-		var errands = generateByggrErrandDtos();
+		final var errands = generateByggrErrandDtos();
 
 		// Act
-		var keyValues = apiResponseMapper.mapToKeyValueResponseList(errands);
+		final var keyValues = apiResponseMapper.mapToKeyValueResponseList(errands);
 
 		// Assert
 		assertThat(keyValues).hasSize(4);
@@ -30,9 +32,17 @@ class ApiResponseMapperTest {
 	@Test
 	void testMapNeighborNotificationsDtosToKeyValueListEmpty() {
 		// Act
-		var keyValues = apiResponseMapper.mapToKeyValueResponseList(List.of());
+		final var keyValues = apiResponseMapper.mapToKeyValueResponseList(List.of());
 
-		//Assert
+		// Assert
 		assertThat(keyValues).isNotNull().isEmpty();
+	}
+
+	@Test
+	void testMapToWeight() {
+		// Act
+		final var response = apiResponseMapper.mapToWeight(generateArendeResponse("dnr"));
+
+		assertThat(response.getValue()).isEqualTo(TestObjectFactory.ARENDE_TYP_LH);
 	}
 }

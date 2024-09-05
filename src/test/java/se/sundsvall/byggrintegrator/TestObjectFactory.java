@@ -9,6 +9,7 @@ import generated.se.sundsvall.arendeexport.ArrayOfAbstractArendeObjekt2;
 import generated.se.sundsvall.arendeexport.ArrayOfArende1;
 import generated.se.sundsvall.arendeexport.ArrayOfHandelse;
 import generated.se.sundsvall.arendeexport.Fastighet;
+import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
@@ -22,6 +23,7 @@ public final class TestObjectFactory {
 	public static final String HANDELSETYP_GRANHO = "GRANHO";
 	public static final String HANDELSESLAG_GRASVA = "GRASVA";
 	public static final String HANDELSESLAG_GRAUTS = "GRAUTS";
+	public static final String ARENDE_TYP_LH = "LH";
 	public static final String BYGGR_ARENDE_NR_1 = "BYGG 2024-000123";
 	public static final String BYGGR_ARENDE_NR_2 = "BYGG 2024-000234";
 
@@ -36,6 +38,11 @@ public final class TestObjectFactory {
 		return response.withGetRelateradeArendenByPersOrgNrAndRoleResult(new ArrayOfArende1().withArende(arendeList));
 	}
 
+	public static GetArendeResponse generateArendeResponse(String dnr) {
+		final var response = OBJECT_FACTORY.createGetArendeResponse();
+		return response.withGetArendeResult(createArende(dnr, true));
+	}
+
 	public static GetRelateradeArendenByPersOrgNrAndRoleResponse generateEmptyRelateradeArendenResponse() {
 		return OBJECT_FACTORY.createGetRelateradeArendenByPersOrgNrAndRoleResponse();
 	}
@@ -43,6 +50,7 @@ public final class TestObjectFactory {
 	public static Arende createArende(String dnr, boolean validEvents) {
 		final var arende = OBJECT_FACTORY.createArende();
 		arende.setDnr(dnr);
+		arende.setArendetyp(ARENDE_TYP_LH);
 		arende.setHandelseLista(createArrayOfHandelse(validEvents));
 		arende.setObjektLista(createObjektLista());
 		return arende;

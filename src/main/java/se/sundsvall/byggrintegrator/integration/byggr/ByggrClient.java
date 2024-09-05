@@ -5,16 +5,14 @@ import static se.sundsvall.byggrintegrator.integration.byggr.ByggrConfiguration.
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import generated.se.sundsvall.arendeexport.GetArende;
+import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.GetRoller;
 import generated.se.sundsvall.arendeexport.GetRollerResponse;
 
-@FeignClient(
-	name = CLIENT_ID,
-	url = "${integration.byggr.url}",
-	configuration = ByggrConfiguration.class
-)
+@FeignClient(name = CLIENT_ID, url = "${integration.byggr.url}", configuration = ByggrConfiguration.class)
 public interface ByggrClient {
 
 	String TEXT_XML_UTF8 = "text/xml;charset=UTF-8";
@@ -24,4 +22,8 @@ public interface ByggrClient {
 
 	@PostMapping(consumes = TEXT_XML_UTF8, produces = TEXT_XML_UTF8, headers = { "SOAPAction=www.tekis.se/ServiceContract/V8/IExportArenden/GetRoller" })
 	GetRollerResponse getRoller(GetRoller request);
+
+	@PostMapping(consumes = TEXT_XML_UTF8, produces = TEXT_XML_UTF8, headers = { "SOAPAction=www.tekis.se/ServiceContract/V8/IExportArenden/GetArende" })
+	GetArendeResponse getArende(GetArende request);
+
 }

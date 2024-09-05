@@ -29,7 +29,7 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 @RestController
 @Validated
 @Tag(name = "ByggR Integrator", description = "ByggR Integrator resources")
-@RequestMapping(path = "/{municipalityId}/byggr")
+@RequestMapping(path = "/{municipalityId}")
 @ApiResponse(responseCode = "200", description = "Successful Operation", content = @Content(schema = @Schema()))
 @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = Problem.class)))

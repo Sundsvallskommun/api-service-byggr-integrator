@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeResponse;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateByggrErrandDtos;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeArendenResponse;
 
@@ -23,8 +24,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
+import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
+import se.sundsvall.byggrintegrator.TestObjectFactory;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
 
@@ -52,7 +55,7 @@ class ByggrIntegratorServiceTest {
 	void testFindNeighborhoodNotifications() {
 		// Arrange
 		when(mockByggrIntegration.getRoles()).thenReturn(ROLES);
-		when(mockByggrIntegration.getErrandsFromByggr(IDENTIFIER_WITH_DASH, ROLES)).thenReturn(generateRelateradeArendenResponse());
+		when(mockByggrIntegration.getErrands(IDENTIFIER_WITH_DASH, ROLES)).thenReturn(generateRelateradeArendenResponse());
 		when(mockByggrIntegrationMapper.mapToNeighborhoodNotifications(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class))).thenCallRealMethod();
 		when(mockApiResponseMapper.mapToKeyValueResponseList(anyList())).thenCallRealMethod();
 
@@ -68,7 +71,7 @@ class ByggrIntegratorServiceTest {
 			assertThat(notification.value()).isEqualTo("BYGG 2024-000123, ANKEBORG 2:5678");
 		});
 		verify(mockByggrIntegration).getRoles();
-		verify(mockByggrIntegration).getErrandsFromByggr(IDENTIFIER_WITH_DASH, ROLES);
+		verify(mockByggrIntegration).getErrands(IDENTIFIER_WITH_DASH, ROLES);
 		verify(mockByggrIntegrationMapper).mapToNeighborhoodNotifications(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class));
 		verify(mockApiResponseMapper).mapToKeyValueResponseList(anyList());
 		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper);
@@ -78,7 +81,7 @@ class ByggrIntegratorServiceTest {
 	void testFindNeighborhoodNotifications_whenEmpty_shouldReturnEmptyList() {
 		// Arrange
 		when(mockByggrIntegration.getRoles()).thenReturn(ROLES);
-		when(mockByggrIntegration.getErrandsFromByggr(IDENTIFIER_WITH_DASH, ROLES)).thenReturn(OBJECT_FACTORY.createGetRelateradeArendenByPersOrgNrAndRoleResponse());
+		when(mockByggrIntegration.getErrands(IDENTIFIER_WITH_DASH, ROLES)).thenReturn(OBJECT_FACTORY.createGetRelateradeArendenByPersOrgNrAndRoleResponse());
 		when(mockByggrIntegrationMapper.mapToNeighborhoodNotifications(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class))).thenCallRealMethod();
 		when(mockApiResponseMapper.mapToKeyValueResponseList(anyList())).thenCallRealMethod();
 
@@ -88,7 +91,7 @@ class ByggrIntegratorServiceTest {
 		// Assert
 		assertThat(neighborNotifications).isEmpty();
 		verify(mockByggrIntegration).getRoles();
-		verify(mockByggrIntegration).getErrandsFromByggr(IDENTIFIER_WITH_DASH, ROLES);
+		verify(mockByggrIntegration).getErrands(IDENTIFIER_WITH_DASH, ROLES);
 		verify(mockByggrIntegrationMapper).mapToNeighborhoodNotifications(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class));
 		verify(mockApiResponseMapper).mapToKeyValueResponseList(emptyList());
 		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper);
@@ -116,7 +119,7 @@ class ByggrIntegratorServiceTest {
 	@Test
 	void testFindApplicantErrands() {
 		// Arrange
-		when(mockByggrIntegration.getErrandsFromByggr(IDENTIFIER_WITH_DASH, null)).thenReturn(generateRelateradeArendenResponse());
+		when(mockByggrIntegration.getErrands(IDENTIFIER_WITH_DASH, null)).thenReturn(generateRelateradeArendenResponse());
 		when(mockByggrIntegrationMapper.mapToApplicantErrands(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class), eq(IDENTIFIER_WITH_DASH))).thenReturn(generateByggrErrandDtos());
 		when(mockApiResponseMapper.mapToKeyValueResponseList(anyList())).thenCallRealMethod();
 
@@ -137,9 +140,45 @@ class ByggrIntegratorServiceTest {
 			assertThat(notification.key()).isEqualTo("dnr456");
 			assertThat(notification.value()).isEqualTo("dnr456, des-4 type4");
 		});
-		verify(mockByggrIntegration).getErrandsFromByggr(IDENTIFIER_WITH_DASH, null);
+		verify(mockByggrIntegration).getErrands(IDENTIFIER_WITH_DASH, null);
 		verify(mockByggrIntegrationMapper).mapToApplicantErrands(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class), eq(IDENTIFIER_WITH_DASH));
 		verify(mockApiResponseMapper).mapToKeyValueResponseList(anyList());
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper);
+	}
+
+	@Test
+	void testGetErrandType() {
+		// Arrange
+		final var dnr = "dnr";
+		when(mockByggrIntegration.getErrand(dnr)).thenReturn(generateArendeResponse(dnr));
+		when(mockApiResponseMapper.mapToWeight(any(GetArendeResponse.class))).thenCallRealMethod();
+
+		// Act
+		final var errandType = service.getErrandType(dnr);
+
+		// Assert
+		assertThat(errandType.getValue()).isEqualTo(TestObjectFactory.ARENDE_TYP_LH);
+
+		verify(mockByggrIntegration).getErrand(dnr);
+		verify(mockApiResponseMapper).mapToWeight(any(GetArendeResponse.class));
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper);
+	}
+
+	@Test
+	void testGetErrandType_nonMatchingErrand() {
+		// Arrange
+		final var dnr = "dnr";
+
+		// Act and assert
+		assertThatExceptionOfType(ThrowableProblem.class)
+			.isThrownBy(() -> service.getErrandType(dnr))
+			.satisfies(throwableProblem -> {
+				assertThat(throwableProblem.getStatus()).isEqualTo(Status.NOT_FOUND);
+				assertThat(throwableProblem.getTitle()).isEqualTo(Status.NOT_FOUND.getReasonPhrase());
+				assertThat(throwableProblem.getDetail()).isEqualTo("No errand with diary number dnr was found");
+			});
+
+		verify(mockByggrIntegration).getErrand(dnr);
 		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper);
 	}
 }

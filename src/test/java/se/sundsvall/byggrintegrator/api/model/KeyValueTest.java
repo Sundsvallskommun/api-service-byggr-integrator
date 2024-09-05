@@ -1,6 +1,6 @@
 package se.sundsvall.byggrintegrator.api.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
@@ -8,12 +8,12 @@ class KeyValueTest {
 
 	@Test
 	void testCreationAndGetters() {
-		var key = "key";
-		var value = "value";
+		final var key = "key";
+		final var value = "value";
 
-		var keyValue = new KeyValue(key, value);
+		final var keyValue = new KeyValue(key, value);
 
-		assertEquals(key, keyValue.key());
-		assertEquals(value, keyValue.value());
+		assertThat(keyValue.key()).isEqualTo(key);
+		assertThat(keyValue.value()).isEqualTo(value);
 	}
 }
