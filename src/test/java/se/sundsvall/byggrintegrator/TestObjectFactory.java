@@ -3,6 +3,8 @@ package se.sundsvall.byggrintegrator;
 import java.util.ArrayList;
 import java.util.List;
 
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
+
 import generated.se.sundsvall.arendeexport.AbstractArendeObjekt;
 import generated.se.sundsvall.arendeexport.Arende;
 import generated.se.sundsvall.arendeexport.ArrayOfAbstractArendeObjekt2;
@@ -12,7 +14,6 @@ import generated.se.sundsvall.arendeexport.Fastighet;
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 
 public final class TestObjectFactory {
 
@@ -103,16 +104,51 @@ public final class TestObjectFactory {
 	public static List<ByggrErrandDto> generateByggrErrandDtos() {
 		return List.of(
 			ByggrErrandDto.builder()
-				.withByggrErrandNumber("dnr123")
+				.withByggrCaseNumber("dnr123")
 				.withPropertyDesignation(List.of(
 					ByggrErrandDto.PropertyDesignation.builder().withProperty("des-1").withDesignation("type1").build(),
 					ByggrErrandDto.PropertyDesignation.builder().withProperty("des-2").withDesignation("type2").build()))
 				.build(),
 			ByggrErrandDto.builder()
-				.withByggrErrandNumber("dnr456")
+				.withByggrCaseNumber("dnr456")
 				.withPropertyDesignation(List.of(
 					ByggrErrandDto.PropertyDesignation.builder().withProperty("des-3").withDesignation("type3").build(),
 					ByggrErrandDto.PropertyDesignation.builder().withProperty("des-4").withDesignation("type4").build()))
 				.build());
+	}
+
+	public static GetArendeResponse createPopulatedGetArendeResponse() {
+		GetArendeResponse response = OBJECT_FACTORY.createGetArendeResponse();
+		response.withGetArendeResult(OBJECT_FACTORY.createArende()
+			.withDnr(BYGGR_ARENDE_NR_1)
+			.withHandelseLista(OBJECT_FACTORY.createArrayOfHandelse()
+				.withHandelse(List.of(OBJECT_FACTORY.createHandelse()
+						//Creates a valid event
+						.withHandelsetyp(HANDELSETYP_GRANHO)
+						.withHandelseslag(HANDELSESLAG_GRAUTS)
+						.withHandlingLista(OBJECT_FACTORY.createArrayOfHandelseHandling()
+							.withHandling(List.of(OBJECT_FACTORY.createHandelseHandling()
+								.withDokument(OBJECT_FACTORY.createDokument()
+									.withDokId("documentId")
+									.withNamn("documentName")))
+							)
+						)
+					, OBJECT_FACTORY.createHandelse()
+						//Creates an invalid event
+						.withHandelsetyp(HANDELSETYP_GRANHO)
+						.withHandelseslag(HANDELSESLAG_GRASVA)  // This is the unwanted handelseslag
+						.withHandlingLista(OBJECT_FACTORY.createArrayOfHandelseHandling()
+							.withHandling(List.of(OBJECT_FACTORY.createHandelseHandling()
+								.withDokument(OBJECT_FACTORY.createDokument()
+									.withDokId("notWantedDocumentId")
+									.withNamn("notWantedDocumentName")))
+							)
+						)
+					)
+				)
+			)
+		);
+
+		return response;
 	}
 }

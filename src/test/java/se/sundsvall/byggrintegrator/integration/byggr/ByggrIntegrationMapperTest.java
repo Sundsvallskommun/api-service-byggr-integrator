@@ -1,27 +1,38 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
+import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.BYGGR_ARENDE_NR_1;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.HANDELSESLAG_GRASVA;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.createArende;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.createPopulatedGetArendeResponse;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateEmptyRelateradeArendenResponse;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeArendenResponse;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import se.sundsvall.byggrintegrator.Application;
+
+import generated.se.sundsvall.arendeexport.Arende;
 import generated.se.sundsvall.arendeexport.ArendeIntressent;
 import generated.se.sundsvall.arendeexport.ArrayOfArende1;
 import generated.se.sundsvall.arendeexport.ArrayOfArendeIntressent2;
+import generated.se.sundsvall.arendeexport.ArrayOfHandelse;
 import generated.se.sundsvall.arendeexport.ArrayOfString2;
+import generated.se.sundsvall.arendeexport.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.Handelse;
 import generated.se.sundsvall.arendeexport.RollTyp;
 import generated.se.sundsvall.arendeexport.StatusFilter;
-import se.sundsvall.byggrintegrator.Application;
 
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("junit")
@@ -63,7 +74,7 @@ class ByggrIntegrationMapperTest {
 
 		// Assert
 		assertThat(byggErrandDtos).hasSize(1);
-		assertThat(byggErrandDtos.getFirst().getByggrErrandNumber()).isEqualTo(BYGGR_ARENDE_NR_1);
+		assertThat(byggErrandDtos.getFirst().getByggrCaseNumber()).isEqualTo(BYGGR_ARENDE_NR_1);
 		assertThat(byggErrandDtos.getFirst().getPropertyDesignation()).hasSize(2);
 
 		final var propertyDesignations = byggErrandDtos.getFirst().getPropertyDesignation();
@@ -118,11 +129,53 @@ class ByggrIntegrationMapperTest {
 
 		// Assert
 		assertThat(byggErrandDtos).hasSize(2).satisfiesExactlyInAnyOrder(errand -> {
-			assertThat(errand.getByggrErrandNumber()).isEqualTo("BYGG 2024-000123");
+			assertThat(errand.getByggrCaseNumber()).isEqualTo("BYGG 2024-000123");
 		}, errand -> {
-			assertThat(errand.getByggrErrandNumber()).isEqualTo("BYGG 2024-000234");
+			assertThat(errand.getByggrCaseNumber()).isEqualTo("BYGG 2024-000234");
 		});
 	}
+
+	@Test
+	void testMapToGetCrendeRequest() {
+		var caseNumber = "BYGG 2001-123456";
+		var request = mapper.createGetArendeRequest(caseNumber);
+
+		assertThat(request.getDnr()).isEqualTo(caseNumber);
+	}
+
+	@Test
+	void testMapToNeighborhoodNotificationFiles() {
+		var response = createPopulatedGetArendeResponse();
+		var errandDto = mapper.mapToNeighborhoodNotificationFiles(response);
+
+		assertThat(errandDto).isNotNull();
+		assertThat(errandDto.getPropertyDesignation()).isNull();
+		assertThat(errandDto.getByggrCaseNumber()).isEqualTo("BYGG 2024-000123");
+		assertThat(errandDto.getFiles()).isNotEmpty();
+		assertThat(errandDto.getFiles()).containsExactly(entry("documentId", "documentName"));
+	}
+
+	@ParameterizedTest
+	@MethodSource("getArendeResponseProvider")
+	void testNullValues(GetArendeResponse response) {
+		var byggrErrandDto = mapper.mapToNeighborhoodNotificationFiles(response);
+		assertThat(byggrErrandDto).isNotNull();
+		assertThat(byggrErrandDto.getFiles()).isNotNull().isEmpty();
+	}
+
+	static Stream<GetArendeResponse> getArendeResponseProvider() {
+		return Stream.of(
+			null,
+			new GetArendeResponse(),
+			new GetArendeResponse().withGetArendeResult(new Arende()),
+			new GetArendeResponse().withGetArendeResult(new Arende().withHandelseLista(null)),
+			new GetArendeResponse().withGetArendeResult(new Arende().withHandelseLista(new ArrayOfHandelse())),
+			new GetArendeResponse().withGetArendeResult(new Arende().withHandelseLista(new ArrayOfHandelse().withHandelse(Collections.emptyList()))),
+			new GetArendeResponse().withGetArendeResult(new Arende().withHandelseLista(new ArrayOfHandelse().withHandelse(List.of(new Handelse()))))
+		);
+	}
+
+
 
 	@Test
 	void testMapToGetArendeRequest() {

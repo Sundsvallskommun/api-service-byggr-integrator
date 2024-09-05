@@ -14,6 +14,7 @@ import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
+import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
 
 @Service
 public class ByggrIntegratorService {
@@ -21,11 +22,13 @@ public class ByggrIntegratorService {
 	private final ByggrIntegrationMapper byggrIntegrationMapper;
 	private final ByggrIntegration byggrIntegration;
 	private final ApiResponseMapper apiResponseMapper;
+	private final TemplateMapper templateMapper;
 
-	public ByggrIntegratorService(ByggrIntegrationMapper byggrIntegrationMapper, ByggrIntegration byggrIntegration, ApiResponseMapper apiResponseMapper) {
+	public ByggrIntegratorService(ByggrIntegrationMapper byggrIntegrationMapper, ByggrIntegration byggrIntegration, ApiResponseMapper apiResponseMapper, TemplateMapper templateMapper) {
 		this.byggrIntegrationMapper = byggrIntegrationMapper;
 		this.byggrIntegration = byggrIntegration;
 		this.apiResponseMapper = apiResponseMapper;
+		this.templateMapper = templateMapper;
 	}
 
 	public List<KeyValue> findNeighborhoodNotifications(String identifier) {
@@ -65,5 +68,11 @@ public class ByggrIntegratorService {
 				.withTitle(Status.NOT_FOUND.getReasonPhrase())
 				.withDetail("No errand with diary number %s was found".formatted(dnr))
 				.build());
+	}
+
+	public String listNeighborhoodNotificationFiles(String caseNumber) {
+		var response = byggrIntegration.listNeighborhoodNotificationFiles(caseNumber);
+		var byggrErrandDto = byggrIntegrationMapper.mapToNeighborhoodNotificationFiles(response);
+		return templateMapper.generateFileList(byggrErrandDto);
 	}
 }

@@ -15,7 +15,7 @@ public class ApiResponseMapper {
 	public List<KeyValue> mapToKeyValueResponseList(List<ByggrErrandDto> errands) {
 		return errands.stream()
 			.flatMap(errand -> errand.getPropertyDesignation().stream()
-				.map(designation -> mapToKeyValue(errand.getByggrErrandNumber(), designation)))
+				.map(designation -> mapToKeyValue(errand.getByggrCaseNumber(), designation)))
 			.toList();
 	}
 

@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +41,7 @@ class ByggrErrandDtoTest {
 		var dnr = "123";
 		var designation = "designation";
 		var property = "property";
+		var files = Map.of("file1", "file1.txt");
 
 		var propertyDesignation = ByggrErrandDto.PropertyDesignation.builder()
 			.withDesignation(designation)
@@ -47,14 +49,16 @@ class ByggrErrandDtoTest {
 			.build();
 
 		var dto = ByggrErrandDto.builder()
-			.withByggrErrandNumber(dnr)
+			.withByggrCaseNumber(dnr)
+			.withFiles(files)
 			.withPropertyDesignation(List.of(propertyDesignation))
 			.build();
 
 		assertThat(propertyDesignation.getDesignation()).isEqualTo(designation);
 		assertThat(propertyDesignation.getProperty()).isEqualTo(property);
 		assertThat(dto).isNotNull().hasNoNullFieldsOrProperties();
-		assertThat(dto.getByggrErrandNumber()).isEqualTo(dnr);
+		assertThat(dto.getFiles()).isEqualTo(files);
+		assertThat(dto.getByggrCaseNumber()).isEqualTo(dnr);
 		assertThat(dto.getPropertyDesignation()).containsExactly(propertyDesignation);
 	}
 

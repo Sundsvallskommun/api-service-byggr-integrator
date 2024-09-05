@@ -66,4 +66,9 @@ public class ByggrIntegration {
 			.map(SOAPFault::getFaultString)
 			.orElse(EMPTY_STRING);
 	}
+
+	public GetArendeResponse listNeighborhoodNotificationFiles(String caseNumber) {
+		var request = byggrIntegrationMapper.createGetArendeRequest(caseNumber);
+		return byggrClient.getArende(request);
+	}
 }
