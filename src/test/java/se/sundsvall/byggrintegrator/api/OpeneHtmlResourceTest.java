@@ -32,7 +32,7 @@ class OpeneHtmlResourceTest {
 	private static final String ERRAND_NUMBER = "BYGG 2001-123456";
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String FAULTY_MUNICIPALITY_ID = "notValid";
-	private static final String NEIGHBORHOOD_NOTIFICATION_FILES_PATH = "/{municipalityId}/neighborhood-notification/{caseNumber}/files";
+	private static final String NEIGHBORHOOD_NOTIFICATION_FILES_PATH = "/{municipalityId}/opene/case/{caseNumber}/files";
 
 	@Test
 	void testFindNeighborhoodNotificationFiles() {

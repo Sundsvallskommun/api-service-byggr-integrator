@@ -40,12 +40,12 @@ public class OpeneXmlResource {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
-	@GetMapping(path = "/errand/{dnr}/type", produces = { APPLICATION_XML_VALUE, APPLICATION_PROBLEM_XML_VALUE })
+	@GetMapping(path = "/case/{caseNumber}/type", produces = { APPLICATION_XML_VALUE, APPLICATION_PROBLEM_XML_VALUE })
 	@Operation(summary = "Return xml structure errand type for the errand matching sent in diary number")
 	public Weight getErrandType(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "dnr", description = "Document diarie number") @NotBlank @PathVariable String dnr) {
+		@Parameter(name = "caseNumber", description = "Document diarie number") @NotBlank @PathVariable String caseNumber) {
 
-		return byggrIntegratorService.getErrandType(dnr);
+		return byggrIntegratorService.getErrandType(caseNumber);
 	}
 }

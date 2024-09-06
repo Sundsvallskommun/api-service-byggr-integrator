@@ -25,7 +25,7 @@ class ErrandTypeIT extends AbstractAppTest {
 	@Test
 	void test01_readErrandTypeForExistingErrand() {
 		setupCall()
-			.withServicePath("/2281/opene/errand/BYGG 2024-000666/type")
+			.withServicePath("/2281/opene/case/BYGG 2024-000666/type")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_XML_VALUE))
@@ -36,7 +36,7 @@ class ErrandTypeIT extends AbstractAppTest {
 	@Test
 	void test02_readErrandTypeForNonExistingErrand() {
 		setupCall()
-			.withServicePath("/2281/opene/errand/BYGG 2024-000667/type")
+			.withServicePath("/2281/opene/case/BYGG 2024-000667/type")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(NOT_FOUND)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_PROBLEM_XML_VALUE))

@@ -25,7 +25,7 @@ import jakarta.validation.constraints.NotBlank;
 @RestController
 @Validated
 @Tag(name = "Open-E", description = "ByggR Integrator Open-E resources")
-@RequestMapping(path = "/{municipalityId}")
+@RequestMapping(path = "/{municipalityId}/opene")
 @ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
 @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
 @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = Problem.class)))
@@ -39,7 +39,7 @@ public class OpeneHtmlResource {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
-	@GetMapping(path = "/neighborhood-notification/{caseNumber}/files", produces = { TEXT_HTML_VALUE })
+	@GetMapping(path = "/case/{caseNumber}/files", produces = { TEXT_HTML_VALUE })
 	@Operation(summary = "Return html structure for all files for the errand matching sent in diary number")
 	public ResponseEntity<String> findNeighborhoodNotificationFiles(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
