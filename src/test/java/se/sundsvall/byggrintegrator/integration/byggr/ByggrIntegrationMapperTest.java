@@ -136,7 +136,7 @@ class ByggrIntegrationMapperTest {
 	}
 
 	@Test
-	void testMapToGetCrendeRequest() {
+	void testMapToGetArendeRequest() {
 		var caseNumber = "BYGG 2001-123456";
 		var request = mapper.createGetArendeRequest(caseNumber);
 
@@ -174,19 +174,4 @@ class ByggrIntegrationMapperTest {
 			new GetArendeResponse().withGetArendeResult(new Arende().withHandelseLista(new ArrayOfHandelse().withHandelse(List.of(new Handelse()))))
 		);
 	}
-
-
-
-	@Test
-	void testMapToGetArendeRequest() {
-		// Arrange
-		final var dnr = "diaryNumber";
-
-		// Act
-		final var request = mapper.mapToGetArendeRequest(dnr);
-
-		// Assert
-		assertThat(request.getDnr()).isEqualTo(dnr);
-	}
-
 }

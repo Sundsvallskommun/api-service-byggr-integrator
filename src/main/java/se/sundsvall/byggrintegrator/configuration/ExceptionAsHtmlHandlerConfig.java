@@ -20,7 +20,7 @@ import org.zalando.problem.Status;
 import org.zalando.problem.StatusType;
 import org.zalando.problem.ThrowableProblem;
 
-import se.sundsvall.byggrintegrator.api.ByggrFileListResource;
+import se.sundsvall.byggrintegrator.api.OpeneHtmlResource;
 import se.sundsvall.dept44.requestid.RequestId;
 
 import jakarta.validation.ValidationException;
@@ -29,12 +29,12 @@ import jakarta.validation.ValidationException;
  * Configuration to convert exceptions and problems to HTML responses.
  */
 @Configuration
-public class ByggrFileExceptionConfig {
+public class ExceptionAsHtmlHandlerConfig {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ByggrFileExceptionConfig.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ExceptionAsHtmlHandlerConfig.class);
 
-	@ControllerAdvice(assignableTypes = ByggrFileListResource.class)
-	public static class ByggrFileExceptionAsHtmlHandler {
+	@ControllerAdvice(assignableTypes = OpeneHtmlResource.class)
+	public static class ControllerExceptionAsHtmlHandler {
 
 		private static final String TEMPLATE_FILE = "neighborhood-notification-file-exception";
 		private static final String TEMPLATE_ERROR_MESSAGE = "errorMessage";
@@ -46,7 +46,7 @@ public class ByggrFileExceptionConfig {
 		private static final Context context = new Context(Locale.of("sv", "SE"));
 		private final ITemplateEngine templateEngine;
 
-		public ByggrFileExceptionAsHtmlHandler(ITemplateEngine templateEngine) {
+		public ControllerExceptionAsHtmlHandler(ITemplateEngine templateEngine) {
 			this.templateEngine = templateEngine;
 		}
 

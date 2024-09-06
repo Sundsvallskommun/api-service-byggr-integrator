@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.zalando.problem.Problem;
+import org.zalando.problem.violations.ConstraintViolationProblem;
 
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
@@ -22,22 +24,23 @@ import jakarta.validation.constraints.NotBlank;
 
 @RestController
 @Validated
-@Tag(name = "File list resource", description = "List files on a neighborhood-notification case")
+@Tag(name = "Open-E", description = "ByggR Integrator Open-E resources")
 @RequestMapping(path = "/{municipalityId}")
-@ApiResponse(
-	responseCode = "200",
-	description = "Successful Operation",
-	useReturnTypeSchema = true)
-public class ByggrFileListResource {
+@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
+@ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
+@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = Problem.class)))
+@ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = Problem.class)))
+@ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(schema = @Schema(implementation = Problem.class)))
+public class OpeneHtmlResource {
 
 	private final ByggrIntegratorService byggrIntegratorService;
 
-	public ByggrFileListResource(ByggrIntegratorService byggrIntegratorService) {
+	public OpeneHtmlResource(ByggrIntegratorService byggrIntegratorService) {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
 	@GetMapping(path = "/neighborhood-notification/{caseNumber}/files", produces = { TEXT_HTML_VALUE })
-	@Operation(summary = "Lists all files on a neighborhood-notification case")
+	@Operation(summary = "Return html structure for all files for the errand matching sent in diary number")
 	public ResponseEntity<String> findNeighborhoodNotificationFiles(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "caseNumber", description = "Case number from ByggR", example = "BYGG 2001-123456") @NotBlank @PathVariable String caseNumber) {

@@ -21,7 +21,7 @@ import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
 
 @ActiveProfiles("junit")
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ByggrFileListResourceTest {
+class OpeneHtmlResourceTest {
 
 	@MockBean
 	private ByggrIntegratorService mockByggrIntegratorService;

@@ -14,11 +14,11 @@ import org.zalando.problem.Status;
 
 import jakarta.validation.ValidationException;
 
-@SpringBootTest(classes = ExceptionHandlerConfig.class)
-class ExceptionHandlerConfigTest {
+@SpringBootTest(classes = ExceptionAsXmlHandlerConfig.class)
+class ExceptionAsXmlHandlerConfigTest {
 
 	@Autowired
-	private ExceptionHandlerConfig.ControllerExceptionAsXmlHandler handler;
+	private ExceptionAsXmlHandlerConfig.ControllerExceptionAsXmlHandler handler;
 
 	@Test
 	void testHandleProblem() {
