@@ -17,22 +17,23 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
-import jakarta.validation.ValidationException;
 import se.sundsvall.byggrintegrator.api.OpeneXmlResource;
+
+import jakarta.validation.ValidationException;
 
 /**
  * Configuration needed to convert execption responses to correct response content types
  */
 @Configuration
-public class ExceptionHandlerConfig {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionHandlerConfig.class);
+public class ExceptionAsXmlHandlerConfig {
+	private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionAsXmlHandlerConfig.class);
 	private static final String LOG_MESSAGE = "Mapping exception into Problem";
 
 	/**
 	 * ControllerAdvice for the OpenE XML resource
 	 */
 	@ControllerAdvice(assignableTypes = OpeneXmlResource.class)
-	public class ControllerExceptionAsXmlHandler {
+	public static class ControllerExceptionAsXmlHandler {
 
 		@ExceptionHandler(ThrowableProblem.class)
 		@ResponseBody
@@ -64,22 +65,21 @@ public class ExceptionHandlerConfig {
 				.contentType(APPLICATION_PROBLEM_XML)
 				.body(createProblem(INTERNAL_SERVER_ERROR, exception));
 		}
-	}
 
-	private static ThrowableProblem createProblem(Status status, Exception exception) {
-		return Problem.builder()
-			.withStatus(status)
-			.withTitle(status.getReasonPhrase())
-			.withDetail(extractMessage(exception))
-			.build();
-	}
+		private static ThrowableProblem createProblem(Status status, Exception exception) {
+			return Problem.builder()
+				.withStatus(status)
+				.withTitle(status.getReasonPhrase())
+				.withDetail(extractMessage(exception))
+				.build();
+		}
 
-	private static int exctractStatusCode(Problem problem) {
-		return Optional.ofNullable(problem.getStatus()).orElse(INTERNAL_SERVER_ERROR).getStatusCode();
-	}
+		private static int exctractStatusCode(Problem problem) {
+			return Optional.ofNullable(problem.getStatus()).orElse(INTERNAL_SERVER_ERROR).getStatusCode();
+		}
 
-	private static String extractMessage(Exception e) {
-		return Optional.ofNullable(e.getMessage()).orElse(String.valueOf(e));
+		private static String extractMessage(Exception e) {
+			return Optional.ofNullable(e.getMessage()).orElse(String.valueOf(e));
+		}
 	}
-
 }

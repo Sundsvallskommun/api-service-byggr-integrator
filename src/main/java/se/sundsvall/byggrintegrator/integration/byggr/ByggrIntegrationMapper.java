@@ -1,31 +1,40 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 
 import generated.se.sundsvall.arendeexport.AbstractArendeObjekt;
 import generated.se.sundsvall.arendeexport.Arende;
 import generated.se.sundsvall.arendeexport.ArendeFastighet;
 import generated.se.sundsvall.arendeexport.ArendeIntressent;
 import generated.se.sundsvall.arendeexport.ArrayOfString2;
+import generated.se.sundsvall.arendeexport.Dokument;
 import generated.se.sundsvall.arendeexport.GetArende;
+import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.GetRoller;
 import generated.se.sundsvall.arendeexport.Handelse;
+import generated.se.sundsvall.arendeexport.Handling;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
 import generated.se.sundsvall.arendeexport.RollTyp;
 import generated.se.sundsvall.arendeexport.StatusFilter;
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 
 @Component
 public class ByggrIntegrationMapper {
@@ -122,7 +131,7 @@ public class ByggrIntegrationMapper {
 
 	private ByggrErrandDto toByggErrandDto(Arende arende) {
 		return ByggrErrandDto.builder()
-			.withByggrErrandNumber(arende.getDnr())
+			.withByggrCaseNumber(arende.getDnr())
 			.withPropertyDesignation(mapToPropertyDesignations(arende.getObjektLista().getAbstractArendeObjekt()))
 			.build();
 	}
@@ -165,5 +174,54 @@ public class ByggrIntegrationMapper {
 			return true;
 		}
 		return false;
+	}
+
+	public GetArende createGetArendeRequest(String caseNumber) {
+		return OBJECT_FACTORY.createGetArende()
+			.withDnr(caseNumber);
+	}
+
+	/**
+	 * Takes the response from Byggr and maps it to a map of Document ID to Document name
+	 * and adds it to a ByggErrandDto
+	 * Only files from a valid event are included
+	 *
+	 * @param response The response from Byggr
+	 * @return a ByggrErrandDto
+	 */
+	public ByggrErrandDto mapToNeighborhoodNotificationFiles(GetArendeResponse response) {
+		var errandDto = ByggrErrandDto.builder()
+			.withFiles(new HashMap<>())
+			.build();
+
+		if (response == null
+			|| response.getGetArendeResult() == null
+			|| response.getGetArendeResult().getHandelseLista() == null
+			|| response.getGetArendeResult().getHandelseLista().getHandelse() == null
+			|| response.getGetArendeResult().getHandelseLista().getHandelse().isEmpty()) {
+			// Just return a dto with an empty map for files
+			return errandDto;
+		}
+
+		// Now we know that we have an event (handelse) in the response
+		// Map the Document ID to the Document name (if we can).
+		var fileMap = response.getGetArendeResult().getHandelseLista().getHandelse().stream()
+			.filter(handelse -> handelse.getHandlingLista() != null) //Not a list
+			.filter(handelse -> !CollectionUtils.isEmpty(handelse.getHandlingLista().getHandling())) //Is a list
+			.filter(this::hasValidEvent)    // Only include files from valid events
+			.flatMap(handelse -> handelse.getHandlingLista().getHandling().stream())
+			.map(Handling::getDokument)
+			.filter(Objects::nonNull)
+			.filter(dokument -> isNotBlank(dokument.getDokId()))
+			.filter(dokument -> isNotBlank(dokument.getNamn()))
+			.collect(Collectors.toMap(
+				Dokument::getDokId,
+				Dokument::getNamn
+			));
+
+		errandDto.setByggrCaseNumber(response.getGetArendeResult().getDnr());
+		errandDto.setFiles(fileMap);
+
+		return errandDto;
 	}
 }

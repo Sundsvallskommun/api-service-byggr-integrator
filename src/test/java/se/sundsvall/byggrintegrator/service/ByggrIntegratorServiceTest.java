@@ -24,12 +24,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
-import generated.se.sundsvall.arendeexport.GetArendeResponse;
-import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
-import generated.se.sundsvall.arendeexport.ObjectFactory;
 import se.sundsvall.byggrintegrator.TestObjectFactory;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
+import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
+
+import generated.se.sundsvall.arendeexport.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
+import generated.se.sundsvall.arendeexport.ObjectFactory;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrIntegratorServiceTest {
@@ -43,12 +46,16 @@ class ByggrIntegratorServiceTest {
 	@Mock
 	private ApiResponseMapper mockApiResponseMapper;
 
+	@Mock
+	private TemplateMapper mockTemplateMapper;
+
 	@InjectMocks
 	private ByggrIntegratorService service;
 
 	private static final ObjectFactory OBJECT_FACTORY = new ObjectFactory();
 	private static final List<String> ROLES = List.of("ANM");
 	private static final String IDENTIFIER = "1234567890";
+	private static final String BYGGR_ERRAND_NUMBER = "BYGG 2024-000123";
 	private static final String IDENTIFIER_WITH_DASH = "123456-7890";
 
 	@Test
@@ -64,10 +71,10 @@ class ByggrIntegratorServiceTest {
 
 		// Assert
 		assertThat(neighborNotifications).hasSize(2).satisfiesExactlyInAnyOrder(notification -> {
-			assertThat(notification.key()).isEqualTo("BYGG 2024-000123");
+			assertThat(notification.key()).isEqualTo(BYGGR_ERRAND_NUMBER);
 			assertThat(notification.value()).isEqualTo("BYGG 2024-000123, ANKEBORG 1:1234");
 		}, notification -> {
-			assertThat(notification.key()).isEqualTo("BYGG 2024-000123");
+			assertThat(notification.key()).isEqualTo(BYGGR_ERRAND_NUMBER);
 			assertThat(notification.value()).isEqualTo("BYGG 2024-000123, ANKEBORG 2:5678");
 		});
 		verify(mockByggrIntegration).getRoles();
@@ -114,6 +121,22 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegration).getRoles();
 		verifyNoMoreInteractions(mockByggrIntegration);
 		verifyNoInteractions(mockByggrIntegrationMapper, mockApiResponseMapper, mockApiResponseMapper);
+	}
+
+	@Test
+	void testListNeighborhoodNotificationFiles() {
+		when(mockByggrIntegration.listNeighborhoodNotificationFiles(BYGGR_ERRAND_NUMBER)).thenReturn(OBJECT_FACTORY.createGetArendeResponse());
+		when(mockByggrIntegrationMapper.mapToNeighborhoodNotificationFiles(any())).thenReturn(ByggrErrandDto.builder().build());
+		when(mockTemplateMapper.generateFileList(any(ByggrErrandDto.class))).thenReturn("html");
+
+		var html = service.listNeighborhoodNotificationFiles(BYGGR_ERRAND_NUMBER);
+
+		assertThat(html).isEqualTo("html");
+		verify(mockByggrIntegration).listNeighborhoodNotificationFiles(BYGGR_ERRAND_NUMBER);
+		verify(mockByggrIntegrationMapper).mapToNeighborhoodNotificationFiles(any(GetArendeResponse.class));
+		verify(mockTemplateMapper).generateFileList(any(ByggrErrandDto.class));
+		verifyNoInteractions(mockApiResponseMapper);
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockTemplateMapper);
 	}
 
 	@Test

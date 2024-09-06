@@ -1,6 +1,7 @@
 package se.sundsvall.byggrintegrator.model;
 
 import java.util.List;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,8 +22,9 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 public class ByggrErrandDto {
-	private String byggrErrandNumber;
+	private String byggrCaseNumber;
 	private List<PropertyDesignation> propertyDesignation;
+	private Map<String, String> files;  // Map<dokumentId, documentName>
 
 	@Getter
 	@Setter

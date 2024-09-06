@@ -31,10 +31,10 @@ class OpeneXmlResourceTest {
 
 	private static final String INVALID_MUNICIPALITY_ID = "InvalidMunicipalityId";
 	private static final String VALID_MUNICIPALITY_ID = "2281";
-	private static final String DNR = "diaryNumber";
+	private static final String CASE_NUMBER = "diaryNumber";
 	private static final String VALUE = "value";
 
-	private static final String ERRAND_TYPE_URL = "/{municipalityId}/opene/errand/{dnr}/type";
+	private static final String ERRAND_TYPE_URL = "/{municipalityId}/opene/case/{caseNumber}/type";
 
 	// ----------------------------------------------------------------
 	// ErrandType resources tests
@@ -43,10 +43,10 @@ class OpeneXmlResourceTest {
 	void testGetErrandType() {
 		final var weight = Weight.builder().withValue(VALUE).build();
 
-		when(mockByggrIntegratorService.getErrandType(DNR)).thenReturn(weight);
+		when(mockByggrIntegratorService.getErrandType(CASE_NUMBER)).thenReturn(weight);
 
 		final var responseBody = webTestClient.get()
-			.uri(ERRAND_TYPE_URL, VALID_MUNICIPALITY_ID, DNR)
+			.uri(ERRAND_TYPE_URL, VALID_MUNICIPALITY_ID, CASE_NUMBER)
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader()
@@ -57,14 +57,14 @@ class OpeneXmlResourceTest {
 
 		assertThat(responseBody).isNotNull().isEqualToIgnoringNewLines("<Weight>value</Weight>");
 
-		verify(mockByggrIntegratorService).getErrandType(DNR);
+		verify(mockByggrIntegratorService).getErrandType(CASE_NUMBER);
 		verifyNoMoreInteractions(mockByggrIntegratorService);
 	}
 
 	@Test
 	void testGetErrandType_faultyMunicipalityId_shouldThrowException() {
 		final var responseBody = webTestClient.get()
-			.uri(ERRAND_TYPE_URL, INVALID_MUNICIPALITY_ID, DNR)
+			.uri(ERRAND_TYPE_URL, INVALID_MUNICIPALITY_ID, CASE_NUMBER)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_XML)

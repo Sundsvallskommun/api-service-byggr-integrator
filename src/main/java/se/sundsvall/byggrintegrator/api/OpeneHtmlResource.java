@@ -1,8 +1,8 @@
 package se.sundsvall.byggrintegrator.api;
 
-import static org.springframework.http.MediaType.APPLICATION_PROBLEM_XML_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 
-import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 
@@ -32,20 +31,20 @@ import jakarta.validation.constraints.NotBlank;
 @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(schema = @Schema(implementation = Problem.class)))
-public class OpeneXmlResource {
+public class OpeneHtmlResource {
 
 	private final ByggrIntegratorService byggrIntegratorService;
 
-	public OpeneXmlResource(ByggrIntegratorService byggrIntegratorService) {
+	public OpeneHtmlResource(ByggrIntegratorService byggrIntegratorService) {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
-	@GetMapping(path = "/case/{caseNumber}/type", produces = { APPLICATION_XML_VALUE, APPLICATION_PROBLEM_XML_VALUE })
-	@Operation(summary = "Return xml structure errand type for the errand matching sent in diary number")
-	public Weight getErrandType(
+	@GetMapping(path = "/case/{caseNumber}/files", produces = { TEXT_HTML_VALUE })
+	@Operation(summary = "Return html structure for all files for the errand matching sent in diary number")
+	public ResponseEntity<String> findNeighborhoodNotificationFiles(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "caseNumber", description = "Document diarie number") @NotBlank @PathVariable String caseNumber) {
+		@Parameter(name = "caseNumber", description = "Case number from ByggR", example = "BYGG 2001-123456") @NotBlank @PathVariable String caseNumber) {
 
-		return byggrIntegratorService.getErrandType(caseNumber);
+		return ResponseEntity.ok(byggrIntegratorService.listNeighborhoodNotificationFiles(caseNumber));
 	}
 }
