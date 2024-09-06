@@ -27,7 +27,7 @@ import jakarta.validation.constraints.NotBlank;
 @ApiResponse(
 	responseCode = "200",
 	description = "Successful Operation",
-	content = @Content(schema = @Schema()))
+	useReturnTypeSchema = true)
 public class ByggrFileListResource {
 
 	private final ByggrIntegratorService byggrIntegratorService;
