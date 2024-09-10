@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import generated.se.sundsvall.arendeexport.GetArende;
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.GetDocument;
+import generated.se.sundsvall.arendeexport.GetDocumentResponse;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.GetRoller;
@@ -26,4 +28,6 @@ public interface ByggrClient {
 	@PostMapping(consumes = TEXT_XML_UTF8, produces = TEXT_XML_UTF8, headers = { "SOAPAction=www.tekis.se/ServiceContract/V8/IExportArenden/GetArende" })
 	GetArendeResponse getArende(GetArende request);
 
+	@PostMapping(consumes = TEXT_XML_UTF8, produces = TEXT_XML_UTF8, headers = { "SOAPAction=www.tekis.se/ServiceContract/V8/IExportArenden/GetDocument" })
+	GetDocumentResponse getDocument(GetDocument request);
 }

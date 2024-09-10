@@ -34,7 +34,7 @@ class OpeneXmlResourceTest {
 	private static final String CASE_NUMBER = "diaryNumber";
 	private static final String VALUE = "value";
 
-	private static final String ERRAND_TYPE_URL = "/{municipalityId}/opene/case/{caseNumber}/type";
+	private static final String ERRAND_TYPE_URL = "/{municipalityId}/opene/cases/{caseNumber}/type";
 
 	// ----------------------------------------------------------------
 	// ErrandType resources tests

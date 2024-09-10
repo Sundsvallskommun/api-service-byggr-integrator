@@ -23,7 +23,7 @@ class ApplicantIT extends AbstractAppTest {
 	@Test
 	void test01_readApplicantErrands() {
 		setupCall()
-			.withServicePath("/2281/applicant/190102031234/errands")
+			.withServicePath("/2281/applicants/190102031234/errands")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_JSON_VALUE))
@@ -34,7 +34,7 @@ class ApplicantIT extends AbstractAppTest {
 	@Test
 	void test02_readApplicantErrandsWhenNoMatch() {
 		setupCall()
-			.withServicePath("/2281/applicant/190203045678/errands")
+			.withServicePath("/2281/applicants/190203045678/errands")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_JSON_VALUE))

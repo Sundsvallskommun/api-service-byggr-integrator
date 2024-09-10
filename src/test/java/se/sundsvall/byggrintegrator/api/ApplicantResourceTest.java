@@ -40,7 +40,7 @@ class ApplicantResourceTest {
 	private static final String INVALID_MUNICIPALITY_ID = "invalid municipality";
 	private static final String INVALID_IDENTIFIER = "invalid identifier";
 
-	private static final String APPLICANT_URL = "/{municipalityId}/applicant/{identifier}/errands";
+	private static final String APPLICANT_URL = "/{municipalityId}/applicants/{identifier}/errands";
 
 	@Test
 	void testFindApplicantErrands() {

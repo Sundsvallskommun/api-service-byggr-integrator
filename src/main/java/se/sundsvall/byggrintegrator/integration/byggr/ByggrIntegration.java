@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import generated.se.sundsvall.arendeexport.ArrayOfString;
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.GetDocumentResponse;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.Roll;
 import jakarta.xml.soap.SOAPFault;
@@ -17,6 +19,8 @@ import jakarta.xml.ws.soap.SOAPFaultException;
 public class ByggrIntegration {
 
 	private static final String SOAP_FAULT_PREFIX_ERRAND_NOT_FOUND = "Arende not found for dnr";
+	private static final String SOAP_FAULT_PREFIX_ERROR_GETTING_DOCUMENT = "Error getting GemDmsdoclink";
+	private static final String SOAP_FAULT_PREFIX_DOCUMENT_ID_NOT_VALID = "is not a numeric value";
 	private static final String EMPTY_STRING = "";
 
 	private final ByggrClient byggrClient;
@@ -53,7 +57,21 @@ public class ByggrIntegration {
 		try {
 			return byggrClient.getArende(byggrIntegrationMapper.mapToGetArendeRequest(dnr));
 		} catch (final SOAPFaultException e) {
-			if (extractFaultString(e).startsWith(SOAP_FAULT_PREFIX_ERRAND_NOT_FOUND)) {
+			if (StringUtils.startsWithIgnoreCase(extractFaultString(e), SOAP_FAULT_PREFIX_ERRAND_NOT_FOUND)) {
+				return null;
+			}
+
+			throw e;
+		}
+	}
+
+	public GetDocumentResponse getDocument(String documentId) {
+		try {
+			return byggrClient.getDocument(byggrIntegrationMapper.mapToGetDocumentRequest(documentId));
+		} catch (final SOAPFaultException e) {
+			final var faultString = extractFaultString(e);
+			if (StringUtils.startsWithIgnoreCase(faultString, SOAP_FAULT_PREFIX_ERROR_GETTING_DOCUMENT) ||
+				StringUtils.containsIgnoreCase(faultString, SOAP_FAULT_PREFIX_DOCUMENT_ID_NOT_VALID)) {
 				return null;
 			}
 
@@ -65,10 +83,5 @@ public class ByggrIntegration {
 		return Optional.ofNullable(e.getFault())
 			.map(SOAPFault::getFaultString)
 			.orElse(EMPTY_STRING);
-	}
-
-	public GetArendeResponse listNeighborhoodNotificationFiles(String caseNumber) {
-		var request = byggrIntegrationMapper.createGetArendeRequest(caseNumber);
-		return byggrClient.getArende(request);
 	}
 }

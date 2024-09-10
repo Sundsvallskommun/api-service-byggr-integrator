@@ -1,4 +1,4 @@
-package se.sundsvall.byggrintegrator.service;
+package se.sundsvall.byggrintegrator.service.template;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
@@ -16,8 +16,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
-import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
-import se.sundsvall.byggrintegrator.service.template.TemplateProperties;
 
 @ActiveProfiles("junit")
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -31,21 +29,24 @@ class TemplateMapperTest {
 
 	@Test
 	void test() {
-		when(mockProperties.domain()).thenReturn("http://somewhere.com");
-		when(mockProperties.path()).thenReturn("/path/");
+		when(mockProperties.domain()).thenReturn("http://somewhere.com/");
 		when(mockProperties.subDirectory()).thenReturn("/files/");
 
-		var html = templateMapper.generateFileList(ByggrErrandDto.builder()
-			.withByggrCaseNumber("BYGG 2001-1234")
-			.withFiles(new LinkedHashMap<>(){{
-				put("file1", "file1.txt");
-				put("file2", "file2.txt");
-			}})
-			.build());
+		final var html = templateMapper.generateFileList(
+			"1234",
+			ByggrErrandDto.builder()
+				.withByggrCaseNumber("BYGG 2001-1234")
+				.withFiles(new LinkedHashMap<>() {
+					private static final long serialVersionUID = 1L;
+					{
+						put("file1", "file1.txt");
+						put("file2", "file2.txt");
+					}
+				})
+				.build());
 
-		assertThat(html).isEqualTo("<ul><li><a href=\"http://somewhere.com/path/BYGG+2001-1234/files/file1\">file1.txt</a></li><li><a href=\"http://somewhere.com/path/BYGG+2001-1234/files/file2\">file2.txt</a></li></ul>");
+		assertThat(html).isEqualTo("<ul><li><a href=\"http://somewhere.com/1234/files/file1\">file1.txt</a></li><li><a href=\"http://somewhere.com/1234/files/file2\">file2.txt</a></li></ul>");
 		verify(mockProperties, times(2)).domain();
-		verify(mockProperties, times(2)).path();
 		verify(mockProperties, times(2)).subDirectory();
 		verifyNoMoreInteractions(mockProperties);
 	}

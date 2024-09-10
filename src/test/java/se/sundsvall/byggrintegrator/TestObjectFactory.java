@@ -3,8 +3,6 @@ package se.sundsvall.byggrintegrator;
 import java.util.ArrayList;
 import java.util.List;
 
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
-
 import generated.se.sundsvall.arendeexport.AbstractArendeObjekt;
 import generated.se.sundsvall.arendeexport.Arende;
 import generated.se.sundsvall.arendeexport.ArrayOfAbstractArendeObjekt2;
@@ -12,8 +10,10 @@ import generated.se.sundsvall.arendeexport.ArrayOfArende1;
 import generated.se.sundsvall.arendeexport.ArrayOfHandelse;
 import generated.se.sundsvall.arendeexport.Fastighet;
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.GetDocumentResponse;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 
 public final class TestObjectFactory {
 
@@ -27,6 +27,8 @@ public final class TestObjectFactory {
 	public static final String ARENDE_TYP_LH = "LH";
 	public static final String BYGGR_ARENDE_NR_1 = "BYGG 2024-000123";
 	public static final String BYGGR_ARENDE_NR_2 = "BYGG 2024-000234";
+	public static final String DOCUMENT_FILE_NAME = "random.txt";
+	public static final byte[] DOCUMENT_CONTENT = "Some not so interesting text".getBytes();
 
 	/**
 	 * Creates a response with one valid and one invalid event
@@ -42,6 +44,17 @@ public final class TestObjectFactory {
 	public static GetArendeResponse generateArendeResponse(String dnr) {
 		final var response = OBJECT_FACTORY.createGetArendeResponse();
 		return response.withGetArendeResult(createArende(dnr, true));
+	}
+
+	public static GetDocumentResponse generateDocumentResponse(String fileId) {
+		final var response = OBJECT_FACTORY.createGetDocumentResponse();
+		final var dokument = OBJECT_FACTORY.createDokument()
+			.withDokId(fileId)
+			.withNamn(DOCUMENT_FILE_NAME)
+			.withFil(OBJECT_FACTORY.createDokumentFil()
+				.withFilBuffer(DOCUMENT_CONTENT));
+
+		return response.withGetDocumentResult(dokument);
 	}
 
 	public static GetRelateradeArendenByPersOrgNrAndRoleResponse generateEmptyRelateradeArendenResponse() {
@@ -118,36 +131,27 @@ public final class TestObjectFactory {
 	}
 
 	public static GetArendeResponse createPopulatedGetArendeResponse() {
-		GetArendeResponse response = OBJECT_FACTORY.createGetArendeResponse();
+		final var response = OBJECT_FACTORY.createGetArendeResponse();
 		response.withGetArendeResult(OBJECT_FACTORY.createArende()
 			.withDnr(BYGGR_ARENDE_NR_1)
 			.withHandelseLista(OBJECT_FACTORY.createArrayOfHandelse()
 				.withHandelse(List.of(OBJECT_FACTORY.createHandelse()
-						//Creates a valid event
-						.withHandelsetyp(HANDELSETYP_GRANHO)
-						.withHandelseslag(HANDELSESLAG_GRAUTS)
-						.withHandlingLista(OBJECT_FACTORY.createArrayOfHandelseHandling()
-							.withHandling(List.of(OBJECT_FACTORY.createHandelseHandling()
-								.withDokument(OBJECT_FACTORY.createDokument()
-									.withDokId("documentId")
-									.withNamn("documentName")))
-							)
-						)
-					, OBJECT_FACTORY.createHandelse()
-						//Creates an invalid event
-						.withHandelsetyp(HANDELSETYP_GRANHO)
-						.withHandelseslag(HANDELSESLAG_GRASVA)  // This is the unwanted handelseslag
-						.withHandlingLista(OBJECT_FACTORY.createArrayOfHandelseHandling()
-							.withHandling(List.of(OBJECT_FACTORY.createHandelseHandling()
-								.withDokument(OBJECT_FACTORY.createDokument()
-									.withDokId("notWantedDocumentId")
-									.withNamn("notWantedDocumentName")))
-							)
-						)
-					)
-				)
-			)
-		);
+					// Creates a valid event
+					.withHandelsetyp(HANDELSETYP_GRANHO)
+					.withHandelseslag(HANDELSESLAG_GRAUTS)
+					.withHandlingLista(OBJECT_FACTORY.createArrayOfHandelseHandling()
+						.withHandling(List.of(OBJECT_FACTORY.createHandelseHandling()
+							.withDokument(OBJECT_FACTORY.createDokument()
+								.withDokId("documentId")
+								.withNamn("documentName"))))), OBJECT_FACTORY.createHandelse()
+									// Creates an invalid event
+									.withHandelsetyp(HANDELSETYP_GRANHO)
+									.withHandelseslag(HANDELSESLAG_GRASVA) // This is the unwanted handelseslag
+									.withHandlingLista(OBJECT_FACTORY.createArrayOfHandelseHandling()
+										.withHandling(List.of(OBJECT_FACTORY.createHandelseHandling()
+											.withDokument(OBJECT_FACTORY.createDokument()
+												.withDokId("notWantedDocumentId")
+												.withNamn("notWantedDocumentName")))))))));
 
 		return response;
 	}

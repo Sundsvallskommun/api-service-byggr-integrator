@@ -11,10 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 
-import se.sundsvall.byggrintegrator.api.model.Weight;
-import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
-import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,6 +18,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
+import se.sundsvall.byggrintegrator.api.model.Weight;
+import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
+import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 
 @RestController
 @Validated
@@ -40,11 +39,11 @@ public class OpeneXmlResource {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
-	@GetMapping(path = "/case/{caseNumber}/type", produces = { APPLICATION_XML_VALUE, APPLICATION_PROBLEM_XML_VALUE })
-	@Operation(summary = "Return xml structure errand type for the errand matching sent in diary number")
+	@GetMapping(path = "/cases/{caseNumber}/type", produces = { APPLICATION_XML_VALUE, APPLICATION_PROBLEM_XML_VALUE })
+	@Operation(summary = "Return xml structure errand type for the errand matching sent in case number")
 	public Weight getErrandType(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "caseNumber", description = "Document diarie number") @NotBlank @PathVariable String caseNumber) {
+		@Parameter(name = "caseNumber", description = "Case number from ByggR", example = "BYGG 2001-123456") @NotBlank @PathVariable String caseNumber) {
 
 		return byggrIntegratorService.getErrandType(caseNumber);
 	}

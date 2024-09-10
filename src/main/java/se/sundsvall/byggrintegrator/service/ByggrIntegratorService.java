@@ -1,15 +1,27 @@
 package se.sundsvall.byggrintegrator.service;
 
 import static java.util.Optional.ofNullable;
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.util.StreamUtils.copy;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.byggrintegrator.service.LegalIdUtility.addHyphen;
+import static se.sundsvall.byggrintegrator.service.MimeTypeUtility.detectMimeType;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
+import org.zalando.problem.StatusType;
+import org.zalando.problem.ThrowableProblem;
 
+import generated.se.sundsvall.arendeexport.Dokument;
+import generated.se.sundsvall.arendeexport.GetDocumentResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
@@ -18,6 +30,12 @@ import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
 
 @Service
 public class ByggrIntegratorService {
+
+	public static final String TEMPLATE_CONTENT_DISPOSITION_HEADER_VALUE = "attachment; filename=\"%s\"";
+	public static final String ERROR_ROLES_NOT_FOUND = "No roles found, cannot continue fetching neighborhood notifications";
+	public static final String ERROR_ERRAND_NOT_FOUND = "No errand with diary number %s was found";
+	public static final String ERROR_FILE_NOT_FOUND = "No file with id %s was found";
+	public static final String ERROR_FILE_COULD_NOT_BE_READ = "Could not read file content for document data with id %s";
 
 	private final ByggrIntegrationMapper byggrIntegrationMapper;
 	private final ByggrIntegration byggrIntegration;
@@ -34,11 +52,7 @@ public class ByggrIntegratorService {
 	public List<KeyValue> findNeighborhoodNotifications(String identifier) {
 		final var roles = byggrIntegration.getRoles();
 		if (CollectionUtils.isEmpty(roles)) {
-			throw Problem.builder()
-				.withStatus(Status.NOT_FOUND)
-				.withTitle("No roles found")
-				.withDetail("Cannot continue fetching neighborhood notifications")
-				.build();
+			throw createProblem(NOT_FOUND, ERROR_ROLES_NOT_FOUND);
 		}
 
 		final var matches = byggrIntegration.getErrands(addHyphen(identifier), roles); // Add hyphen to identifier as ByggR integration formats legal id that way
@@ -63,16 +77,41 @@ public class ByggrIntegratorService {
 
 		return ofNullable(errand)
 			.map(apiResponseMapper::mapToWeight)
-			.orElseThrow(() -> Problem.builder()
-				.withStatus(Status.NOT_FOUND)
-				.withTitle(Status.NOT_FOUND.getReasonPhrase())
-				.withDetail("No errand with diary number %s was found".formatted(dnr))
-				.build());
+			.orElseThrow(() -> createProblem(NOT_FOUND, ERROR_ERRAND_NOT_FOUND.formatted(dnr)));
 	}
 
-	public String listNeighborhoodNotificationFiles(String caseNumber) {
-		var response = byggrIntegration.listNeighborhoodNotificationFiles(caseNumber);
-		var byggrErrandDto = byggrIntegrationMapper.mapToNeighborhoodNotificationFiles(response);
-		return templateMapper.generateFileList(byggrErrandDto);
+	public String listNeighborhoodNotificationFiles(String municipalityId, String caseNumber) {
+		final var response = byggrIntegration.getErrand(caseNumber);
+		final var byggrErrandDto = byggrIntegrationMapper.mapToNeighborhoodNotificationFiles(response);
+		return templateMapper.generateFileList(municipalityId, byggrErrandDto);
+	}
+
+	public void readFile(String fileId, HttpServletResponse response) {
+		ofNullable(byggrIntegration.getDocument(fileId))
+			.map(GetDocumentResponse::getGetDocumentResult)
+			.map(List::getFirst)
+			.ifPresentOrElse(byggRFile -> addToResponse(fileId, response, byggRFile), () -> {
+				throw createProblem(NOT_FOUND, ERROR_FILE_NOT_FOUND.formatted(fileId));
+			});
+	}
+
+	private void addToResponse(String documentId, HttpServletResponse response, final Dokument byggRFile) {
+		try {
+			response.addHeader(CONTENT_TYPE, detectMimeType(byggRFile.getNamn(), byggRFile.getFil().getFilBuffer()));
+			response.addHeader(CONTENT_DISPOSITION, TEMPLATE_CONTENT_DISPOSITION_HEADER_VALUE.formatted(byggRFile.getNamn()));
+			response.setContentLength(byggRFile.getFil().getFilBuffer().length);
+
+			copy(new ByteArrayInputStream(byggRFile.getFil().getFilBuffer()), response.getOutputStream());
+		} catch (final IOException e) {
+			throw createProblem(INTERNAL_SERVER_ERROR, ERROR_FILE_COULD_NOT_BE_READ.formatted(documentId));
+		}
+	}
+
+	private ThrowableProblem createProblem(StatusType status, String detail) {
+		return Problem.builder()
+			.withStatus(status)
+			.withTitle(status.getReasonPhrase())
+			.withDetail(detail)
+			.build();
 	}
 }

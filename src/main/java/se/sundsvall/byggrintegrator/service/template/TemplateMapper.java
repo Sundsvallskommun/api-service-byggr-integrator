@@ -2,8 +2,6 @@ package se.sundsvall.byggrintegrator.service.template;
 
 import static java.util.Optional.ofNullable;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,15 +28,16 @@ public class TemplateMapper {
 
 	/**
 	 * Generate a list of files as HTML
+	 *
 	 * @param byggrErrandDto The errand to generate the file list for
 	 * @return The HTML as a string
 	 */
-	public String generateFileList(ByggrErrandDto byggrErrandDto) {
-		var fileTemplateDtoList = ofNullable(byggrErrandDto)
-			.map(this::mapByggrFilesToList)
+	public String generateFileList(String municipalityId, ByggrErrandDto byggrErrandDto) {
+		final var fileTemplateDtoList = ofNullable(byggrErrandDto)
+			.map(errandDto -> mapByggrFilesToList(municipalityId, errandDto))
 			.orElse(List.of());
 
-		var context = new Context(Locale.of("sv", "SE"));
+		final var context = new Context(Locale.of("sv", "SE"));
 		// Add the list of files to the context (as "fileList") so Thymeleaf can use it
 		context.setVariable("fileList", fileTemplateDtoList);
 
@@ -46,28 +45,23 @@ public class TemplateMapper {
 	}
 
 	// Create a list that we iterate over with Thymeleaf
-	private List<FileTemplateDto> mapByggrFilesToList(ByggrErrandDto byggrErrandDto) {
+	private List<FileTemplateDto> mapByggrFilesToList(String municipalityId, ByggrErrandDto byggrErrandDto) {
 		return ofNullable(byggrErrandDto.getFiles())
 			.map(file -> file.entrySet().stream()
-				.map(entry -> mapToUrl(byggrErrandDto.getByggrCaseNumber(), entry.getKey(), entry.getValue()))
+				.map(entry -> mapToUrl(municipalityId, entry.getKey(), entry.getValue()))
 				.toList())
 			.orElse(List.of());
 	}
 
 	// Create a FileTemplateDto containing the URL to the file and the file name as the display name
-	private FileTemplateDto mapToUrl(String errandNumber, String fileId, String fileName) {
+	private FileTemplateDto mapToUrl(String municipalityId, String fileId, String fileName) {
 		return FileTemplateDto.builder()
-			.withFileUrl(String.format("%s%s%s%s%s",
+			.withFileUrl(String.format("%s%s%s%s", // [domain] [municipalityid] [subdirectory] [file identificator]
 				templateProperties.domain(),
-				templateProperties.path(),
-				urlEncodeString(errandNumber), //Contain characters that needs to be url encoded
+				municipalityId,
 				templateProperties.subDirectory(),
 				fileId))
 			.withFileName(fileName)
 			.build();
-	}
-
-	private String urlEncodeString(String value) {
-		return URLEncoder.encode(value, StandardCharsets.UTF_8);
 	}
 }

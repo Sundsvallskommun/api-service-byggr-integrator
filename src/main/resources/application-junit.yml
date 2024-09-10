@@ -12,6 +12,5 @@ integration:
 
 neighborhood-notification-template:
   byggr-files:
-    domain: http://somewhere.com
-    path: /neighborhood-notification/
+    domain: http://somewhere.com/
     sub-directory: /files/

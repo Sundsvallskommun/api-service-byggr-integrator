@@ -21,8 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import se.sundsvall.byggrintegrator.Application;
-
 import generated.se.sundsvall.arendeexport.Arende;
 import generated.se.sundsvall.arendeexport.ArendeIntressent;
 import generated.se.sundsvall.arendeexport.ArrayOfArende1;
@@ -33,6 +31,7 @@ import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.Handelse;
 import generated.se.sundsvall.arendeexport.RollTyp;
 import generated.se.sundsvall.arendeexport.StatusFilter;
+import se.sundsvall.byggrintegrator.Application;
 
 @SpringBootTest(classes = Application.class)
 @ActiveProfiles("junit")
@@ -136,17 +135,9 @@ class ByggrIntegrationMapperTest {
 	}
 
 	@Test
-	void testMapToGetArendeRequest() {
-		var caseNumber = "BYGG 2001-123456";
-		var request = mapper.createGetArendeRequest(caseNumber);
-
-		assertThat(request.getDnr()).isEqualTo(caseNumber);
-	}
-
-	@Test
 	void testMapToNeighborhoodNotificationFiles() {
-		var response = createPopulatedGetArendeResponse();
-		var errandDto = mapper.mapToNeighborhoodNotificationFiles(response);
+		final var response = createPopulatedGetArendeResponse();
+		final var errandDto = mapper.mapToNeighborhoodNotificationFiles(response);
 
 		assertThat(errandDto).isNotNull();
 		assertThat(errandDto.getPropertyDesignation()).isNull();
@@ -158,7 +149,7 @@ class ByggrIntegrationMapperTest {
 	@ParameterizedTest
 	@MethodSource("getArendeResponseProvider")
 	void testNullValues(GetArendeResponse response) {
-		var byggrErrandDto = mapper.mapToNeighborhoodNotificationFiles(response);
+		final var byggrErrandDto = mapper.mapToNeighborhoodNotificationFiles(response);
 		assertThat(byggrErrandDto).isNotNull();
 		assertThat(byggrErrandDto.getFiles()).isNotNull().isEmpty();
 	}
@@ -171,7 +162,23 @@ class ByggrIntegrationMapperTest {
 			new GetArendeResponse().withGetArendeResult(new Arende().withHandelseLista(null)),
 			new GetArendeResponse().withGetArendeResult(new Arende().withHandelseLista(new ArrayOfHandelse())),
 			new GetArendeResponse().withGetArendeResult(new Arende().withHandelseLista(new ArrayOfHandelse().withHandelse(Collections.emptyList()))),
-			new GetArendeResponse().withGetArendeResult(new Arende().withHandelseLista(new ArrayOfHandelse().withHandelse(List.of(new Handelse()))))
-		);
+			new GetArendeResponse().withGetArendeResult(new Arende().withHandelseLista(new ArrayOfHandelse().withHandelse(List.of(new Handelse())))));
+	}
+
+	@Test
+	void testMapToGetArendeRequest() {
+		final var dnr = "dnr";
+		final var request = mapper.mapToGetArendeRequest(dnr);
+
+		assertThat(request.getDnr()).isEqualTo(dnr);
+	}
+
+	@Test
+	void testMapToGetDocumentRequest() {
+		final var fileId = "111222";
+		final var request = mapper.mapToGetDocumentRequest(fileId);
+
+		assertThat(request.getDocumentId()).isEqualTo(fileId);
+		assertThat(request.isInkluderaFil()).isTrue();
 	}
 }
