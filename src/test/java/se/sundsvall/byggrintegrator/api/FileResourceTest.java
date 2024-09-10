@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
@@ -49,6 +50,7 @@ class FileResourceTest {
 			.isEmpty();
 
 		verify(mockByggrIntegratorService).readFile(eq(fileId), any(HttpServletResponse.class));
+		verifyNoMoreInteractions(mockByggrIntegratorService);
 	}
 
 	@Test
