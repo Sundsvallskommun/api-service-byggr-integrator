@@ -17,8 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
-
 import generated.se.sundsvall.arendeexport.AbstractArendeObjekt;
 import generated.se.sundsvall.arendeexport.Arende;
 import generated.se.sundsvall.arendeexport.ArendeFastighet;
@@ -27,6 +25,7 @@ import generated.se.sundsvall.arendeexport.ArrayOfString2;
 import generated.se.sundsvall.arendeexport.Dokument;
 import generated.se.sundsvall.arendeexport.GetArende;
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.GetDocument;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.GetRoller;
@@ -35,6 +34,7 @@ import generated.se.sundsvall.arendeexport.Handling;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
 import generated.se.sundsvall.arendeexport.RollTyp;
 import generated.se.sundsvall.arendeexport.StatusFilter;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 
 @Component
 public class ByggrIntegrationMapper {
@@ -66,6 +66,12 @@ public class ByggrIntegrationMapper {
 	public GetArende mapToGetArendeRequest(String dnr) {
 		return OBJECT_FACTORY.createGetArende()
 			.withDnr(dnr);
+	}
+
+	public GetDocument mapToGetDocumentRequest(String documentId) {
+		return new GetDocument()
+			.withDocumentId(documentId)
+			.withInkluderaFil(true);
 	}
 
 	/**
@@ -176,11 +182,6 @@ public class ByggrIntegrationMapper {
 		return false;
 	}
 
-	public GetArende createGetArendeRequest(String caseNumber) {
-		return OBJECT_FACTORY.createGetArende()
-			.withDnr(caseNumber);
-	}
-
 	/**
 	 * Takes the response from Byggr and maps it to a map of Document ID to Document name
 	 * and adds it to a ByggErrandDto
@@ -190,7 +191,7 @@ public class ByggrIntegrationMapper {
 	 * @return a ByggrErrandDto
 	 */
 	public ByggrErrandDto mapToNeighborhoodNotificationFiles(GetArendeResponse response) {
-		var errandDto = ByggrErrandDto.builder()
+		final var errandDto = ByggrErrandDto.builder()
 			.withFiles(new HashMap<>())
 			.build();
 
@@ -205,10 +206,10 @@ public class ByggrIntegrationMapper {
 
 		// Now we know that we have an event (handelse) in the response
 		// Map the Document ID to the Document name (if we can).
-		var fileMap = response.getGetArendeResult().getHandelseLista().getHandelse().stream()
-			.filter(handelse -> handelse.getHandlingLista() != null) //Not a list
-			.filter(handelse -> !CollectionUtils.isEmpty(handelse.getHandlingLista().getHandling())) //Is a list
-			.filter(this::hasValidEvent)    // Only include files from valid events
+		final var fileMap = response.getGetArendeResult().getHandelseLista().getHandelse().stream()
+			.filter(handelse -> handelse.getHandlingLista() != null) // Not a list
+			.filter(handelse -> !CollectionUtils.isEmpty(handelse.getHandlingLista().getHandling())) // Is a list
+			.filter(this::hasValidEvent) // Only include files from valid events
 			.flatMap(handelse -> handelse.getHandlingLista().getHandling().stream())
 			.map(Handling::getDokument)
 			.filter(Objects::nonNull)
@@ -216,8 +217,7 @@ public class ByggrIntegrationMapper {
 			.filter(dokument -> isNotBlank(dokument.getNamn()))
 			.collect(Collectors.toMap(
 				Dokument::getDokId,
-				Dokument::getNamn
-			));
+				Dokument::getNamn));
 
 		errandDto.setByggrCaseNumber(response.getGetArendeResult().getDnr());
 		errandDto.setFiles(fileMap);

@@ -15,6 +15,7 @@
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
 		<generated-sources-java-path>src/main/java</generated-sources-java-path>
 
+		<overviewproject.mimetypes.version>1.0.4</overviewproject.mimetypes.version>
 		<jaxb2-fluent-api.version>3.0</jaxb2-fluent-api.version>
 		<jaxb2-maven-plugin.version>3.2.0</jaxb2-maven-plugin.version>
 	</properties>
@@ -43,6 +44,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.overviewproject</groupId>
+			<artifactId>mime-types</artifactId>
+			<version>${overviewproject.mimetypes.version}</version>
 		</dependency>
 
 		<!-- Test -->
@@ -93,6 +99,18 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Need to add excludes for test files of type doc, docx and pdf -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<nonFilteredFileExtensions>
+						<nonFilteredFileExtension>doc</nonFilteredFileExtension>
+						<nonFilteredFileExtension>docx</nonFilteredFileExtension>
+						<nonFilteredFileExtension>pdf</nonFilteredFileExtension>
+					</nonFilteredFileExtensions>
+				</configuration>
+			</plugin>  
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>

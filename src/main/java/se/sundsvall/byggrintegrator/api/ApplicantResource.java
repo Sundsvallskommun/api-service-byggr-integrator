@@ -14,11 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
 
-import se.sundsvall.byggrintegrator.api.model.KeyValue;
-import se.sundsvall.byggrintegrator.api.validation.ValidPersonalOrOrgNumber;
-import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
-import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,6 +21,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
+import se.sundsvall.byggrintegrator.api.model.KeyValue;
+import se.sundsvall.byggrintegrator.api.validation.ValidPersonalOrOrgNumber;
+import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
+import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 
 @RestController
 @Validated
@@ -43,11 +42,11 @@ public class ApplicantResource {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
-	@GetMapping(path = "/applicant/{identifier}/errands", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
-	@Operation(summary = "Lists all errands for a person or an organization")
+	@GetMapping(path = "/applicants/{identifier}/errands", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+	@Operation(summary = "Lists all errands where a person or an organization is applicant")
 	public ResponseEntity<List<KeyValue>> findApplicantErrands(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "identifier", description = "Personal or organization number") @NotBlank @ValidPersonalOrOrgNumber @PathVariable String identifier) {
+		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @ValidPersonalOrOrgNumber @PathVariable String identifier) {
 
 		return ResponseEntity.ok(byggrIntegratorService.findApplicantErrands(identifier));
 	}

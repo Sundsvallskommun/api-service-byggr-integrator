@@ -43,7 +43,7 @@ class NeighborhoodNotificationResourceTest {
 	private static final String INVALID_MUNICIPALITY_ID = "invalid municipality";
 	private static final String INVALID_IDENTIFIER = "invalid identifier";
 
-	private static final String NEIGHBORHOOD_NOTIFICATION_URL = "/{municipalityId}/neighborhood-notification/{identifier}/errands";
+	private static final String NEIGHBORHOOD_NOTIFICATION_URL = "/{municipalityId}/neighborhood-notifications/{identifier}/errands";
 
 	@Test
 	void testFindNeighborhoodNotifications() {

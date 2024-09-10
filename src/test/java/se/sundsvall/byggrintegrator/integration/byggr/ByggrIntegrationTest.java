@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import generated.se.sundsvall.arendeexport.GetArende;
+import generated.se.sundsvall.arendeexport.GetDocument;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
 import generated.se.sundsvall.arendeexport.GetRoller;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
@@ -45,6 +46,9 @@ class ByggrIntegrationTest {
 
 	@Captor
 	private ArgumentCaptor<GetArende> getArendeCaptor;
+
+	@Captor
+	private ArgumentCaptor<GetDocument> getDocumentCaptor;
 
 	@InjectMocks
 	private ByggrIntegration integration;
@@ -181,6 +185,76 @@ class ByggrIntegrationTest {
 		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrClient);
 
 		assertThat(getArendeCaptor.getValue().getDnr()).isEqualTo(dnr);
+		assertThat(exception).isInstanceOf(SOAPFaultException.class);
+		assertThat(exception.getFault().getFaultReasonText(Locale.ENGLISH)).isEqualTo(reasonText);
+	}
+
+	@Test
+	void testGetDocument() {
+		// Arrange
+		final var fileId = "fileId";
+		final var response = OBJECT_FACTORY.createGetDocumentResponse();
+
+		when(mockByggrIntegrationMapper.mapToGetDocumentRequest(fileId)).thenCallRealMethod();
+		when(mockByggrClient.getDocument(any(GetDocument.class))).thenReturn(response);
+
+		// Act
+		final var document = integration.getDocument(fileId);
+
+		// Verify and assert
+		verify(mockByggrIntegrationMapper).mapToGetDocumentRequest(fileId);
+		verify(mockByggrClient).getDocument(getDocumentCaptor.capture());
+		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrClient);
+
+		assertThat(getDocumentCaptor.getValue().getDocumentId()).isEqualTo(fileId);
+		assertThat(getDocumentCaptor.getValue().isInkluderaFil()).isTrue();
+		assertThat(document).isEqualTo(response);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "Error getting GemDmsdoclink something something", "Something is not a numeric value" })
+	void testGetDocument_soapFaultNotFound(String faultText) throws Exception {
+		// Arrange
+		final var fileId = "fileId";
+		final var soapfault = SOAPFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL).createFault();
+		soapfault.addFaultReasonText(faultText, Locale.ENGLISH);
+
+		when(mockByggrIntegrationMapper.mapToGetDocumentRequest(fileId)).thenCallRealMethod();
+		when(mockByggrClient.getDocument(any(GetDocument.class))).thenThrow(new SOAPFaultException(soapfault));
+
+		// Act
+		assertThat(integration.getDocument(fileId)).isNull();
+
+		// Verify and assert
+		verify(mockByggrIntegrationMapper).mapToGetDocumentRequest(fileId);
+		verify(mockByggrClient).getDocument(getDocumentCaptor.capture());
+		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrClient);
+
+		assertThat(getDocumentCaptor.getValue().getDocumentId()).isEqualTo(fileId);
+		assertThat(getDocumentCaptor.getValue().isInkluderaFil()).isTrue();
+	}
+
+	@Test
+	void testGetDocument_otherSoapFaultThanNotFound() throws Exception {
+		// Arrange
+		final var fileId = "fileId";
+		final var reasonText = "Other reason";
+		final var soapfault = SOAPFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL).createFault();
+		soapfault.addFaultReasonText(reasonText, Locale.ENGLISH);
+
+		when(mockByggrIntegrationMapper.mapToGetDocumentRequest(fileId)).thenCallRealMethod();
+		when(mockByggrClient.getDocument(any(GetDocument.class))).thenThrow(new SOAPFaultException(soapfault));
+
+		// Act
+		final var exception = assertThrows(SOAPFaultException.class, () -> integration.getDocument(fileId));
+
+		// Verify and assert
+		verify(mockByggrIntegrationMapper).mapToGetDocumentRequest(fileId);
+		verify(mockByggrClient).getDocument(getDocumentCaptor.capture());
+		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrClient);
+
+		assertThat(getDocumentCaptor.getValue().getDocumentId()).isEqualTo(fileId);
+		assertThat(getDocumentCaptor.getValue().isInkluderaFil()).isTrue();
 		assertThat(exception).isInstanceOf(SOAPFaultException.class);
 		assertThat(exception.getFault().getFaultReasonText(Locale.ENGLISH)).isEqualTo(reasonText);
 	}
