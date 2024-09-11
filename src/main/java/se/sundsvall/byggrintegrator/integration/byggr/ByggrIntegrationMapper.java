@@ -86,7 +86,7 @@ public class ByggrIntegrationMapper {
 
 		// Collect the info we want from errands that have a valid event
 		return errands.stream()
-			.filter(arende -> hasValidHandelseList(arende.getHandelseLista().getHandelse()))
+			.filter(arende -> hasValidHandelseList(arende.getDnr(), arende.getHandelseLista().getHandelse()))
 			.map(this::toByggErrandDto)
 			.toList();
 	}
@@ -150,7 +150,9 @@ public class ByggrIntegrationMapper {
 			.anyMatch(roller -> roller.stream().anyMatch(roles::contains));
 	}
 
-	private boolean hasValidHandelseList(List<Handelse> handelseList) {
+	private boolean hasValidHandelseList(String dnr, List<Handelse> handelseList) {
+		LOG.info("Validating case with dnr {}", dnr);
+
 		var hasValidEvent = false;
 		var hasInvalidEvent = false;
 
