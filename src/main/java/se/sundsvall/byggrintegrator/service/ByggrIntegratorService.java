@@ -7,6 +7,7 @@ import static org.springframework.util.StreamUtils.copy;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.byggrintegrator.service.LegalIdUtility.addHyphen;
+import static se.sundsvall.byggrintegrator.service.LegalIdUtility.prefixOrgnbr;
 import static se.sundsvall.byggrintegrator.service.MimeTypeUtility.detectMimeType;
 
 import java.io.ByteArrayInputStream;
@@ -55,7 +56,10 @@ public class ByggrIntegratorService {
 			throw createProblem(NOT_FOUND, ERROR_ROLES_NOT_FOUND);
 		}
 
-		final var matches = byggrIntegration.getErrands(addHyphen(identifier), roles); // Add hyphen to identifier as ByggR integration formats legal id that way
+		// Prefix identifier if it contains organisation legal id and add hyphen to identifier as ByggR integration formats
+		// legal id that way
+		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
+		final var matches = byggrIntegration.getErrands(processedIdentifier, roles);
 
 		final var byggrErrandList = byggrIntegrationMapper.mapToNeighborhoodNotifications(matches);
 
@@ -63,11 +67,13 @@ public class ByggrIntegratorService {
 	}
 
 	public List<KeyValue> findApplicantErrands(String identifier) {
-		final var identifierWithHyphen = addHyphen(identifier); // Add hyphen to identifier as ByggR integration formats legal id that way
+		// Prefix identifier if it contains organisation legal id and add hyphen to identifier as ByggR integration formats
+		// legal id that way
+		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
 
-		final var matches = byggrIntegration.getErrands(identifierWithHyphen, null);
+		final var matches = byggrIntegration.getErrands(processedIdentifier, null);
 
-		final var byggrErrandList = byggrIntegrationMapper.mapToApplicantErrands(matches, identifierWithHyphen);
+		final var byggrErrandList = byggrIntegrationMapper.mapToApplicantErrands(matches, processedIdentifier);
 
 		return apiResponseMapper.mapToKeyValueResponseList(byggrErrandList);
 	}

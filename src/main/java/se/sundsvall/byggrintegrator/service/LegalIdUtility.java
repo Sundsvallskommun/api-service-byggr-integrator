@@ -10,6 +10,22 @@ public class LegalIdUtility {
 	private LegalIdUtility() {}
 
 	/**
+	 * Method for adding 16 as prefix if incoming legalId passes the following tests:
+	 * - string is not null
+	 * - string has a character length of exactly 10
+	 * If sent in string doesn't pass the test above, the string is returned untouched.
+	 *
+	 * @param legalId string
+	 * @return string prefixed with 16 or untouched string if the it does not match the tests above
+	 */
+	public static String prefixOrgnbr(String legalId) {
+		return ofNullable(legalId)
+			.filter(string -> string.length() == 10)
+			.map(string -> "16" + string)
+			.orElse(legalId);
+	}
+
+	/**
 	 * Method to add a hyphen after position 4 when string passes the following tests:
 	 * - string is not null
 	 * - string has a minimum length of 4

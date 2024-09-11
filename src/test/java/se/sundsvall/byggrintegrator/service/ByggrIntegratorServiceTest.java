@@ -19,9 +19,14 @@ import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeA
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -65,21 +70,24 @@ class ByggrIntegratorServiceTest {
 
 	private static final ObjectFactory OBJECT_FACTORY = new ObjectFactory();
 	private static final List<String> ROLES = List.of("ANM");
-	private static final String IDENTIFIER = "1234567890";
+	private static final String ORG_IDENTIFIER = "1234567890";
+	private static final String PRIVATE_IDENTIFIER = "123456789012";
 	private static final String BYGGR_ERRAND_NUMBER = "BYGG 2024-000123";
-	private static final String IDENTIFIER_WITH_DASH = "123456-7890";
+	private static final String PROCESSED_ORG_IDENTIFIER = "16123456-7890";
+	private static final String PROCESSED_PRIVATE_IDENTIFIER = "12345678-9012";
 	private static final String MUNICIPALITY_ID = "2281";
 
-	@Test
-	void testFindNeighborhoodNotifications() {
+	@ParameterizedTest
+	@MethodSource("identifierProvider")
+	void testFindNeighborhoodNotifications(String indentifier, String processedIdentifier) {
 		// Arrange
 		when(mockByggrIntegration.getRoles()).thenReturn(ROLES);
-		when(mockByggrIntegration.getErrands(IDENTIFIER_WITH_DASH, ROLES)).thenReturn(generateRelateradeArendenResponse());
+		when(mockByggrIntegration.getErrands(processedIdentifier, ROLES)).thenReturn(generateRelateradeArendenResponse());
 		when(mockByggrIntegrationMapper.mapToNeighborhoodNotifications(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class))).thenCallRealMethod();
 		when(mockApiResponseMapper.mapToKeyValueResponseList(anyList())).thenCallRealMethod();
 
 		// Act
-		final var neighborNotifications = service.findNeighborhoodNotifications(IDENTIFIER);
+		final var neighborNotifications = service.findNeighborhoodNotifications(indentifier);
 
 		// Assert
 		assertThat(neighborNotifications).hasSize(2).satisfiesExactlyInAnyOrder(notification -> {
@@ -90,40 +98,42 @@ class ByggrIntegratorServiceTest {
 			assertThat(notification.value()).isEqualTo("BYGG 2024-000123, ANKEBORG 2:5678");
 		});
 		verify(mockByggrIntegration).getRoles();
-		verify(mockByggrIntegration).getErrands(IDENTIFIER_WITH_DASH, ROLES);
+		verify(mockByggrIntegration).getErrands(processedIdentifier, ROLES);
 		verify(mockByggrIntegrationMapper).mapToNeighborhoodNotifications(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class));
 		verify(mockApiResponseMapper).mapToKeyValueResponseList(anyList());
 		verifyNoMoreInterations();
 	}
 
-	@Test
-	void testFindNeighborhoodNotifications_whenEmpty_shouldReturnEmptyList() {
+	@ParameterizedTest
+	@MethodSource("identifierProvider")
+	void testFindNeighborhoodNotifications_whenEmpty_shouldReturnEmptyList(String indentifier, String processedIdentifier) {
 		// Arrange
 		when(mockByggrIntegration.getRoles()).thenReturn(ROLES);
-		when(mockByggrIntegration.getErrands(IDENTIFIER_WITH_DASH, ROLES)).thenReturn(OBJECT_FACTORY.createGetRelateradeArendenByPersOrgNrAndRoleResponse());
+		when(mockByggrIntegration.getErrands(processedIdentifier, ROLES)).thenReturn(OBJECT_FACTORY.createGetRelateradeArendenByPersOrgNrAndRoleResponse());
 		when(mockByggrIntegrationMapper.mapToNeighborhoodNotifications(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class))).thenCallRealMethod();
 		when(mockApiResponseMapper.mapToKeyValueResponseList(anyList())).thenCallRealMethod();
 
 		// Act
-		final var neighborNotifications = service.findNeighborhoodNotifications(IDENTIFIER);
+		final var neighborNotifications = service.findNeighborhoodNotifications(indentifier);
 
 		// Assert
 		assertThat(neighborNotifications).isEmpty();
 		verify(mockByggrIntegration).getRoles();
-		verify(mockByggrIntegration).getErrands(IDENTIFIER_WITH_DASH, ROLES);
+		verify(mockByggrIntegration).getErrands(processedIdentifier, ROLES);
 		verify(mockByggrIntegrationMapper).mapToNeighborhoodNotifications(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class));
 		verify(mockApiResponseMapper).mapToKeyValueResponseList(emptyList());
 		verifyNoMoreInterations();
 	}
 
-	@Test
-	void testFindNeighborhoodNotifications_noRoles_shouldThrow404() {
+	@ParameterizedTest
+	@ValueSource(strings = { ORG_IDENTIFIER, PRIVATE_IDENTIFIER })
+	void testFindNeighborhoodNotifications_noRoles_shouldThrow404(String identifier) {
 		// Arrange
 		when(mockByggrIntegration.getRoles()).thenReturn(emptyList());
 
 		// Act
 		assertThatExceptionOfType(ThrowableProblem.class)
-			.isThrownBy(() -> service.findNeighborhoodNotifications(IDENTIFIER))
+			.isThrownBy(() -> service.findNeighborhoodNotifications(identifier))
 			.satisfies(throwableProblem -> {
 				assertThat(throwableProblem.getStatus()).isEqualTo(Status.NOT_FOUND);
 				assertThat(throwableProblem.getTitle()).isEqualTo(Status.NOT_FOUND.getReasonPhrase());
@@ -151,15 +161,16 @@ class ByggrIntegratorServiceTest {
 		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockTemplateMapper);
 	}
 
-	@Test
-	void testFindApplicantErrands() {
+	@ParameterizedTest
+	@MethodSource("identifierProvider")
+	void testFindApplicantErrands(String indentifier, String processedIdentifier) {
 		// Arrange
-		when(mockByggrIntegration.getErrands(IDENTIFIER_WITH_DASH, null)).thenReturn(generateRelateradeArendenResponse());
-		when(mockByggrIntegrationMapper.mapToApplicantErrands(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class), eq(IDENTIFIER_WITH_DASH))).thenReturn(generateByggrErrandDtos());
+		when(mockByggrIntegration.getErrands(processedIdentifier, null)).thenReturn(generateRelateradeArendenResponse());
+		when(mockByggrIntegrationMapper.mapToApplicantErrands(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class), eq(processedIdentifier))).thenReturn(generateByggrErrandDtos());
 		when(mockApiResponseMapper.mapToKeyValueResponseList(anyList())).thenCallRealMethod();
 
 		// Act
-		final var applicantErrands = service.findApplicantErrands(IDENTIFIER);
+		final var applicantErrands = service.findApplicantErrands(indentifier);
 
 		// Assert
 		assertThat(applicantErrands).hasSize(4).satisfiesExactlyInAnyOrder(notification -> {
@@ -175,8 +186,8 @@ class ByggrIntegratorServiceTest {
 			assertThat(notification.key()).isEqualTo("dnr456");
 			assertThat(notification.value()).isEqualTo("dnr456, des-4 type4");
 		});
-		verify(mockByggrIntegration).getErrands(IDENTIFIER_WITH_DASH, null);
-		verify(mockByggrIntegrationMapper).mapToApplicantErrands(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class), eq(IDENTIFIER_WITH_DASH));
+		verify(mockByggrIntegration).getErrands(processedIdentifier, null);
+		verify(mockByggrIntegrationMapper).mapToApplicantErrands(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class), eq(processedIdentifier));
 		verify(mockApiResponseMapper).mapToKeyValueResponseList(anyList());
 		verifyNoMoreInterations();
 	}
@@ -275,6 +286,12 @@ class ByggrIntegratorServiceTest {
 		verify(mockHttpServletResponse).setContentLength(TestObjectFactory.DOCUMENT_CONTENT.length);
 		verify(mockHttpServletResponse).getOutputStream();
 		verifyNoMoreInterations();
+	}
+
+	private static Stream<Arguments> identifierProvider() {
+		return Stream.of(
+			Arguments.of(ORG_IDENTIFIER, PROCESSED_ORG_IDENTIFIER),
+			Arguments.of(PRIVATE_IDENTIFIER, PROCESSED_PRIVATE_IDENTIFIER));
 	}
 
 	private void verifyNoMoreInterations() {
