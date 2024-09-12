@@ -1,0 +1,23 @@
+{
+	"name": "api-byggr-get-roles",
+	"request": {
+		"method": "POST",
+		"urlPath": "/api-byggr/endpoint",
+		"headers": {
+			"Content-Type": {
+				"equalTo": "text/xml;charset=UTF-8"
+			}
+		},
+        "bodyPatterns" : [{
+          "equalToXml" : "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body><GetRoller xmlns=\"www.tekis.se/ServiceContract\"><rollTyp>Intressent</rollTyp><statusfilter>Aktiv</statusfilter></GetRoller></SOAP-ENV:Body></SOAP-ENV:Envelope>"
+	    }]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/xml"
+		},
+		"status": 200,
+		"bodyFileName": "test02_getNeighborhoodNotificationsWhenNoMatch/responses/api-byggr-get-roles-response.xml"
+		}
+	}
+}

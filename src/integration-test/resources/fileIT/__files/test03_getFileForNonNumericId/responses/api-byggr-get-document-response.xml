@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+	<s:Body>
+		<s:Fault>
+			<faultcode>s:Client</faultcode>
+			<faultstring xml:lang="sv-SE">DocumentId ABCABCABC is not a numeric value!&#13;\r\nParameter name: documentId</faultstring>
+		</s:Fault>
+	</s:Body>
+</s:Envelope>

@@ -1,0 +1,8 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+	<s:Body>
+		<s:Fault>
+			<faultcode>s:Client</faultcode>
+			<faultstring xml:lang="sv-SE">Arende not found for dnr (BYGG 2024-000669</faultstring>
+		</s:Fault>
+	</s:Body>
+</s:Envelope>

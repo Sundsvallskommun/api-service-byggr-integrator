@@ -1,0 +1,23 @@
+{
+	"name": "api-byggr-read-errand",
+	"request": {
+		"method": "POST",
+		"urlPath": "/api-byggr/endpoint",
+		"headers": {
+			"Content-Type": {
+				"equalTo": "text/xml;charset=UTF-8"
+			}
+		},
+        "bodyPatterns" : [{
+          "equalToXml" : "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body><GetArende xmlns=\"www.tekis.se/ServiceContract\"><dnr>BYGG 2024-000666</dnr></GetArende></SOAP-ENV:Body></SOAP-ENV:Envelope>"
+	    }]
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/xml"
+		},
+		"status": 200,
+		"bodyFileName": "test01_getTypeForExistingErrand/responses/api-byggr-read-errand-response.xml"
+		}
+	}
+}

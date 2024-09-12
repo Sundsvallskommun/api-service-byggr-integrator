@@ -9,7 +9,6 @@ integration:
     mapper:
       applicant:
         roles: SOK, KPER
-
 neighborhood-notification-template:
   byggr-files:
     domain: http://somewhere.com/
