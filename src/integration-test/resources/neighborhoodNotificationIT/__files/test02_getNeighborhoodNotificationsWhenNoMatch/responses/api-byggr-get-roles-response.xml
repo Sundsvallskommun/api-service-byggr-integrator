@@ -1,0 +1,133 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+	<s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+		<GetRollerResponse xmlns="www.tekis.se/ServiceContract">
+			<GetRollerResult>
+				<Roll>
+					<RollKod>ANM</RollKod>
+					<Beskrivning>Anmälare</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>AANM</RollKod>
+					<Beskrivning>Anonym anmälare</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>BETA</RollKod>
+					<Beskrivning>Betalningsansvarig</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>BH</RollKod>
+					<Beskrivning>Byggherre</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>BIR</RollKod>
+					<Beskrivning>Byggnadsinspektör</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>BÄG</RollKod>
+					<Beskrivning>Byggnadsägare</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>ENTR</RollKod>
+					<Beskrivning>Entreprenör</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>FSÖK</RollKod>
+					<Beskrivning>F d sökande</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>FAG</RollKod>
+					<Beskrivning>Fastighetsägare</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>FDFAG</RollKod>
+					<Beskrivning>Fd fastighetsägare</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>FORV</RollKod>
+					<Beskrivning>Förvaltare</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>FÖRVDRAK</RollKod>
+					<Beskrivning>Förvaltare Drakfastigheter</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>GRAN</RollKod>
+					<Beskrivning>Grannar</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>KPER</RollKod>
+					<Beskrivning>Kontaktperson</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>KOA</RollKod>
+					<Beskrivning>Kontrollansvarig</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>KAE</RollKod>
+					<Beskrivning>Kvalitetsansvarig (E)</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>KAK</RollKod>
+					<Beskrivning>Kvalitetsansvarig (K)</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>KAN</RollKod>
+					<Beskrivning>Kvalitetsansvarig (N)</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>MSOK</RollKod>
+					<Beskrivning>Medsökande</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>ORDB</RollKod>
+					<Beskrivning>Ordf bostadsrättsförening</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>ORDF</RollKod>
+					<Beskrivning>Ordf samfällighetsförening</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>ORDV</RollKod>
+					<Beskrivning>Ordf vägförening</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>REMIN</RollKod>
+					<Beskrivning>Remissinstans</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>SOK</RollKod>
+					<Beskrivning>Sökande</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+				<Roll>
+					<RollKod>TOMIN</RollKod>
+					<Beskrivning>Tomträttsinnehavare</Beskrivning>
+					<ArAktiv>true</ArAktiv>
+				</Roll>
+			</GetRollerResult>
+		</GetRollerResponse>
+	</s:Body>
+</s:Envelope>

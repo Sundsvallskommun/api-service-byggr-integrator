@@ -14,16 +14,16 @@ import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 
-@WireMockAppTestSuite(files = "classpath:/applicantIT/", classes = Application.class)
+@WireMockAppTestSuite(files = "classpath:/neighborhoodNotificationIT/", classes = Application.class)
 @ActiveProfiles("it")
-class ApplicantIT extends AbstractAppTest {
+class NeighborhoodNotificationIT extends AbstractAppTest {
 
 	private static final String RESPONSE_FILE = "response.json";
 
 	@Test
-	void test01_getApplicantErrands() {
+	void test01_getNeighborhoodNotifications() {
 		setupCall()
-			.withServicePath("/2281/applicants/190102031234/errands")
+			.withServicePath("/2281/neighborhood-notifications/190102031234/errands")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_JSON_VALUE))
@@ -32,9 +32,9 @@ class ApplicantIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test02_getApplicantErrandsWhenNoMatch() {
+	void test02_getNeighborhoodNotificationsWhenNoMatch() {
 		setupCall()
-			.withServicePath("/2281/applicants/190203045678/errands")
+			.withServicePath("/2281/neighborhood-notifications/190102034567/errands")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_JSON_VALUE))

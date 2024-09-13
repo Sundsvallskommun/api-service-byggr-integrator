@@ -11,6 +11,11 @@ integration:
 logging:
   level:
     root: INFO
+logbook:
+  body-filters:
+    xPath:
+        - key: '//filBuffer/text()'
+          value: '[binary]'
 openapi:
   name: ${spring.application.name}
   title: ${spring.application.name}
