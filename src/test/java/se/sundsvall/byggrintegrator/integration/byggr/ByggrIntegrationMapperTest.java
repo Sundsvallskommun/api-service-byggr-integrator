@@ -71,7 +71,7 @@ class ByggrIntegrationMapperTest {
 		final var response = generateRelateradeArendenResponse();
 
 		// Prepare list of unwanted handelseslag
-		setField(mapper, "unwantedHandelseslag", List.of(HANDELSESLAG_GRASVA));
+		setField(mapper, "unwantedEventTypes", List.of(HANDELSESLAG_GRASVA));
 
 		// Act
 		final var byggErrandDtos = mapper.mapToNeighborhoodNotifications(response);
@@ -128,7 +128,7 @@ class ByggrIntegrationMapperTest {
 		final var response = generateRelateradeArendenResponse();
 
 		// Prepare list of unwanted handelseslag
-		setField(mapper, "unwantedHandelseslag", List.of(HANDELSESLAG_GRASVA));
+		setField(mapper, "unwantedEventTypes", List.of(HANDELSESLAG_GRASVA));
 
 		// Set all events to invalid
 		response.getGetRelateradeArendenByPersOrgNrAndRoleResult().getArende().getFirst().getHandelseLista().getHandelse().getFirst().setHandelseslag(HANDELSESLAG_GRASVA);

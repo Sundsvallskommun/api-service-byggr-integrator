@@ -10,7 +10,7 @@ integration:
       applicant:
         roles: SOK, KPER
       notifications:
-        unwanted-handelseslag: UNWANTED1, UNWANTED2
+        unwanted-event-types: UNWANTED1, UNWANTED2
 
 neighborhood-notification-template:
   byggr-files:

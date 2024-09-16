@@ -21,6 +21,6 @@ class ByggrPropertiesTest {
 		assertThat(properties.connectTimeoutInSeconds()).isEqualTo(1);
 		assertThat(properties.readTimeoutInSeconds()).isEqualTo(2);
 		assertThat(properties.mapper().applicant().roles()).containsExactly("SOK", "KPER");
-		assertThat(properties.mapper().notifications().unwantedHandelseslag()).containsExactly("UNWANTED1", "UNWANTED2");
+		assertThat(properties.mapper().notifications().unwantedEventTypes()).containsExactly("UNWANTED1", "UNWANTED2");
 	}
 }

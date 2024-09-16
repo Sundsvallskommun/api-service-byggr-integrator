@@ -15,7 +15,7 @@ public record ByggrProperties(int connectTimeoutInSeconds, int readTimeoutInSeco
 	public record ApplicantProperties(List<String> roles) {
 	}
 
-	public record NotificationProperties(List<String> unwantedHandelseslag) {
+	public record NotificationProperties(List<String> unwantedEventTypes) {
 	}
 
 }

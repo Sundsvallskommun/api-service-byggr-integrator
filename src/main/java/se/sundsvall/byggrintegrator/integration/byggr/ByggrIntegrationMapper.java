@@ -50,18 +50,17 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
  *         applicant:
  *           roles: <comma separated list of role>
  *         notifications:
- *           unwanted-handelseslag: <comma separated list of unwanted handelseslag>
+ *           unwanted-event-types: <comma separated list of unwanted event type>
  * </code>
  *
  * The first setting (applicant roles) contains the list of the roles that will be matched against to establish if the
  * stakeholder is to be interpreted as applicant for the errand or not. If the stakeholder matches one of the values in
- * the list, it is interpreteded as applicant for the errand.
+ * the list, it is interpreted as applicant for the errand.
  *
- * The second setting (notification unwanted-handelseslag) is used to filter out errands when collectiong neighborhood
- * notifications. If an errand contains a handelse with handelseTyp matching one of the defined value(s), the errand is
+ * The second setting (notification unwanted-event-types) is used to filter out errands when collecting neighborhood
+ * notifications. If an errand contains an event with event type matching one of the defined value(s), the errand is
  * filtered out from the returned response. If property is not set, then no filtering is made. Observe that filtering is
- * always done regarding that the errand must have a handelse of type GRANHO and a handelseslag of type GRAUTS to be
- * returned in the response.
+ * always done regarding that the errand must have a GRANHO event with event type GRAUTS to be returned in the response.
  */
 @Component
 public class ByggrIntegrationMapper {
@@ -72,7 +71,7 @@ public class ByggrIntegrationMapper {
 	private static final ObjectFactory OBJECT_FACTORY = new ObjectFactory();
 
 	private final List<String> roles;
-	private final List<String> unwantedHandelseslag;
+	private final List<String> unwantedEventTypes;
 
 	public ByggrIntegrationMapper(final ByggrProperties byggrProperties) {
 		this.roles = ofNullable(byggrProperties)
@@ -80,10 +79,10 @@ public class ByggrIntegrationMapper {
 			.map(MapperProperties::applicant)
 			.map(ApplicantProperties::roles)
 			.orElse(null);
-		this.unwantedHandelseslag = ofNullable(byggrProperties)
+		this.unwantedEventTypes = ofNullable(byggrProperties)
 			.map(ByggrProperties::mapper)
 			.map(MapperProperties::notifications)
-			.map(NotificationProperties::unwantedHandelseslag)
+			.map(NotificationProperties::unwantedEventTypes)
 			.orElse(null);
 	}
 
@@ -214,12 +213,12 @@ public class ByggrIntegrationMapper {
 
 	private boolean hasInvalidEvent(Handelse event) {
 
-		final boolean unwantedEvent = ofNullable(unwantedHandelseslag)
+		final boolean unwantedEvent = ofNullable(unwantedEventTypes)
 			.map(list -> event.getHandelsetyp().equals(WANTED_HANDELSETYP) && list.contains(event.getHandelseslag()))
 			.orElse(false);
 
 		if (unwantedEvent) {
-			LOG.info("Unwanted eventid with handelsetyp GRANHO and handelseslag matching one of {} found: {}", unwantedHandelseslag, event.getHandelseId());
+			LOG.info("Unwanted eventid with handelsetyp GRANHO and handelseslag matching one of {} found: {}", unwantedEventTypes, event.getHandelseId());
 		}
 
 		return unwantedEvent;
