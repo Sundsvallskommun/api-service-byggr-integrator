@@ -216,6 +216,51 @@
 							<arbetsmaterial>false</arbetsmaterial>
 							<handlaggare signatur="SYSTEM"/>
 						</handelse>
+						<handelse checksum="36" handelseId="1465848">
+							<riktning>In</riktning>
+							<rubrik>Grannehörande Svar med erinran, BALDER 5, null</rubrik>
+							<startDatum>2023-11-30T13:57:00+02:00</startDatum>
+							<anteckning>Inkommande svar</anteckning>
+							<handelseslag>GRASVA</handelseslag>
+							<handelsetyp>GRANHO</handelsetyp>
+							<sekretess>false</sekretess>
+							<makulerad>false</makulerad>
+							<handlingLista>
+								<handling checksum="39" handlingId="1484443">
+									<typ>UNDERE</typ>
+									<status>Inkommen</status>
+									<handlingDatum>2023-11-29</handlingDatum>
+									<anteckning>16542.pdf</anteckning>
+									<uuid>2701e123-2458-49c4-9e9e-f616283d6911</uuid>
+									<arkivStatus>Arkiveras</arkivStatus>
+									<makulerad>false</makulerad>
+									<dokument checksum="1855751238|638614870450000000" dokId="250324728">
+										<namn>16542.pdf</namn>
+									</dokument>
+								</handling>
+							</handlingLista>
+							<intressentLista>
+									<intressent intressentId="15567" persOrgNr="19050505-5555" arForetag="false" intressentVersionId="45336" kundnr="00005" arInternKund="false" arAktiv="true" checksum="-587656301|332087168">
+										<namn>Granne Grannsson</namn>
+										<adress>Stora gatan 2</adress>
+										<postNr>852 30</postNr>
+										<ort>SUNDSVALL</ort>
+										<fornamn>Granne</fornamn>
+										<efternamn>Gransson</efternamn>
+										<intressentKommunikationLista>
+											<intressentKommunikation arAktiv="true" checksum="-107631629">
+												<beskrivning>070-5555555</beskrivning>
+												<komtyp>1</komtyp>
+											</intressentKommunikation>
+										</intressentKommunikationLista>
+										<rollLista>
+											<roll>GRAN</roll>
+										</rollLista>
+									</intressent>
+							</intressentLista>
+							<arbetsmaterial>false</arbetsmaterial>
+							<handlaggare signatur="SYSTEM"/>
+						</handelse>
 					</handelseLista>
 					<projektnr xmlns="www.tekis.se/arende">760208</projektnr>
 					<bevakningLista xmlns="www.tekis.se/arende"/>

@@ -1,6 +1,8 @@
 package se.sundsvall.byggrintegrator.service;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.stereotype.Component;
 
@@ -13,14 +15,17 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 public class ApiResponseMapper {
 
 	public List<KeyValue> mapToKeyValueResponseList(List<ByggrErrandDto> errands) {
+		final var position = new AtomicInteger(1);
+
 		return errands.stream()
-			.flatMap(errand -> errand.getPropertyDesignation().stream()
-				.map(designation -> mapToKeyValue(errand.getByggrCaseNumber(), designation)))
+			.filter(Objects::nonNull)
+			.sorted((o1, o2) -> o1.getByggrCaseNumber().compareTo(o2.getByggrCaseNumber()))
+			.map(errand -> mapToKeyValue(position.getAndIncrement(), errand.getByggrCaseNumber()))
 			.toList();
 	}
 
-	private KeyValue mapToKeyValue(String dnr, ByggrErrandDto.PropertyDesignation designation) {
-		return new KeyValue(dnr, dnr + ", " + designation.getProperty() + " " + designation.getDesignation());
+	private KeyValue mapToKeyValue(int position, String dnr) {
+		return new KeyValue(String.valueOf(position), dnr);
 	}
 
 	public Weight mapToWeight(GetArendeResponse errand) {
