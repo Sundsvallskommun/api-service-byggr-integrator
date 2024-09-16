@@ -1,5 +1,6 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.util.Collection;
@@ -7,13 +8,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -34,21 +33,57 @@ import generated.se.sundsvall.arendeexport.Handling;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
 import generated.se.sundsvall.arendeexport.RollTyp;
 import generated.se.sundsvall.arendeexport.StatusFilter;
+import se.sundsvall.byggrintegrator.integration.byggr.ByggrProperties.ApplicantProperties;
+import se.sundsvall.byggrintegrator.integration.byggr.ByggrProperties.MapperProperties;
+import se.sundsvall.byggrintegrator.integration.byggr.ByggrProperties.NotificationProperties;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 
+/**
+ * Mapper for handling mappings regarding ByggR responses
+ *
+ * The mapper has two configuratble settings:
+ *
+ * <code>
+ *   integration:
+ *     byggr:
+ *       mapper:
+ *         applicant:
+ *           roles: <comma separated list of role>
+ *         notifications:
+ *           unwanted-event-types: <comma separated list of unwanted event type>
+ * </code>
+ *
+ * The first setting (applicant roles) contains the list of the roles that will be matched against to establish if the
+ * stakeholder is to be interpreted as applicant for the errand or not. If the stakeholder matches one of the values in
+ * the list, it is interpreted as applicant for the errand.
+ *
+ * The second setting (notification unwanted-event-types) is used to filter out errands when collecting neighborhood
+ * notifications. If an errand contains an event with event type matching one of the defined value(s), the errand is
+ * filtered out from the returned response. If property is not set, then no filtering is made. Observe that filtering is
+ * always done regarding that the errand must have a GRANHO event with event type GRAUTS to be returned in the response.
+ */
 @Component
 public class ByggrIntegrationMapper {
 	private static final Logger LOG = LoggerFactory.getLogger(ByggrIntegrationMapper.class);
 
 	private static final String WANTED_HANDELSETYP = "GRANHO";
 	private static final String WANTED_HANDELSESLAG = "GRAUTS";
-	private static final String UNWANTED_HANDELSESLAG = "GRASVA";
 	private static final ObjectFactory OBJECT_FACTORY = new ObjectFactory();
 
 	private final List<String> roles;
+	private final List<String> unwantedEventTypes;
 
-	public ByggrIntegrationMapper(@Value("${integration.byggr.mapper.applicant.roles}") List<String> roles) {
-		this.roles = roles;
+	public ByggrIntegrationMapper(final ByggrProperties byggrProperties) {
+		this.roles = ofNullable(byggrProperties)
+			.map(ByggrProperties::mapper)
+			.map(MapperProperties::applicant)
+			.map(ApplicantProperties::roles)
+			.orElse(null);
+		this.unwantedEventTypes = ofNullable(byggrProperties)
+			.map(ByggrProperties::mapper)
+			.map(MapperProperties::notifications)
+			.map(NotificationProperties::unwantedEventTypes)
+			.orElse(null);
 	}
 
 	public GetRoller createGetRolesRequest() {
@@ -129,8 +164,8 @@ public class ByggrIntegrationMapper {
 	}
 
 	private List<Arende> extractErrands(GetRelateradeArendenByPersOrgNrAndRoleResponse response) {
-		return Optional.ofNullable(response.getGetRelateradeArendenByPersOrgNrAndRoleResult())
-			.flatMap(result -> Optional.ofNullable(result.getArende())).stream()
+		return ofNullable(response.getGetRelateradeArendenByPersOrgNrAndRoleResult())
+			.flatMap(result -> ofNullable(result.getArende())).stream()
 			.flatMap(Collection::stream)
 			.toList();
 	}
@@ -143,7 +178,7 @@ public class ByggrIntegrationMapper {
 	}
 
 	private boolean isApplicant(List<ArendeIntressent> arendeIntressentList, String identifier) {
-		return Optional.ofNullable(arendeIntressentList).orElse(Collections.emptyList()).stream()
+		return ofNullable(arendeIntressentList).orElse(Collections.emptyList()).stream()
 			.filter(intressent -> StringUtils.equals(intressent.getPersOrgNr(), identifier))
 			.map(ArendeIntressent::getRollLista)
 			.map(ArrayOfString2::getRoll)
@@ -177,11 +212,16 @@ public class ByggrIntegrationMapper {
 	}
 
 	private boolean hasInvalidEvent(Handelse event) {
-		if (event.getHandelsetyp().equals(WANTED_HANDELSETYP) && event.getHandelseslag().equals(UNWANTED_HANDELSESLAG)) {
-			LOG.info("Unwanted eventid with handelsetyp GRANHO and handelseslag GRASVA found: {}", event.getHandelseId());
-			return true;
+
+		final boolean unwantedEvent = ofNullable(unwantedEventTypes)
+			.map(list -> event.getHandelsetyp().equals(WANTED_HANDELSETYP) && list.contains(event.getHandelseslag()))
+			.orElse(false);
+
+		if (unwantedEvent) {
+			LOG.info("Unwanted eventid with handelsetyp GRANHO and handelseslag matching one of {} found: {}", unwantedEventTypes, event.getHandelseId());
 		}
-		return false;
+
+		return unwantedEvent;
 	}
 
 	/**

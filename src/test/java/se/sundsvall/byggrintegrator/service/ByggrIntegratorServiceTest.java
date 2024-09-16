@@ -91,11 +91,11 @@ class ByggrIntegratorServiceTest {
 
 		// Assert
 		assertThat(neighborNotifications).hasSize(2).satisfiesExactlyInAnyOrder(notification -> {
-			assertThat(notification.key()).isEqualTo(BYGGR_ERRAND_NUMBER);
-			assertThat(notification.value()).isEqualTo("BYGG 2024-000123, ANKEBORG 1:1234");
+			assertThat(notification.key()).isEqualTo("1");
+			assertThat(notification.value()).isEqualTo("BYGG 2024-000123");
 		}, notification -> {
-			assertThat(notification.key()).isEqualTo(BYGGR_ERRAND_NUMBER);
-			assertThat(notification.value()).isEqualTo("BYGG 2024-000123, ANKEBORG 2:5678");
+			assertThat(notification.key()).isEqualTo("2");
+			assertThat(notification.value()).isEqualTo("BYGG 2024-000234");
 		});
 		verify(mockByggrIntegration).getRoles();
 		verify(mockByggrIntegration).getErrands(processedIdentifier, ROLES);
@@ -173,18 +173,12 @@ class ByggrIntegratorServiceTest {
 		final var applicantErrands = service.findApplicantErrands(indentifier);
 
 		// Assert
-		assertThat(applicantErrands).hasSize(4).satisfiesExactlyInAnyOrder(notification -> {
-			assertThat(notification.key()).isEqualTo("dnr123");
-			assertThat(notification.value()).isEqualTo("dnr123, des-1 type1");
+		assertThat(applicantErrands).hasSize(2).satisfiesExactlyInAnyOrder(notification -> {
+			assertThat(notification.key()).isEqualTo("1");
+			assertThat(notification.value()).isEqualTo("dnr123");
 		}, notification -> {
-			assertThat(notification.key()).isEqualTo("dnr123");
-			assertThat(notification.value()).isEqualTo("dnr123, des-2 type2");
-		}, notification -> {
-			assertThat(notification.key()).isEqualTo("dnr456");
-			assertThat(notification.value()).isEqualTo("dnr456, des-3 type3");
-		}, notification -> {
-			assertThat(notification.key()).isEqualTo("dnr456");
-			assertThat(notification.value()).isEqualTo("dnr456, des-4 type4");
+			assertThat(notification.key()).isEqualTo("2");
+			assertThat(notification.value()).isEqualTo("dnr456");
 		});
 		verify(mockByggrIntegration).getErrands(processedIdentifier, null);
 		verify(mockByggrIntegrationMapper).mapToApplicantErrands(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class), eq(processedIdentifier));

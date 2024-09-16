@@ -9,7 +9,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import se.sundsvall.byggrintegrator.TestObjectFactory;
-import se.sundsvall.byggrintegrator.api.model.KeyValue;
 
 class ApiResponseMapperTest {
 
@@ -24,9 +23,13 @@ class ApiResponseMapperTest {
 		final var keyValues = apiResponseMapper.mapToKeyValueResponseList(errands);
 
 		// Assert
-		assertThat(keyValues).hasSize(4);
-		assertThat(keyValues).extracting(KeyValue::key).containsExactlyInAnyOrder("dnr123", "dnr123", "dnr456", "dnr456");
-		assertThat(keyValues).extracting(KeyValue::value).containsExactlyInAnyOrder("dnr123, des-1 type1", "dnr123, des-2 type2", "dnr456, des-3 type3", "dnr456, des-4 type4");
+		assertThat(keyValues).hasSize(2).satisfiesExactlyInAnyOrder(keyVal -> {
+			assertThat(keyVal.key()).isEqualTo("1");
+			assertThat(keyVal.value()).isEqualTo("dnr123");
+		}, keyVal -> {
+			assertThat(keyVal.key()).isEqualTo("2");
+			assertThat(keyVal.value()).isEqualTo("dnr456");
+		});
 	}
 
 	@Test

@@ -3,7 +3,9 @@ package se.sundsvall.byggrintegrator.integration.byggr;
 import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.BYGGR_ARENDE_NR_1;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.BYGGR_ARENDE_NR_2;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.HANDELSESLAG_GRASVA;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.createArende;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.createPopulatedGetArendeResponse;
@@ -68,26 +70,66 @@ class ByggrIntegrationMapperTest {
 		// Arrange
 		final var response = generateRelateradeArendenResponse();
 
+		// Prepare list of unwanted handelseslag
+		setField(mapper, "unwantedEventTypes", List.of(HANDELSESLAG_GRASVA));
+
 		// Act
 		final var byggErrandDtos = mapper.mapToNeighborhoodNotifications(response);
 
 		// Assert
-		assertThat(byggErrandDtos).hasSize(1);
-		assertThat(byggErrandDtos.getFirst().getByggrCaseNumber()).isEqualTo(BYGGR_ARENDE_NR_1);
-		assertThat(byggErrandDtos.getFirst().getPropertyDesignation()).hasSize(2);
+		assertThat(byggErrandDtos).hasSize(1).satisfiesExactly(errand -> {
+			assertThat(errand.getByggrCaseNumber()).isEqualTo(BYGGR_ARENDE_NR_1);
+			assertThat(errand.getPropertyDesignation()).hasSize(2);
 
-		final var propertyDesignations = byggErrandDtos.getFirst().getPropertyDesignation();
-		assertThat(propertyDesignations).hasSize(2);
-		assertThat(propertyDesignations).extracting("property", "designation")
-			.containsExactlyInAnyOrder(
-				tuple("ANKEBORG", "1:1234"),
-				tuple("ANKEBORG", "2:5678"));
+			final var propertyDesignations = errand.getPropertyDesignation();
+			assertThat(propertyDesignations).hasSize(2);
+			assertThat(propertyDesignations).extracting("property", "designation")
+				.containsExactlyInAnyOrder(
+					tuple("ANKEBORG", "1:1234"),
+					tuple("ANKEBORG", "2:5678"));
+		});
+	}
+
+	@Test
+	void testMapToNeighborhoodNotifications_noUnwantedEventsValidation1() {
+		// Arrange
+		final var response = generateRelateradeArendenResponse();
+
+		// Act
+		final var byggErrandDtos = mapper.mapToNeighborhoodNotifications(response);
+
+		// Assert
+		assertThat(byggErrandDtos).hasSize(2).satisfiesExactlyInAnyOrder(errand -> {
+			assertThat(errand.getByggrCaseNumber()).isEqualTo(BYGGR_ARENDE_NR_1);
+			assertThat(errand.getPropertyDesignation()).hasSize(2);
+
+			final var propertyDesignations = errand.getPropertyDesignation();
+			assertThat(propertyDesignations).hasSize(2);
+			assertThat(propertyDesignations).extracting("property", "designation")
+				.containsExactlyInAnyOrder(
+					tuple("ANKEBORG", "1:1234"),
+					tuple("ANKEBORG", "2:5678"));
+		}, errand -> {
+			assertThat(errand.getByggrCaseNumber()).isEqualTo(BYGGR_ARENDE_NR_2);
+			assertThat(errand.getPropertyDesignation()).hasSize(2);
+
+			final var propertyDesignations = errand.getPropertyDesignation();
+			assertThat(propertyDesignations).hasSize(2);
+			assertThat(propertyDesignations).extracting("property", "designation")
+				.containsExactlyInAnyOrder(
+					tuple("ANKEBORG", "1:1234"),
+					tuple("ANKEBORG", "2:5678"));
+		});
 	}
 
 	@Test
 	void testMapToNeighborhoodNotifications_noValidEvents() {
 		// Arrange
 		final var response = generateRelateradeArendenResponse();
+
+		// Prepare list of unwanted handelseslag
+		setField(mapper, "unwantedEventTypes", List.of(HANDELSESLAG_GRASVA));
+
 		// Set all events to invalid
 		response.getGetRelateradeArendenByPersOrgNrAndRoleResult().getArende().getFirst().getHandelseLista().getHandelse().getFirst().setHandelseslag(HANDELSESLAG_GRASVA);
 
