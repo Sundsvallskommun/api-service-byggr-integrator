@@ -26,6 +26,10 @@ spring:
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
+  cache:
+    cache-names: getRollerCache, getArendeCache, getDocumentCache, getRelateradeArendenByPersOrgNrAndRoleCache
+    caffeine:
+      spec: maximumSize=500, expireAfterWrite=300s
 neighborhood-notification-template: 
   byggr-files:
     sub-directory: /files/
