@@ -29,6 +29,8 @@ class OpeneHtmlResourceTest {
 	@Autowired
 	private WebTestClient webTestClient;
 
+	private static final String INFO_QUERY_RESPONSE_HEADER = "InfoQueryResponse";
+	private static final String INFO_QUERY_RESPONSE_HEADER_VALUE = "true";
 	private static final String ERRAND_NUMBER = "BYGG 2001-123456";
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String FAULTY_MUNICIPALITY_ID = "notValid";
@@ -42,6 +44,7 @@ class OpeneHtmlResourceTest {
 			.uri(NEIGHBORHOOD_NOTIFICATION_FILES_PATH, MUNICIPALITY_ID, ERRAND_NUMBER)
 			.exchange()
 			.expectStatus().isOk()
+			.expectHeader().valueEquals(INFO_QUERY_RESPONSE_HEADER, INFO_QUERY_RESPONSE_HEADER_VALUE)
 			.expectBody(String.class)
 			.returnResult()
 			.getResponseBody();
@@ -62,6 +65,7 @@ class OpeneHtmlResourceTest {
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(TEXT_HTML_VALUE)
+			.expectHeader().valueEquals(INFO_QUERY_RESPONSE_HEADER, INFO_QUERY_RESPONSE_HEADER_VALUE)
 			.expectBody(String.class)
 			.returnResult();
 
@@ -86,6 +90,7 @@ class OpeneHtmlResourceTest {
 			.exchange()
 			.expectStatus().is5xxServerError()
 			.expectHeader().contentType(TEXT_HTML_VALUE)
+			.expectHeader().valueEquals(INFO_QUERY_RESPONSE_HEADER, INFO_QUERY_RESPONSE_HEADER_VALUE)
 			.expectBody(String.class)
 			.returnResult();
 
@@ -114,6 +119,7 @@ class OpeneHtmlResourceTest {
 			.exchange()
 			.expectStatus().is4xxClientError()
 			.expectHeader().contentType(TEXT_HTML_VALUE)
+			.expectHeader().valueEquals(INFO_QUERY_RESPONSE_HEADER, INFO_QUERY_RESPONSE_HEADER_VALUE)
 			.expectBody(String.class)
 			.returnResult();
 
