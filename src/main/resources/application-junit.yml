@@ -16,3 +16,6 @@ neighborhood-notification-template:
   byggr-files:
     domain: http://somewhere.com/
     sub-directory: /files/
+spring:
+  cache:
+    type: none

@@ -5,6 +5,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 
 import generated.se.sundsvall.arendeexport.ArrayOfString;
@@ -26,11 +28,13 @@ public class ByggrIntegration {
 	private final ByggrClient byggrClient;
 	private final ByggrIntegrationMapper byggrIntegrationMapper;
 
-	public ByggrIntegration(ByggrClient byggrClient, final ByggrIntegrationMapper byggrIntegrationMapper) {
+	public ByggrIntegration(final ByggrClient byggrClient,
+		final ByggrIntegrationMapper byggrIntegrationMapper) {
 		this.byggrClient = byggrClient;
 		this.byggrIntegrationMapper = byggrIntegrationMapper;
 	}
 
+	@Cacheable(value = "getRelateradeArendenByPersOrgNrAndRoleCache", key = "{#root.methodName, #identifier, #roles != null ? #roles.hashCode() : 0}")
 	public GetRelateradeArendenByPersOrgNrAndRoleResponse getErrands(String identifier, List<String> roles) {
 		final var request = byggrIntegrationMapper.mapToGetRelateradeArendenRequest(identifier)
 			.withArendeIntressentRoller(rolesToArrayOfString(roles));
@@ -42,6 +46,7 @@ public class ByggrIntegration {
 		return Objects.isNull(roles) ? null : new ArrayOfString().withString(roles);
 	}
 
+	@Cacheable(value = "getRollerCache", key = "{#root.methodName}")
 	public List<String> getRoles() {
 		final var roller = byggrClient.getRoller(byggrIntegrationMapper.createGetRolesRequest());
 
@@ -53,6 +58,7 @@ public class ByggrIntegration {
 			.orElse(List.of());
 	}
 
+	@Cacheable(value = "getArendeCache", key = "{#root.methodName, #dnr}")
 	public GetArendeResponse getErrand(String dnr) {
 		try {
 			return byggrClient.getArende(byggrIntegrationMapper.mapToGetArendeRequest(dnr));
@@ -65,6 +71,7 @@ public class ByggrIntegration {
 		}
 	}
 
+	@Cacheable(value = "getDocumentCache", key = "{#root.methodName, #documentId}")
 	public GetDocumentResponse getDocument(String documentId) {
 		try {
 			return byggrClient.getDocument(byggrIntegrationMapper.mapToGetDocumentRequest(documentId));
