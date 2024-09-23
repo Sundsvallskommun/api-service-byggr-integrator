@@ -26,6 +26,11 @@ import jakarta.validation.ValidationException;
  */
 @Configuration
 public class ExceptionAsXmlHandlerConfig {
+
+	private ExceptionAsXmlHandlerConfig() {
+		// private constructor to hide the implicit public one
+	}
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionAsXmlHandlerConfig.class);
 	private static final String LOG_MESSAGE = "Mapping exception into Problem";
 
