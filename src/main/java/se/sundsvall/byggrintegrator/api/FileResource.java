@@ -38,7 +38,7 @@ public class FileResource {
 	}
 
 	@GetMapping(path = "/files/{fileId}", produces = { APPLICATION_OCTET_STREAM_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
-	@Operation(summary = "Fetch file")
+	@Operation(summary = "Return file content for file matching the provided id")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	public ResponseEntity<Void> readFile(

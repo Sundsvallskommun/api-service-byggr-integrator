@@ -61,16 +61,15 @@ public class ByggrIntegratorService {
 		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
 		final var matches = byggrIntegration.getErrands(processedIdentifier, roles);
 
-		final var byggrErrandList = byggrIntegrationMapper.mapToNeighborhoodNotifications(matches);
+		final var byggrErrandList = byggrIntegrationMapper.mapToNeighborhoodNotifications(matches, processedIdentifier);
 
-		return apiResponseMapper.mapToKeyValueResponseList(byggrErrandList);
+		return apiResponseMapper.mapToNeighborhoodKeyValueResponseList(byggrErrandList);
 	}
 
 	public List<KeyValue> findApplicantErrands(String identifier) {
 		// Prefix identifier if it contains organisation legal id and add hyphen to identifier as ByggR integration formats
 		// legal id that way
 		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
-
 		final var matches = byggrIntegration.getErrands(processedIdentifier, null);
 
 		final var byggrErrandList = byggrIntegrationMapper.mapToApplicantErrands(matches, processedIdentifier);

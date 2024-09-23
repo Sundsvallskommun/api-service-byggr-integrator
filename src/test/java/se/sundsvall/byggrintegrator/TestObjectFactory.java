@@ -1,7 +1,11 @@
 package se.sundsvall.byggrintegrator;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 
 import generated.se.sundsvall.arendeexport.AbstractArendeObjekt;
 import generated.se.sundsvall.arendeexport.Arende;
@@ -19,6 +23,9 @@ public final class TestObjectFactory {
 
 	private static final ObjectFactory OBJECT_FACTORY = new ObjectFactory();
 
+	public static final String CASE_APPLICANT = "errandApplicant";
+	public static final String NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER = "neighborhoodNotificationStakeholder";
+	public static final String APPLICANT_ROLE = "SOK";
 	public static final String FBET_NR_1 = "1:1234";
 	public static final String FBET_NR_2 = "2:5678";
 	public static final String HANDELSETYP_GRANHO = "GRANHO";
@@ -35,15 +42,25 @@ public final class TestObjectFactory {
 	 *
 	 * @return A populated response
 	 */
-	public static GetRelateradeArendenByPersOrgNrAndRoleResponse generateRelateradeArendenResponse() {
+	public static GetRelateradeArendenByPersOrgNrAndRoleResponse generateRelateradeArendenResponse() throws Exception {
+		return generateRelateradeArendenResponse(CASE_APPLICANT, NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER);
+	}
+
+	/**
+	 * Creates a response with one valid and one invalid event
+	 *
+	 * @return A populated response
+	 * @throws DatatypeConfigurationException
+	 */
+	public static GetRelateradeArendenByPersOrgNrAndRoleResponse generateRelateradeArendenResponse(String caseApplicant, String neighborhoodStakeholder) throws Exception {
 		final var response = OBJECT_FACTORY.createGetRelateradeArendenByPersOrgNrAndRoleResponse();
-		final var arendeList = List.of(createArende(BYGGR_ARENDE_NR_1, true), createArende(BYGGR_ARENDE_NR_2, false));
+		final var arendeList = List.of(createArende(BYGGR_ARENDE_NR_1, true, caseApplicant, neighborhoodStakeholder), createArende(BYGGR_ARENDE_NR_2, false, caseApplicant, neighborhoodStakeholder));
 		return response.withGetRelateradeArendenByPersOrgNrAndRoleResult(new ArrayOfArende1().withArende(arendeList));
 	}
 
-	public static GetArendeResponse generateArendeResponse(String dnr) {
+	public static GetArendeResponse generateArendeResponse(String dnr) throws Exception {
 		final var response = OBJECT_FACTORY.createGetArendeResponse();
-		return response.withGetArendeResult(createArende(dnr, true));
+		return response.withGetArendeResult(createArende(dnr, true, CASE_APPLICANT, NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER));
 	}
 
 	public static GetDocumentResponse generateDocumentResponse(String fileId) {
@@ -61,31 +78,42 @@ public final class TestObjectFactory {
 		return OBJECT_FACTORY.createGetRelateradeArendenByPersOrgNrAndRoleResponse();
 	}
 
-	public static Arende createArende(String dnr, boolean validEvents) {
-		final var arende = OBJECT_FACTORY.createArende();
-		arende.setDnr(dnr);
-		arende.setArendetyp(ARENDE_TYP_LH);
-		arende.setHandelseLista(createArrayOfHandelse(validEvents));
-		arende.setObjektLista(createObjektLista());
-		return arende;
+	public static Arende createArende(String dnr, boolean validEvents) throws Exception {
+		return createArende(dnr, validEvents, CASE_APPLICANT, NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER);
 	}
 
-	private static ArrayOfHandelse createArrayOfHandelse(boolean validEvents) {
-		final var handelse1 = OBJECT_FACTORY.createHandelse();
-		handelse1.setHandelseId(1);
-		handelse1.setHandelsetyp(HANDELSETYP_GRANHO);
+	public static Arende createArende(String dnr, boolean validEvents, String errandApplicant, String neighborhoodStakeholder) throws Exception {
+		return OBJECT_FACTORY.createArende()
+			.withDnr(dnr)
+			.withIntressentLista(OBJECT_FACTORY.createArrayOfArendeIntressent2().withIntressent(
+				OBJECT_FACTORY.createArendeIntressent()
+					.withPersOrgNr(errandApplicant)
+					.withRollLista(
+						OBJECT_FACTORY.createArrayOfString2().withRoll(APPLICANT_ROLE))))
+			.withArendetyp(ARENDE_TYP_LH)
+			.withHandelseLista(createArrayOfHandelse(validEvents, neighborhoodStakeholder))
+			.withObjektLista(createObjektLista());
+	}
 
-		// If validEvents is true, we set a valid handelseslag
-		if (validEvents) {
-			handelse1.setHandelseslag(HANDELSESLAG_GRAUTS);
-		} else {
-			handelse1.setHandelseslag(HANDELSESLAG_GRASVA);
-		}
+	private static ArrayOfHandelse createArrayOfHandelse(boolean validEvents, String neighborhoodStakeholder) throws Exception {
+		final var handelse1 = OBJECT_FACTORY.createHandelse()
+			.withHandelseId(1)
+			.withHandelsetyp(HANDELSETYP_GRANHO)
+			// If validEvents is true, we set a valid handelseslag else a invalid one
+			.withHandelseslag(validEvents ? HANDELSESLAG_GRAUTS : HANDELSESLAG_GRASVA)
+			.withStartDatum(DatatypeFactory.newInstance().newXMLGregorianCalendar(LocalDate.now().toString()))
+			.withIntressentLista(OBJECT_FACTORY.createArrayOfHandelseIntressent2().withIntressent(
+				OBJECT_FACTORY.createHandelseIntressent()
+					.withPersOrgNr(neighborhoodStakeholder)));
 
-		final var handelse2 = OBJECT_FACTORY.createHandelse();
-		handelse2.setHandelseId(2);
-		handelse2.setHandelsetyp(HANDELSETYP_GRANHO);
-		handelse2.setHandelseslag(HANDELSESLAG_GRAUTS);
+		final var handelse2 = OBJECT_FACTORY.createHandelse()
+			.withHandelseId(2)
+			.withHandelsetyp(HANDELSETYP_GRANHO)
+			.withHandelseslag(HANDELSESLAG_GRAUTS)
+			.withStartDatum(DatatypeFactory.newInstance().newXMLGregorianCalendar(LocalDate.now().toString()))
+			.withIntressentLista(OBJECT_FACTORY.createArrayOfHandelseIntressent2().withIntressent(
+				OBJECT_FACTORY.createHandelseIntressent()
+					.withPersOrgNr(neighborhoodStakeholder)));
 
 		final var arrayOfHandelse = OBJECT_FACTORY.createArrayOfHandelse();
 		return arrayOfHandelse.withHandelse(handelse1, handelse2);
@@ -121,12 +149,14 @@ public final class TestObjectFactory {
 				.withPropertyDesignation(List.of(
 					ByggrErrandDto.PropertyDesignation.builder().withProperty("des-1").withDesignation("type1").build(),
 					ByggrErrandDto.PropertyDesignation.builder().withProperty("des-2").withDesignation("type2").build()))
+				.withNeighborhoodEventIds(List.of(123, 234))
 				.build(),
 			ByggrErrandDto.builder()
 				.withByggrCaseNumber("dnr456")
 				.withPropertyDesignation(List.of(
 					ByggrErrandDto.PropertyDesignation.builder().withProperty("des-3").withDesignation("type3").build(),
 					ByggrErrandDto.PropertyDesignation.builder().withProperty("des-4").withDesignation("type4").build()))
+				.withNeighborhoodEventIds(List.of(345, 456))
 				.build());
 	}
 

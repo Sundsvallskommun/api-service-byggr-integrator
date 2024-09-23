@@ -1,5 +1,8 @@
 package se.sundsvall.byggrintegrator.service;
 
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,6 +17,27 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 @Component
 public class ApiResponseMapper {
 
+	private static final String KEY_TEMPLATE = "%s [%s]";
+
+	public List<KeyValue> mapToNeighborhoodKeyValueResponseList(List<ByggrErrandDto> errands) {
+		final var position = new AtomicInteger(1);
+
+		return errands.stream()
+			.filter(Objects::nonNull)
+			.map(this::decorateWithEventIds)
+			.flatMap(List::stream)
+			.sorted()
+			.map(value -> mapToKeyValue(position.getAndIncrement(), value))
+			.toList();
+	}
+
+	private List<String> decorateWithEventIds(ByggrErrandDto dto) {
+		return ofNullable(dto.getNeighborhoodEventIds()).orElse(emptyList())
+			.stream()
+			.map(eventId -> KEY_TEMPLATE.formatted(dto.getByggrCaseNumber(), eventId))
+			.toList();
+	}
+
 	public List<KeyValue> mapToKeyValueResponseList(List<ByggrErrandDto> errands) {
 		final var position = new AtomicInteger(1);
 
@@ -24,8 +48,8 @@ public class ApiResponseMapper {
 			.toList();
 	}
 
-	private KeyValue mapToKeyValue(int position, String dnr) {
-		return new KeyValue(String.valueOf(position), dnr);
+	private KeyValue mapToKeyValue(int position, String value) {
+		return new KeyValue(String.valueOf(position), value);
 	}
 
 	public Weight mapToWeight(GetArendeResponse errand) {

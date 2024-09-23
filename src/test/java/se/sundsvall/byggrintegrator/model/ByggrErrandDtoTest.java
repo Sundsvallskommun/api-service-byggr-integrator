@@ -38,19 +38,21 @@ class ByggrErrandDtoTest {
 
 	@Test
 	void testBuilderMethods() {
-		var dnr = "123";
-		var designation = "designation";
-		var property = "property";
-		var files = Map.of("file1", "file1.txt");
+		final var designation = "designation";
+		final var dnr = "123";
+		final var files = Map.of("file1", "file1.txt");
+		final var neighborhoodEventIds = List.of(123, 456);
+		final var property = "property";
 
-		var propertyDesignation = ByggrErrandDto.PropertyDesignation.builder()
+		final var propertyDesignation = ByggrErrandDto.PropertyDesignation.builder()
 			.withDesignation(designation)
 			.withProperty(property)
 			.build();
 
-		var dto = ByggrErrandDto.builder()
+		final var dto = ByggrErrandDto.builder()
 			.withByggrCaseNumber(dnr)
 			.withFiles(files)
+			.withNeighborhoodEventIds(neighborhoodEventIds)
 			.withPropertyDesignation(List.of(propertyDesignation))
 			.build();
 
@@ -60,6 +62,7 @@ class ByggrErrandDtoTest {
 		assertThat(dto.getFiles()).isEqualTo(files);
 		assertThat(dto.getByggrCaseNumber()).isEqualTo(dnr);
 		assertThat(dto.getPropertyDesignation()).containsExactly(propertyDesignation);
+		assertThat(dto.getNeighborhoodEventIds()).isEqualTo(neighborhoodEventIds);
 	}
 
 	@Test

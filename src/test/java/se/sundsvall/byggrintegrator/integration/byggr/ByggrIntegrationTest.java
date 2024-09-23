@@ -58,7 +58,7 @@ class ByggrIntegrationTest {
 	@ParameterizedTest
 	@ValueSource(strings = { "ANM" })
 	@NullSource
-	void testGetErrandsFromByggr(String role) {
+	void testGetErrandsFromByggr(String role) throws Exception {
 		// Arrange
 		final var identifier = "1234567890";
 		final var roles = Objects.isNull(role) ? null : List.of(role);

@@ -24,7 +24,8 @@ import lombok.ToString;
 public class ByggrErrandDto {
 	private String byggrCaseNumber;
 	private List<PropertyDesignation> propertyDesignation;
-	private Map<String, String> files;  // Map<dokumentId, documentName>
+	private Map<String, String> files; // Map<dokumentId, documentName>
+	private List<Integer> neighborhoodEventIds; // Used when mapping neighborhood errands
 
 	@Getter
 	@Setter
@@ -34,7 +35,7 @@ public class ByggrErrandDto {
 	@ToString
 	@EqualsAndHashCode
 	public static class PropertyDesignation {
-		private String property;    //Name of the property
+		private String property; // Name of the property
 		private String designation; // Fastighetsbeteckning
 	}
 }

@@ -44,7 +44,7 @@ public class NeighborhoodNotificationResource {
 
 	@GetMapping(path = "/neighborhood-notifications/{identifier}/errands", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
 	@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = Problem.class)))
-	@Operation(summary = "Lists all neighborhood notifications")
+	@Operation(summary = "Lists all neighborhood notifications where the provided identifier is a stakeholder")
 	public ResponseEntity<List<KeyValue>> findNeighborhoodNotifications(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @ValidPersonalOrOrgNumber @PathVariable String identifier) {

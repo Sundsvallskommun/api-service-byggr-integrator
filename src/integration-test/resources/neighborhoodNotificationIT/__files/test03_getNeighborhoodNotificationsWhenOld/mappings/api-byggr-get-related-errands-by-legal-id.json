@@ -16,7 +16,7 @@
 		"headers": {
 			"Content-Type": "application/xml"
 		},
-		"bodyFileName": "test01_getNeighborhoodNotifications/responses/api-byggr-get-related-errands-by-legal-id-response.xml",
+		"bodyFileName": "test03_getNeighborhoodNotificationsWhenOld/responses/api-byggr-get-related-errands-by-legal-id-response.xml",
 		"status": 200,
 		"transformers": ["response-template"]
 	}
