@@ -43,7 +43,7 @@ public class ApplicantResource {
 	}
 
 	@GetMapping(path = "/applicants/{identifier}/errands", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
-	@Operation(summary = "Lists all errands where a person or an organization is applicant")
+	@Operation(summary = "Lists all errands where the provided identifier is applicant")
 	public ResponseEntity<List<KeyValue>> findApplicantErrands(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @ValidPersonalOrOrgNumber @PathVariable String identifier) {

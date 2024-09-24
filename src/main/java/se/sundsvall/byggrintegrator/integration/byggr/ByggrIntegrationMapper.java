@@ -1,5 +1,6 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
+import static java.time.LocalDate.now;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -9,6 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,6 +23,7 @@ import generated.se.sundsvall.arendeexport.AbstractArendeObjekt;
 import generated.se.sundsvall.arendeexport.Arende;
 import generated.se.sundsvall.arendeexport.ArendeFastighet;
 import generated.se.sundsvall.arendeexport.ArendeIntressent;
+import generated.se.sundsvall.arendeexport.ArrayOfHandelseIntressent2;
 import generated.se.sundsvall.arendeexport.ArrayOfString2;
 import generated.se.sundsvall.arendeexport.Dokument;
 import generated.se.sundsvall.arendeexport.GetArende;
@@ -113,16 +117,18 @@ public class ByggrIntegrationMapper {
 	 * Maps the response from Byggr and maps it to a narrowed down list of ByggrErrandDtos containing all neighborhood
 	 * notifications
 	 *
-	 * @param response The response from Byggr
+	 * @param response   The response from Byggr
+	 * @param identifier The id for the neighbor to return notifications for
 	 * @return A list of ByggrErrandDtos containing neighborhood notifications
 	 */
-	public List<ByggrErrandDto> mapToNeighborhoodNotifications(GetRelateradeArendenByPersOrgNrAndRoleResponse response) {
+	public List<ByggrErrandDto> mapToNeighborhoodNotifications(GetRelateradeArendenByPersOrgNrAndRoleResponse response, String identifier) {
 		final var errands = extractErrands(response);
 
 		// Collect the info we want from errands that have a valid event
 		return errands.stream()
-			.filter(arende -> hasValidHandelseList(arende.getDnr(), arende.getHandelseLista().getHandelse()))
-			.map(this::toByggErrandDto)
+			.filter(arende -> hasValidEvent(arende.getDnr(), arende.getHandelseLista().getHandelse()))
+			.filter(arende -> containsStakeholder(identifier, arende.getHandelseLista().getHandelse()))
+			.map(arende -> toByggErrandDtoWithNeighborhoodNotificationEventIds(identifier, arende))
 			.toList();
 	}
 
@@ -177,6 +183,29 @@ public class ByggrIntegrationMapper {
 			.build();
 	}
 
+	private ByggrErrandDto toByggErrandDtoWithNeighborhoodNotificationEventIds(String identifier, Arende arende) {
+		return ByggrErrandDto.builder()
+			.withByggrCaseNumber(arende.getDnr())
+			.withNeighborhoodEventIds(mapToNeighborhoodNotificationEventIds(identifier, arende.getHandelseLista().getHandelse()))
+			.withPropertyDesignation(mapToPropertyDesignations(arende.getObjektLista().getAbstractArendeObjekt()))
+			.build();
+	}
+
+	private List<Integer> mapToNeighborhoodNotificationEventIds(String identifier, List<Handelse> handelseList) {
+		return handelseList.stream()
+			.filter(event -> WANTED_HANDELSETYP.equals(event.getHandelsetyp()) && WANTED_HANDELSESLAG.equals(event.getHandelseslag())) // Filter out correct event types
+			.filter(event -> event.getIntressentLista().getIntressent()
+				.stream().anyMatch(stakeholder -> identifier.equals(stakeholder.getPersOrgNr()))) // Filter out events that has identifier as stakeholder
+			.filter(event -> isActive(event.getStartDatum())) // Filter out active events
+			.map(Handelse::getHandelseId)
+			.toList();
+	}
+
+	private boolean isActive(XMLGregorianCalendar eventTimestamp) {
+		final var eventDate = eventTimestamp.toGregorianCalendar().toZonedDateTime().toLocalDate();
+		return eventDate.isAfter(now().minusDays(31)); // Events older than 30 days will not be included
+	}
+
 	private boolean isApplicant(List<ArendeIntressent> arendeIntressentList, String identifier) {
 		return ofNullable(arendeIntressentList).orElse(Collections.emptyList()).stream()
 			.filter(intressent -> StringUtils.equals(intressent.getPersOrgNr(), identifier))
@@ -185,7 +214,7 @@ public class ByggrIntegrationMapper {
 			.anyMatch(roller -> roller.stream().anyMatch(roles::contains));
 	}
 
-	private boolean hasValidHandelseList(String dnr, List<Handelse> handelseList) {
+	private boolean hasValidEvent(String dnr, List<Handelse> handelseList) {
 		LOG.info("Validating case with dnr {}", dnr);
 
 		var hasValidEvent = false;
@@ -222,6 +251,16 @@ public class ByggrIntegrationMapper {
 		}
 
 		return unwantedEvent;
+	}
+
+	private boolean containsStakeholder(String identifier, List<Handelse> handelseList) {
+		return handelseList.stream()
+			.filter(handelse -> WANTED_HANDELSETYP.equals(handelse.getHandelsetyp()))
+			.filter(handelse -> WANTED_HANDELSESLAG.equals(handelse.getHandelseslag()))
+			.map(Handelse::getIntressentLista)
+			.map(ArrayOfHandelseIntressent2::getIntressent)
+			.flatMap(List::stream)
+			.anyMatch(intressent -> identifier.equals(intressent.getPersOrgNr()));
 	}
 
 	/**

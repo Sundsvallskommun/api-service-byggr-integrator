@@ -7,6 +7,7 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.BYGGR_ARENDE_NR_1;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.BYGGR_ARENDE_NR_2;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.HANDELSESLAG_GRASVA;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.createArende;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.createPopulatedGetArendeResponse;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateEmptyRelateradeArendenResponse;
@@ -66,7 +67,7 @@ class ByggrIntegrationMapperTest {
 	}
 
 	@Test
-	void testMapToNeighborhoodNotifications() {
+	void testMapToNeighborhoodNotifications() throws Exception {
 		// Arrange
 		final var response = generateRelateradeArendenResponse();
 
@@ -74,7 +75,7 @@ class ByggrIntegrationMapperTest {
 		setField(mapper, "unwantedEventTypes", List.of(HANDELSESLAG_GRASVA));
 
 		// Act
-		final var byggErrandDtos = mapper.mapToNeighborhoodNotifications(response);
+		final var byggErrandDtos = mapper.mapToNeighborhoodNotifications(response, NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER);
 
 		// Assert
 		assertThat(byggErrandDtos).hasSize(1).satisfiesExactly(errand -> {
@@ -91,12 +92,12 @@ class ByggrIntegrationMapperTest {
 	}
 
 	@Test
-	void testMapToNeighborhoodNotifications_noUnwantedEventsValidation1() {
+	void testMapToNeighborhoodNotifications_noUnwantedEventsValidation1() throws Exception {
 		// Arrange
 		final var response = generateRelateradeArendenResponse();
 
 		// Act
-		final var byggErrandDtos = mapper.mapToNeighborhoodNotifications(response);
+		final var byggErrandDtos = mapper.mapToNeighborhoodNotifications(response, NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER);
 
 		// Assert
 		assertThat(byggErrandDtos).hasSize(2).satisfiesExactlyInAnyOrder(errand -> {
@@ -123,8 +124,9 @@ class ByggrIntegrationMapperTest {
 	}
 
 	@Test
-	void testMapToNeighborhoodNotifications_noValidEvents() {
+	void testMapToNeighborhoodNotifications_noValidEvents() throws Exception {
 		// Arrange
+		final var identifier = "identifier";
 		final var response = generateRelateradeArendenResponse();
 
 		// Prepare list of unwanted handelseslag
@@ -134,15 +136,14 @@ class ByggrIntegrationMapperTest {
 		response.getGetRelateradeArendenByPersOrgNrAndRoleResult().getArende().getFirst().getHandelseLista().getHandelse().getFirst().setHandelseslag(HANDELSESLAG_GRASVA);
 
 		// Act
-		final var byggErrandDtos = mapper.mapToNeighborhoodNotifications(response);
+		final var byggErrandDtos = mapper.mapToNeighborhoodNotifications(response, identifier);
 
 		// Assert
 		assertThat(byggErrandDtos).isEmpty();
 	}
 
 	@Test
-	void testMapToApplicantErrands() {
-		// Arrange
+	void testMapToApplicantErrands() throws Exception {
 		final var legalId = "legalId";
 
 		final var arendeList = List.of(

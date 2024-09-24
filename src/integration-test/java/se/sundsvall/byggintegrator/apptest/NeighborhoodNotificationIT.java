@@ -41,4 +41,16 @@ class NeighborhoodNotificationIT extends AbstractAppTest {
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
 	}
+
+	@Test
+	void test03_getNeighborhoodNotificationsWhenOld() {
+		setupCall()
+			.withServicePath("/2281/neighborhood-notifications/190102031234/errands")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_JSON_VALUE))
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
 }
