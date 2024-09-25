@@ -1,3 +1,4 @@
+
 package se.sundsvall.byggrintegrator.service;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -10,12 +10,14 @@ import se.sundsvall.byggrintegrator.api.interceptor.OpeneHtmlInterceptor;
 public class InterceptorConfig implements WebMvcConfigurer {
 
 	/**
-	 * Intercept all html responses from the "/{municipalityId}/opene/cases/{wildcard}/neighborhood-notifications" endpoint.
+	 * Intercept all html responses from the "/{municipalityId}/opene/neighborhood-notifications/{wildcard}/filenames"
+	 * endpoint.
+	 *
 	 * @param registry the interceptor registry
 	 */
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new OpeneHtmlInterceptor())
-			.addPathPatterns("/{municipalityId}/opene/cases/*/neighborhood-notifications");
+			.addPathPatterns("/{municipalityId}/opene/neighborhood-notifications/*/filenames");
 	}
 }

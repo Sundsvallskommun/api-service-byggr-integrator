@@ -21,6 +21,7 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 @ActiveProfiles("it")
 class OpeneIT extends AbstractAppTest {
 
+	private static final String INFO_QUERY_RESPONSE_HEADER_NAME = "InfoQueryResponse";
 	private static final String RESPONSE_FILE = "response.xml";
 
 	@Test
@@ -46,23 +47,37 @@ class OpeneIT extends AbstractAppTest {
 	}
 
 	@Test
-	void test03_getNeighborhoodNotificationsForErrand() {
+	void test03_getNeighborhoodNotificationFilenamesForErrandAndEvent() {
 		setupCall()
-			.withServicePath("/2281/opene/cases/BYGG 2024-000668/neighborhood-notifications")
+			.withServicePath("/2281/opene/neighborhood-notifications/BYGG 2024-000668 [1465852]/filenames")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(TEXT_HTML_VALUE + ";" + "charset=UTF-8"))
+			.withExpectedResponseHeader(INFO_QUERY_RESPONSE_HEADER_NAME, List.of("true"))
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
 	}
 
 	@Test
-	void test04_getNeighborhoodNotificationsForNonExistingErrand() {
+	void test04_getNeighborhoodNotificationFilenamesForNonExistingErrand() {
 		setupCall()
-			.withServicePath("/2281/opene/cases/BYGG 2024-000669/neighborhood-notifications")
+			.withServicePath("/2281/opene/neighborhood-notifications/BYGG 2024-000669 [1465852]/filenames")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(TEXT_HTML_VALUE + ";" + "charset=UTF-8"))
+			.withExpectedResponseHeader(INFO_QUERY_RESPONSE_HEADER_NAME, List.of("true"))
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test05_getNeighborhoodNotificationFilenamesForNonExistingEventId() {
+		setupCall()
+			.withServicePath("/2281/opene/neighborhood-notifications/BYGG 2024-000670 [1465890]/filenames")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponseHeader(CONTENT_TYPE, List.of(TEXT_HTML_VALUE + ";" + "charset=UTF-8"))
+			.withExpectedResponseHeader(INFO_QUERY_RESPONSE_HEADER_NAME, List.of("true"))
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
 	}

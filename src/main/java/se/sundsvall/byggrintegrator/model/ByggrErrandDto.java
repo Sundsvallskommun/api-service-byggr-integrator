@@ -1,5 +1,6 @@
 package se.sundsvall.byggrintegrator.model;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -23,9 +24,8 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class ByggrErrandDto {
 	private String byggrCaseNumber;
-	private List<PropertyDesignation> propertyDesignation;
-	private Map<String, String> files; // Map<dokumentId, documentName>
-	private List<Integer> neighborhoodEventIds; // Used when mapping neighborhood errands
+	private List<Event> events;
+	private List<Stakeholder> stakeholders;
 
 	@Getter
 	@Setter
@@ -34,8 +34,24 @@ public class ByggrErrandDto {
 	@AllArgsConstructor
 	@ToString
 	@EqualsAndHashCode
-	public static class PropertyDesignation {
-		private String property; // Name of the property
-		private String designation; // Fastighetsbeteckning
+	public static class Event {
+		private int id; // Maps to handelseId
+		private String eventType; // Maps to handelsetyp
+		private String eventSubtype; // Maps to handelseslag
+		private LocalDate eventDate; // Maps to startDatum
+		private Map<String, String> files; // Map<dokumentId, documentName>
+		private List<Stakeholder> stakeholders;
+	}
+
+	@Getter
+	@Setter
+	@Builder(setterPrefix = "with")
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@ToString
+	@EqualsAndHashCode
+	public static class Stakeholder {
+		private String legalId; // Maps to personNummer
+		private List<String> roles; // Maps to roll
 	}
 }

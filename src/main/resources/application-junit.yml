@@ -6,7 +6,9 @@ integration:
     url: http://somehost.com
     connect-timeout-in-seconds: 1
     read-timeout-in-seconds: 2
-    mapper:
+service:
+  byggr:
+    filter-util:
       applicant:
         roles: SOK, KPER
       notifications:

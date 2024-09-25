@@ -1,31 +1,27 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
-import static java.time.LocalDate.now;
+import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
-import generated.se.sundsvall.arendeexport.AbstractArendeObjekt;
 import generated.se.sundsvall.arendeexport.Arende;
-import generated.se.sundsvall.arendeexport.ArendeFastighet;
 import generated.se.sundsvall.arendeexport.ArendeIntressent;
+import generated.se.sundsvall.arendeexport.ArrayOfArendeIntressent2;
+import generated.se.sundsvall.arendeexport.ArrayOfHandelse;
+import generated.se.sundsvall.arendeexport.ArrayOfHandelseHandling;
 import generated.se.sundsvall.arendeexport.ArrayOfHandelseIntressent2;
 import generated.se.sundsvall.arendeexport.ArrayOfString2;
-import generated.se.sundsvall.arendeexport.Dokument;
 import generated.se.sundsvall.arendeexport.GetArende;
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetDocument;
@@ -33,62 +29,21 @@ import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRol
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.GetRoller;
 import generated.se.sundsvall.arendeexport.Handelse;
-import generated.se.sundsvall.arendeexport.Handling;
+import generated.se.sundsvall.arendeexport.HandelseHandling;
+import generated.se.sundsvall.arendeexport.HandelseIntressent;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
 import generated.se.sundsvall.arendeexport.RollTyp;
 import generated.se.sundsvall.arendeexport.StatusFilter;
-import se.sundsvall.byggrintegrator.integration.byggr.ByggrProperties.ApplicantProperties;
-import se.sundsvall.byggrintegrator.integration.byggr.ByggrProperties.MapperProperties;
-import se.sundsvall.byggrintegrator.integration.byggr.ByggrProperties.NotificationProperties;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
 
 /**
- * Mapper for handling mappings regarding ByggR responses
- *
- * The mapper has two configuratble settings:
- *
- * <code>
- *   integration:
- *     byggr:
- *       mapper:
- *         applicant:
- *           roles: <comma separated list of role>
- *         notifications:
- *           unwanted-event-types: <comma separated list of unwanted event type>
- * </code>
- *
- * The first setting (applicant roles) contains the list of the roles that will be matched against to establish if the
- * stakeholder is to be interpreted as applicant for the errand or not. If the stakeholder matches one of the values in
- * the list, it is interpreted as applicant for the errand.
- *
- * The second setting (notification unwanted-event-types) is used to filter out errands when collecting neighborhood
- * notifications. If an errand contains an event with event type matching one of the defined value(s), the errand is
- * filtered out from the returned response. If property is not set, then no filtering is made. Observe that filtering is
- * always done regarding that the errand must have a GRANHO event with event type GRAUTS to be returned in the response.
+ * Mapper for handling mappings between ByggR responses and the internal dto class used in the service layer
  */
 @Component
 public class ByggrIntegrationMapper {
-	private static final Logger LOG = LoggerFactory.getLogger(ByggrIntegrationMapper.class);
-
-	private static final String WANTED_HANDELSETYP = "GRANHO";
-	private static final String WANTED_HANDELSESLAG = "GRAUTS";
 	private static final ObjectFactory OBJECT_FACTORY = new ObjectFactory();
-
-	private final List<String> roles;
-	private final List<String> unwantedEventTypes;
-
-	public ByggrIntegrationMapper(final ByggrProperties byggrProperties) {
-		this.roles = ofNullable(byggrProperties)
-			.map(ByggrProperties::mapper)
-			.map(MapperProperties::applicant)
-			.map(ApplicantProperties::roles)
-			.orElse(null);
-		this.unwantedEventTypes = ofNullable(byggrProperties)
-			.map(ByggrProperties::mapper)
-			.map(MapperProperties::notifications)
-			.map(NotificationProperties::unwantedEventTypes)
-			.orElse(null);
-	}
 
 	public GetRoller createGetRolesRequest() {
 		return OBJECT_FACTORY.createGetRoller()
@@ -113,60 +68,18 @@ public class ByggrIntegrationMapper {
 			.withInkluderaFil(true);
 	}
 
-	/**
-	 * Maps the response from Byggr and maps it to a narrowed down list of ByggrErrandDtos containing all neighborhood
-	 * notifications
-	 *
-	 * @param response   The response from Byggr
-	 * @param identifier The id for the neighbor to return notifications for
-	 * @return A list of ByggrErrandDtos containing neighborhood notifications
-	 */
-	public List<ByggrErrandDto> mapToNeighborhoodNotifications(GetRelateradeArendenByPersOrgNrAndRoleResponse response, String identifier) {
-		final var errands = extractErrands(response);
-
-		// Collect the info we want from errands that have a valid event
-		return errands.stream()
-			.filter(arende -> hasValidEvent(arende.getDnr(), arende.getHandelseLista().getHandelse()))
-			.filter(arende -> containsStakeholder(identifier, arende.getHandelseLista().getHandelse()))
-			.map(arende -> toByggErrandDtoWithNeighborhoodNotificationEventIds(identifier, arende))
-			.toList();
-	}
-
-	/**
-	 * Maps the response from Byggr and maps it to a narrowed down list of ByggrErrandDtos where sent in legal id is
-	 * applicant
-	 *
-	 * @param response The response from Byggr
-	 * @param legalId  The legal id for the applicant party to fetch errands for
-	 * @return A list of ByggrErrandDtos containing errands where sent in legal id is applicant
-	 */
-	public List<ByggrErrandDto> mapToApplicantErrands(GetRelateradeArendenByPersOrgNrAndRoleResponse response, String legalId) {
-		final var errands = extractErrands(response);
-
-		// Collect the info we want from errands that have a valid event
-		return errands.stream()
-			.filter(arende -> isApplicant(arende.getIntressentLista().getIntressent(), legalId))
+	public List<ByggrErrandDto> mapToByggErrandDtos(GetRelateradeArendenByPersOrgNrAndRoleResponse response) {
+		return extractErrands(response)
+			.stream()
 			.map(this::toByggErrandDto)
 			.toList();
 	}
 
-	/**
-	 * Maps the list of AbstractArendeObjekt to a list of PropertyDesignation
-	 *
-	 * @param abstractArendeObjektList The list of AbstractArendeObjekt
-	 * @return A list of PropertyDesignation to be added to the NeighborhoodNotificationsDto
-	 */
-	private List<ByggrErrandDto.PropertyDesignation> mapToPropertyDesignations(List<AbstractArendeObjekt> abstractArendeObjektList) {
-		return abstractArendeObjektList.stream()
-			.filter(ArendeFastighet.class::isInstance)
-			.map(ArendeFastighet.class::cast)
-			.map(ArendeFastighet::getFastighet)
-			.filter(Objects::nonNull)
-			.map(fastighet -> ByggrErrandDto.PropertyDesignation.builder()
-				.withProperty(fastighet.getTrakt())
-				.withDesignation(fastighet.getFbetNr())
-				.build())
-			.toList();
+	public ByggrErrandDto mapToByggErrandDto(GetArendeResponse response) {
+		return ofNullable(response)
+			.map(GetArendeResponse::getGetArendeResult)
+			.map(this::toByggErrandDto)
+			.orElse(null);
 	}
 
 	private List<Arende> extractErrands(GetRelateradeArendenByPersOrgNrAndRoleResponse response) {
@@ -179,130 +92,83 @@ public class ByggrIntegrationMapper {
 	private ByggrErrandDto toByggErrandDto(Arende arende) {
 		return ByggrErrandDto.builder()
 			.withByggrCaseNumber(arende.getDnr())
-			.withPropertyDesignation(mapToPropertyDesignations(arende.getObjektLista().getAbstractArendeObjekt()))
+			.withEvents(toEvents(arende.getHandelseLista()))
+			.withStakeholders(toStakeholders(arende.getIntressentLista()))
 			.build();
 	}
 
-	private ByggrErrandDto toByggErrandDtoWithNeighborhoodNotificationEventIds(String identifier, Arende arende) {
-		return ByggrErrandDto.builder()
-			.withByggrCaseNumber(arende.getDnr())
-			.withNeighborhoodEventIds(mapToNeighborhoodNotificationEventIds(identifier, arende.getHandelseLista().getHandelse()))
-			.withPropertyDesignation(mapToPropertyDesignations(arende.getObjektLista().getAbstractArendeObjekt()))
-			.build();
-	}
-
-	private List<Integer> mapToNeighborhoodNotificationEventIds(String identifier, List<Handelse> handelseList) {
-		return handelseList.stream()
-			.filter(event -> WANTED_HANDELSETYP.equals(event.getHandelsetyp()) && WANTED_HANDELSESLAG.equals(event.getHandelseslag())) // Filter out correct event types
-			.filter(event -> event.getIntressentLista().getIntressent()
-				.stream().anyMatch(stakeholder -> identifier.equals(stakeholder.getPersOrgNr()))) // Filter out events that has identifier as stakeholder
-			.filter(event -> isActive(event.getStartDatum())) // Filter out active events
-			.map(Handelse::getHandelseId)
+	private List<Event> toEvents(ArrayOfHandelse handelser) {
+		return ofNullable(handelser)
+			.map(wrapper -> ofNullable(wrapper.getHandelse()).orElse(emptyList()))
+			.stream()
+			.flatMap(Collection::stream)
+			.map(this::toEvent)
 			.toList();
 	}
 
-	private boolean isActive(XMLGregorianCalendar eventTimestamp) {
-		final var eventDate = eventTimestamp.toGregorianCalendar().toZonedDateTime().toLocalDate();
-		return eventDate.isAfter(now().minusDays(31)); // Events older than 30 days will not be included
-	}
-
-	private boolean isApplicant(List<ArendeIntressent> arendeIntressentList, String identifier) {
-		return ofNullable(arendeIntressentList).orElse(Collections.emptyList()).stream()
-			.filter(intressent -> StringUtils.equals(intressent.getPersOrgNr(), identifier))
-			.map(ArendeIntressent::getRollLista)
-			.map(ArrayOfString2::getRoll)
-			.anyMatch(roller -> roller.stream().anyMatch(roles::contains));
-	}
-
-	private boolean hasValidEvent(String dnr, List<Handelse> handelseList) {
-		LOG.info("Validating case with dnr {}", dnr);
-
-		var hasValidEvent = false;
-		var hasInvalidEvent = false;
-
-		for (final Handelse handelse : handelseList) {
-			if (hasValidEvent(handelse)) {
-				hasValidEvent = true;
-			}
-			if (hasInvalidEvent(handelse)) {
-				hasInvalidEvent = true;
-			}
-		}
-
-		return hasValidEvent && !hasInvalidEvent;
-	}
-
-	private boolean hasValidEvent(Handelse event) {
-		if (event.getHandelsetyp().equals(WANTED_HANDELSETYP) && event.getHandelseslag().equals(WANTED_HANDELSESLAG)) {
-			LOG.info("Valid eventid with handelsetyp GRANHO and handelseslag GRAUTS found: {}", event.getHandelseId());
-			return true;
-		}
-		return false;
-	}
-
-	private boolean hasInvalidEvent(Handelse event) {
-
-		final boolean unwantedEvent = ofNullable(unwantedEventTypes)
-			.map(list -> event.getHandelsetyp().equals(WANTED_HANDELSETYP) && list.contains(event.getHandelseslag()))
-			.orElse(false);
-
-		if (unwantedEvent) {
-			LOG.info("Unwanted eventid with handelsetyp GRANHO and handelseslag matching one of {} found: {}", unwantedEventTypes, event.getHandelseId());
-		}
-
-		return unwantedEvent;
-	}
-
-	private boolean containsStakeholder(String identifier, List<Handelse> handelseList) {
-		return handelseList.stream()
-			.filter(handelse -> WANTED_HANDELSETYP.equals(handelse.getHandelsetyp()))
-			.filter(handelse -> WANTED_HANDELSESLAG.equals(handelse.getHandelseslag()))
-			.map(Handelse::getIntressentLista)
-			.map(ArrayOfHandelseIntressent2::getIntressent)
-			.flatMap(List::stream)
-			.anyMatch(intressent -> identifier.equals(intressent.getPersOrgNr()));
-	}
-
-	/**
-	 * Takes the response from Byggr and maps it to a map of Document ID to Document name
-	 * and adds it to a ByggErrandDto
-	 * Only files from a valid event are included
-	 *
-	 * @param response The response from Byggr
-	 * @return a ByggrErrandDto
-	 */
-	public ByggrErrandDto mapToNeighborhoodNotificationFiles(GetArendeResponse response) {
-		final var errandDto = ByggrErrandDto.builder()
-			.withFiles(new HashMap<>())
+	private Event toEvent(Handelse handelse) {
+		return Event.builder()
+			.withId(handelse.getHandelseId())
+			.withEventType(handelse.getHandelsetyp())
+			.withEventSubtype(handelse.getHandelseslag())
+			.withEventDate(ofNullable(handelse.getStartDatum())
+				.map(XMLGregorianCalendar::toGregorianCalendar)
+				.map(GregorianCalendar::toZonedDateTime)
+				.map(ZonedDateTime::toLocalDate)
+				.orElse(null))
+			.withFiles(toFiles(handelse.getHandlingLista()))
+			.withStakeholders(toStakeholders(handelse.getIntressentLista()))
 			.build();
+	}
 
-		if (response == null
-			|| response.getGetArendeResult() == null
-			|| response.getGetArendeResult().getHandelseLista() == null
-			|| response.getGetArendeResult().getHandelseLista().getHandelse() == null
-			|| response.getGetArendeResult().getHandelseLista().getHandelse().isEmpty()) {
-			// Just return a dto with an empty map for files
-			return errandDto;
-		}
-
-		// Now we know that we have an event (handelse) in the response
-		// Map the Document ID to the Document name (if we can).
-		final var fileMap = response.getGetArendeResult().getHandelseLista().getHandelse().stream()
-			.filter(handelse -> handelse.getHandlingLista() != null) // Not a list
-			.filter(handelse -> !CollectionUtils.isEmpty(handelse.getHandlingLista().getHandling())) // Is a list
-			.filter(this::hasValidEvent) // Only include files from valid events
-			.flatMap(handelse -> handelse.getHandlingLista().getHandling().stream())
-			.map(Handling::getDokument)
+	private Map<String, String> toFiles(ArrayOfHandelseHandling handlingar) {
+		return ofNullable(handlingar)
+			.map(wrapper -> ofNullable(wrapper.getHandling()).orElse(emptyList()))
+			.stream()
+			.flatMap(Collection::stream)
+			.map(HandelseHandling::getDokument)
 			.filter(Objects::nonNull)
-			.filter(dokument -> isNotBlank(dokument.getDokId()))
-			.filter(dokument -> isNotBlank(dokument.getNamn()))
-			.collect(Collectors.toMap(
-				Dokument::getDokId,
-				Dokument::getNamn));
+			.filter(document -> Objects.nonNull(document.getDokId()))
+			.filter(document -> Objects.nonNull(document.getNamn()))
+			.map(document -> Map.entry(document.getDokId(), document.getNamn()))
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+	}
 
-		errandDto.setByggrCaseNumber(response.getGetArendeResult().getDnr());
-		errandDto.setFiles(fileMap);
+	private List<Stakeholder> toStakeholders(ArrayOfHandelseIntressent2 intressenter) {
+		return ofNullable(intressenter)
+			.map(wrapper -> ofNullable(wrapper.getIntressent()).orElse(emptyList()))
+			.stream()
+			.flatMap(Collection::stream)
+			.map(this::toStakeholder)
+			.toList();
+	}
 
-		return errandDto;
+	private Stakeholder toStakeholder(HandelseIntressent intressent) {
+		return Stakeholder.builder()
+			.withLegalId(intressent.getPersOrgNr())
+			.withRoles(toRoles(intressent.getRollLista()))
+			.build();
+	}
+
+	private List<Stakeholder> toStakeholders(ArrayOfArendeIntressent2 intressenter) {
+		return ofNullable(intressenter)
+			.map(wrapper -> ofNullable(wrapper.getIntressent()).orElse(emptyList()))
+			.stream()
+			.flatMap(Collection::stream)
+			.map(this::toStakeholder)
+			.toList();
+	}
+
+	private Stakeholder toStakeholder(ArendeIntressent intressent) {
+		return Stakeholder.builder()
+			.withLegalId(intressent.getPersOrgNr())
+			.withRoles(toRoles(intressent.getRollLista()))
+			.build();
+	}
+
+	private List<String> toRoles(ArrayOfString2 roller) {
+		return ofNullable(roller)
+			.map(ArrayOfString2::getRoll)
+			.orElse(emptyList());
 	}
 }

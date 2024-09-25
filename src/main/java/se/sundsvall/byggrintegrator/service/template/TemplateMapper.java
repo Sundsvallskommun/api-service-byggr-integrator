@@ -2,6 +2,7 @@ package se.sundsvall.byggrintegrator.service.template;
 
 import static java.util.Optional.ofNullable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -11,6 +12,7 @@ import org.thymeleaf.context.Context;
 
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.FileTemplateDto;
+import se.sundsvall.byggrintegrator.service.ByggrFilterUtility;
 
 @Component
 public class TemplateMapper {
@@ -46,11 +48,15 @@ public class TemplateMapper {
 
 	// Create a list that we iterate over with Thymeleaf
 	private List<FileTemplateDto> mapByggrFilesToList(String municipalityId, ByggrErrandDto byggrErrandDto) {
-		return ofNullable(byggrErrandDto.getFiles())
+		return ofNullable(byggrErrandDto.getEvents()).orElse(Collections.emptyList()).stream()
+			.filter(ByggrFilterUtility::hasValidEvent)
+			.map(event -> ofNullable(event.getFiles()).orElse(Collections.emptyMap()))
 			.map(file -> file.entrySet().stream()
 				.map(entry -> mapToUrl(municipalityId, entry.getKey(), entry.getValue()))
 				.toList())
-			.orElse(List.of());
+			.flatMap(List::stream)
+			.sorted((o1, o2) -> o2.getFileUrl().compareTo(o1.getFileUrl()))
+			.toList();
 	}
 
 	// Create a FileTemplateDto containing the URL to the file and the file name as the display name

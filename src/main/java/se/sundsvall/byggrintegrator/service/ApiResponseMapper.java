@@ -32,9 +32,9 @@ public class ApiResponseMapper {
 	}
 
 	private List<String> decorateWithEventIds(ByggrErrandDto dto) {
-		return ofNullable(dto.getNeighborhoodEventIds()).orElse(emptyList())
+		return ofNullable(dto.getEvents()).orElse(emptyList())
 			.stream()
-			.map(eventId -> KEY_TEMPLATE.formatted(dto.getByggrCaseNumber(), eventId))
+			.map(event -> KEY_TEMPLATE.formatted(dto.getByggrCaseNumber(), event.getId()))
 			.toList();
 	}
 

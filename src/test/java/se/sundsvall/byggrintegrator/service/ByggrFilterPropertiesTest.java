@@ -1,5 +1,5 @@
 
-package se.sundsvall.byggrintegrator.integration.byggr;
+package se.sundsvall.byggrintegrator.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,14 +13,14 @@ import se.sundsvall.byggrintegrator.Application;
 @SpringBootTest(classes = Application.class)
 
 @ActiveProfiles("junit")
-class ByggrPropertiesTest {
+class ByggrFilterPropertiesTest {
 
 	@Autowired
-	private ByggrProperties properties;
+	private ByggrFilterProperties properties;
 
 	@Test
 	void testProperties() {
-		assertThat(properties.connectTimeoutInSeconds()).isEqualTo(1);
-		assertThat(properties.readTimeoutInSeconds()).isEqualTo(2);
+		assertThat(properties.applicant().roles()).containsExactly("SOK", "KPER");
+		assertThat(properties.notifications().unwantedEventTypes()).containsExactly("UNWANTED1", "UNWANTED2");
 	}
 }

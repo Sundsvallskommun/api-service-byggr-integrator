@@ -240,23 +240,69 @@
 								</handling>
 							</handlingLista>
 							<intressentLista>
-									<intressent intressentId="15567" persOrgNr="19050505-5555" arForetag="false" intressentVersionId="45336" kundnr="00005" arInternKund="false" arAktiv="true" checksum="-587656301|332087168">
-										<namn>Granne Grannsson</namn>
-										<adress>Stora gatan 2</adress>
-										<postNr>852 30</postNr>
-										<ort>SUNDSVALL</ort>
-										<fornamn>Granne</fornamn>
-										<efternamn>Gransson</efternamn>
-										<intressentKommunikationLista>
-											<intressentKommunikation arAktiv="true" checksum="-107631629">
-												<beskrivning>070-5555555</beskrivning>
-												<komtyp>1</komtyp>
-											</intressentKommunikation>
-										</intressentKommunikationLista>
-										<rollLista>
-											<roll>GRAN</roll>
-										</rollLista>
-									</intressent>
+								<intressent intressentId="15567" persOrgNr="19010203-1234" arForetag="false" intressentVersionId="45336" kundnr="00005" arInternKund="false" arAktiv="true" checksum="-587656301|332087168">
+									<namn>Granne Grannsson</namn>
+									<adress>Stora gatan 2</adress>
+									<postNr>852 30</postNr>
+									<ort>SUNDSVALL</ort>
+									<fornamn>Granne</fornamn>
+									<efternamn>Gransson</efternamn>
+									<intressentKommunikationLista>
+										<intressentKommunikation arAktiv="true" checksum="-107631629">
+											<beskrivning>070-5555555</beskrivning>
+											<komtyp>1</komtyp>
+										</intressentKommunikation>
+									</intressentKommunikationLista>
+									<rollLista>
+										<roll>GRAN</roll>
+									</rollLista>
+								</intressent>
+							</intressentLista>
+							<arbetsmaterial>false</arbetsmaterial>
+							<handlaggare signatur="SYSTEM"/>
+						</handelse>
+						<handelse handelseId="1465815" checksum="45">
+							<riktning>Ut</riktning>
+							<rubrik>Grannhörande - Bagger 2</rubrik>
+							<startDatum>{{now offset='-30 days'}}</startDatum>
+							<anteckning>Här kommer en annan underrättelse. Svar kan lämnas genom vår digitala e-tjänst.</anteckning>
+							<handelseslag>GRAUTS</handelseslag>
+							<handelsetyp>GRANHO</handelsetyp>
+							<sekretess>false</sekretess>
+							<makulerad>false</makulerad>
+							<handlingLista>
+								<handling handlingId="1484279" checksum="0">
+									<typ>ANS</typ>
+									<status>Inkommen</status>
+									<handlingDatum>2023-09-06</handlingDatum>
+									<anteckning>14480.pdf</anteckning>
+									<uuid>b13a0412-0c8b-4484-af30-e1460161878c</uuid>
+									<arkivStatus>Arkiveras</arkivStatus>
+									<makulerad>false</makulerad>
+									<dokument dokId="250324565" checksum="1996278069|638295923100000000">
+										<namn>15325.pdf</namn>
+									</dokument>
+									<refTyp>Bifogad</refTyp>
+								</handling>
+							</handlingLista>
+							<intressentLista>
+								<intressent intressentId="15567" persOrgNr="19010203-1234" arForetag="false" intressentVersionId="45336" kundnr="00005" arInternKund="false" arAktiv="true" checksum="-587656301|332087168">
+									<namn>Granne Grannsson</namn>
+									<adress>Stora gatan 2</adress>
+									<postNr>852 30</postNr>
+									<ort>SUNDSVALL</ort>
+									<fornamn>Granne</fornamn>
+									<efternamn>Gransson</efternamn>
+									<intressentKommunikationLista>
+										<intressentKommunikation arAktiv="true" checksum="-107631629">
+											<beskrivning>070-5555555</beskrivning>
+											<komtyp>1</komtyp>
+										</intressentKommunikation>
+									</intressentKommunikationLista>
+									<rollLista>
+										<roll>GRAN</roll>
+									</rollLista>
+								</intressent>
 							</intressentLista>
 							<arbetsmaterial>false</arbetsmaterial>
 							<handlaggare signatur="SYSTEM"/>
@@ -273,7 +319,120 @@
 						</abstractArendeObjekt>
 					</objektLista>
 				</arende>
-				<arende arendeId="233648" dnr="BYGG 2023-000256" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
+				<arende arendeId="233649" dnr="BYGG 2023-000256" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
+					<status xmlns="www.tekis.se/arende">Pågående</status>
+					<beskrivning xmlns="www.tekis.se/arende">Bygglov för ombyggnad av</beskrivning>
+					<ankomstDatum xmlns="www.tekis.se/arende">2023-09-06</ankomstDatum>
+					<uppdateradDatum xmlns="www.tekis.se/arende">2023-09-06</uppdateradDatum>
+					<registreradDatum xmlns="www.tekis.se/arende">2023-09-06</registreradDatum>
+					<handlaggare handlaggareId="1607" signatur="SYSTEM" xmlns="www.tekis.se/arende">
+						<fornamn>Systemanvändare</fornamn>
+						<efternamn>System</efternamn>
+					</handlaggare>
+					<intressentLista xmlns="www.tekis.se/arende">
+						<intressent intressentId="38334" persOrgNr="16123456-7788" arForetag="true" intressentVersionId="215712" kundnr="000001" arInternKund="false" arAktiv="true" checksum="-1769046254|1926702523">
+							<namn>KOMMUNKONTORET</namn>
+							<postNr>851 85</postNr>
+							<ort>SUNDSVALL</ort>
+							<land>Sverige</land>
+							<intressentKommunikationLista>
+								<intressentKommunikation arAktiv="true" checksum="-1143432453">
+									<beskrivning>0701111111</beskrivning>
+									<komtyp>MOB</komtyp>
+								</intressentKommunikation>
+							</intressentKommunikationLista>
+							<rollLista>
+								<roll>FAG</roll>
+							</rollLista>
+						</intressent>
+						<intressent intressentId="132402" persOrgNr="19050505-5555" arForetag="true" intressentVersionId="216022" kundnr="000002" arInternKund="false" arAktiv="true" checksum="-1768803822|-1768803822">
+							<namn>Förnamn Efternamn</namn>
+							<adress>Stora gatan 1</adress>
+							<postNr>852 30</postNr>
+							<ort>SUNDSVALL</ort>
+							<intressentKommunikationLista>
+								<intressentKommunikation arAktiv="true" checksum="776758367">
+									<beskrivning>0702222222</beskrivning>
+									<komtyp>MOB</komtyp>
+								</intressentKommunikation>
+							</intressentKommunikationLista>
+							<rollLista>
+								<roll>SOK</roll>
+							</rollLista>
+						</intressent>
+						<intressent intressentId="132347" persOrgNr="19200202-1234" arForetag="true" intressentVersionId="216023" kundnr="132347" arInternKund="false" arAktiv="true" checksum="-1769433342|-1769271438">
+							<namn>Kontakt Person</namn>
+							<intressentKommunikationLista>
+								<intressentKommunikation arAktiv="true" checksum="222597226">
+									<beskrivning>0703333333</beskrivning>
+									<komtyp>MOB</komtyp>
+								</intressentKommunikation>
+							</intressentKommunikationLista>
+							<rollLista>
+								<roll>KPER</roll>
+							</rollLista>
+						</intressent>
+					</intressentLista>
+					<handelseLista xmlns="www.tekis.se/arende">
+						<handelse handelseId="1565809" checksum="45">
+							<riktning>Ut</riktning>
+							<rubrik>Grannhörande - Bagger 3</rubrik>
+							<startDatum>{{now}}</startDatum>
+							<anteckning>Här kommer en underrättelse. Svar kan lämnas genom vår digitala e-tjänst.</anteckning>
+							<handelseslag>GRAUTS</handelseslag>
+							<handelsetyp>GRANHO</handelsetyp>
+							<sekretess>false</sekretess>
+							<makulerad>false</makulerad>
+							<handlingLista>
+								<handling handlingId="1584359" checksum="5">
+									<typ>REMISS</typ>
+									<status>Expedierad</status>
+									<handlingDatum>2023-11-29</handlingDatum>
+									<anteckning>Remissutskick, omg. 1, 2023-11-29, 11:12</anteckning>
+									<uuid>93d86ac9-8a17-4981-9066-287a691df2ca</uuid>
+									<makulerad>false</makulerad>
+									<dokument dokId="252324644" checksum="-1699562074|638368531550000000">
+										<namn>Underrättelse.Pdf</namn>
+										<beskrivning>Remiss</beskrivning>
+									</dokument>
+									<refTyp>Bifogad</refTyp>
+								</handling>
+							</handlingLista>
+							<intressentLista>
+								<intressent intressentId="15567" persOrgNr="19010203-1234" arForetag="false" intressentVersionId="45336" kundnr="00005" arInternKund="false" arAktiv="true" checksum="-587656301|332087168">
+									<namn>Granne Grannsson</namn>
+									<adress>Stora gatan 2</adress>
+									<postNr>852 30</postNr>
+									<ort>SUNDSVALL</ort>
+									<fornamn>Granne</fornamn>
+									<efternamn>Gransson</efternamn>
+									<intressentKommunikationLista>
+										<intressentKommunikation arAktiv="true" checksum="-107631629">
+											<beskrivning>070-5555555</beskrivning>
+											<komtyp>1</komtyp>
+										</intressentKommunikation>
+									</intressentKommunikationLista>
+									<rollLista>
+										<roll>GRAN</roll>
+									</rollLista>
+								</intressent>
+							</intressentLista>
+							<arbetsmaterial>false</arbetsmaterial>
+							<handlaggare signatur="SYSTEM"/>
+						</handelse>
+					</handelseLista>
+					<projektnr xmlns="www.tekis.se/arende">760208</projektnr>
+					<bevakningLista xmlns="www.tekis.se/arende"/>
+					<objektLista xmlns="www.tekis.se/arende">
+						<abstractArendeObjekt xsi:type="arendeFastighet" arendeObjektId="256140" arHuvudObjekt="true" checksum="1|">
+							<fastighet checksum="1482424270|" fnr="22044332">
+								<trakt>BAGGER</trakt>
+								<fbetNr>3</fbetNr>
+							</fastighet>
+						</abstractArendeObjekt>
+					</objektLista>
+				</arende>
+				<arende arendeId="233650" dnr="BYGG 2023-000257" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
 					<status xmlns="www.tekis.se/arende">Pågående</status>
 					<beskrivning xmlns="www.tekis.se/arende">Bygglov för ombyggnad av</beskrivning>
 					<ankomstDatum xmlns="www.tekis.se/arende">2023-09-06</ankomstDatum>

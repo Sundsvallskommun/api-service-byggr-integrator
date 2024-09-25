@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 
 import generated.se.sundsvall.arendeexport.ArrayOfString;
