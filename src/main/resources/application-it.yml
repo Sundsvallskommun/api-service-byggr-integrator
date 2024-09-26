@@ -6,9 +6,6 @@ integration:
     url: http://localhost:${wiremock.server.port}/api-byggr/endpoint
     connect-timeout-in-seconds: 5
     read-timeout-in-seconds: 30
-    mapper:
-      applicant:
-        roles: SOK
 neighborhood-notification-template:
   byggr-files:
     domain: http://localhost/

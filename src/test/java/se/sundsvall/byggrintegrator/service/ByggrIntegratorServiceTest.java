@@ -1,3 +1,4 @@
+
 package se.sundsvall.byggrintegrator.service;
 
 import static java.util.Collections.emptyList;
@@ -12,10 +13,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.APPLICANT_ROLE;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.CASE_APPLICANT;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeResponse;
-import static se.sundsvall.byggrintegrator.TestObjectFactory.generateByggrErrandDtos;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateDocumentResponse;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeArendenResponse;
 
@@ -65,6 +67,9 @@ class ByggrIntegratorServiceTest {
 	private HttpServletResponse mockHttpServletResponse;
 
 	@Mock
+	private ByggrFilterUtility mockByggrFilterUtility;
+
+	@Mock
 	private ServletOutputStream mockServletOutputStream;
 
 	@InjectMocks
@@ -75,17 +80,21 @@ class ByggrIntegratorServiceTest {
 	private static final String ORG_IDENTIFIER = "1234567890";
 	private static final String PRIVATE_IDENTIFIER = "123456789012";
 	private static final String BYGGR_ERRAND_NUMBER = "BYGG 2024-000123";
+	private static final int EVENT_ID = 123;
 	private static final String PROCESSED_ORG_IDENTIFIER = "16123456-7890";
 	private static final String PROCESSED_PRIVATE_IDENTIFIER = "12345678-9012";
 	private static final String MUNICIPALITY_ID = "2281";
 
 	@ParameterizedTest
+
 	@MethodSource("identifierProvider")
 	void testFindNeighborhoodNotifications(String indentifier, String processedIdentifier) throws Exception {
 		// Arrange
 		when(mockByggrIntegration.getRoles()).thenReturn(ROLES);
-		when(mockByggrIntegration.getErrands(processedIdentifier, ROLES)).thenReturn(generateRelateradeArendenResponse(CASE_APPLICANT, processedIdentifier));
-		when(mockByggrIntegrationMapper.mapToNeighborhoodNotifications(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class), eq(processedIdentifier))).thenCallRealMethod();
+		when(mockByggrIntegration.getErrands(processedIdentifier,
+			ROLES)).thenReturn(generateRelateradeArendenResponse(CASE_APPLICANT, processedIdentifier));
+		when(mockByggrIntegrationMapper.mapToByggErrandDtos(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class))).thenCallRealMethod();
+		when(mockByggrFilterUtility.filterNeighborhoodNotifications(anyList(), eq(processedIdentifier))).thenCallRealMethod();
 		when(mockApiResponseMapper.mapToNeighborhoodKeyValueResponseList(any())).thenCallRealMethod();
 
 		// Act
@@ -104,18 +113,22 @@ class ByggrIntegratorServiceTest {
 		});
 		verify(mockByggrIntegration).getRoles();
 		verify(mockByggrIntegration).getErrands(processedIdentifier, ROLES);
-		verify(mockByggrIntegrationMapper).mapToNeighborhoodNotifications(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class), eq(processedIdentifier));
+		verify(mockByggrIntegrationMapper).mapToByggErrandDtos(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class));
+		verify(mockByggrFilterUtility).filterNeighborhoodNotifications(anyList(), eq(processedIdentifier));
 		verify(mockApiResponseMapper).mapToNeighborhoodKeyValueResponseList(anyList());
 		verifyNoMoreInterations();
 	}
 
 	@ParameterizedTest
+
 	@MethodSource("identifierProvider")
 	void testFindNeighborhoodNotifications_whenEmpty_shouldReturnEmptyList(String indentifier, String processedIdentifier) {
 		// Arrange
 		when(mockByggrIntegration.getRoles()).thenReturn(ROLES);
-		when(mockByggrIntegration.getErrands(processedIdentifier, ROLES)).thenReturn(OBJECT_FACTORY.createGetRelateradeArendenByPersOrgNrAndRoleResponse());
-		when(mockByggrIntegrationMapper.mapToNeighborhoodNotifications(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class), eq(processedIdentifier))).thenCallRealMethod();
+		when(mockByggrIntegration.getErrands(processedIdentifier,
+			ROLES)).thenReturn(OBJECT_FACTORY.createGetRelateradeArendenByPersOrgNrAndRoleResponse());
+		when(mockByggrIntegrationMapper.mapToByggErrandDtos(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class))).thenCallRealMethod();
+		when(mockByggrFilterUtility.filterNeighborhoodNotifications(anyList(), eq(processedIdentifier))).thenCallRealMethod();
 		when(mockApiResponseMapper.mapToNeighborhoodKeyValueResponseList(anyList())).thenCallRealMethod();
 
 		// Act
@@ -125,12 +138,14 @@ class ByggrIntegratorServiceTest {
 		assertThat(neighborNotifications).isEmpty();
 		verify(mockByggrIntegration).getRoles();
 		verify(mockByggrIntegration).getErrands(processedIdentifier, ROLES);
-		verify(mockByggrIntegrationMapper).mapToNeighborhoodNotifications(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class), eq(processedIdentifier));
+		verify(mockByggrIntegrationMapper).mapToByggErrandDtos(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class));
+		verify(mockByggrFilterUtility).filterNeighborhoodNotifications(anyList(), eq(processedIdentifier));
 		verify(mockApiResponseMapper).mapToNeighborhoodKeyValueResponseList(emptyList());
 		verifyNoMoreInterations();
 	}
 
 	@ParameterizedTest
+
 	@ValueSource(strings = { ORG_IDENTIFIER, PRIVATE_IDENTIFIER })
 	void testFindNeighborhoodNotifications_noRoles_shouldThrow404(String identifier) {
 		// Arrange
@@ -147,31 +162,40 @@ class ByggrIntegratorServiceTest {
 
 		verify(mockByggrIntegration).getRoles();
 		verifyNoMoreInteractions(mockByggrIntegration);
-		verifyNoInteractions(mockByggrIntegrationMapper, mockApiResponseMapper, mockApiResponseMapper);
+		verifyNoInteractions(mockByggrIntegrationMapper, mockByggrFilterUtility, mockApiResponseMapper, mockApiResponseMapper);
 	}
 
 	@Test
 	void testListNeighborhoodNotificationFiles() {
 		when(mockByggrIntegration.getErrand(BYGGR_ERRAND_NUMBER)).thenReturn(OBJECT_FACTORY.createGetArendeResponse());
-		when(mockByggrIntegrationMapper.mapToNeighborhoodNotificationFiles(any())).thenReturn(ByggrErrandDto.builder().build());
+		when(mockByggrIntegrationMapper.mapToByggErrandDto(any())).thenReturn(ByggrErrandDto.builder().build());
+		when(mockByggrFilterUtility.filterEvent(any(ByggrErrandDto.class), eq(EVENT_ID))).thenReturn(ByggrErrandDto.builder().build());
 		when(mockTemplateMapper.generateFileList(any(String.class), any(ByggrErrandDto.class))).thenReturn("html");
 
-		final var html = service.listNeighborhoodNotificationFiles(MUNICIPALITY_ID, BYGGR_ERRAND_NUMBER);
+		final var html = service.listNeighborhoodNotificationFiles(MUNICIPALITY_ID, BYGGR_ERRAND_NUMBER, EVENT_ID);
 
 		assertThat(html).isEqualTo("html");
 		verify(mockByggrIntegration).getErrand(BYGGR_ERRAND_NUMBER);
-		verify(mockByggrIntegrationMapper).mapToNeighborhoodNotificationFiles(any(GetArendeResponse.class));
+		verify(mockByggrIntegrationMapper).mapToByggErrandDto(any(GetArendeResponse.class));
+		verify(mockByggrFilterUtility).filterEvent(any(ByggrErrandDto.class), eq(EVENT_ID));
 		verify(mockTemplateMapper).generateFileList(eq(MUNICIPALITY_ID), any(ByggrErrandDto.class));
+		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrFilterUtility, mockApiResponseMapper, mockApiResponseMapper);
 		verifyNoInteractions(mockApiResponseMapper);
-		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockTemplateMapper);
 	}
 
 	@ParameterizedTest
+
 	@MethodSource("identifierProvider")
 	void testFindApplicantErrands(String indentifier, String processedIdentifier) throws Exception {
+		// Prepare list of unwanted handelseslag
+		setField(mockByggrFilterUtility, "applicantRoles", List.of(APPLICANT_ROLE));
+
 		// Arrange
-		when(mockByggrIntegration.getErrands(processedIdentifier, null)).thenReturn(generateRelateradeArendenResponse(CASE_APPLICANT, NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER));
-		when(mockByggrIntegrationMapper.mapToApplicantErrands(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class), eq(processedIdentifier))).thenReturn(generateByggrErrandDtos());
+		when(mockByggrIntegration.getErrands(processedIdentifier,
+			null)).thenReturn(generateRelateradeArendenResponse(processedIdentifier, NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER));
+
+		when(mockByggrIntegrationMapper.mapToByggErrandDtos(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class))).thenCallRealMethod();
+		when(mockByggrFilterUtility.filterCasesForApplicant(anyList(), eq(processedIdentifier))).thenCallRealMethod();
 		when(mockApiResponseMapper.mapToKeyValueResponseList(anyList())).thenCallRealMethod();
 
 		// Act
@@ -180,13 +204,14 @@ class ByggrIntegratorServiceTest {
 		// Assert
 		assertThat(applicantErrands).hasSize(2).satisfiesExactlyInAnyOrder(notification -> {
 			assertThat(notification.key()).isEqualTo("1");
-			assertThat(notification.value()).isEqualTo("dnr123");
+			assertThat(notification.value()).isEqualTo("BYGG 2024-000123");
 		}, notification -> {
 			assertThat(notification.key()).isEqualTo("2");
-			assertThat(notification.value()).isEqualTo("dnr456");
+			assertThat(notification.value()).isEqualTo("BYGG 2024-000234");
 		});
 		verify(mockByggrIntegration).getErrands(processedIdentifier, null);
-		verify(mockByggrIntegrationMapper).mapToApplicantErrands(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class), eq(processedIdentifier));
+		verify(mockByggrIntegrationMapper).mapToByggErrandDtos(any(GetRelateradeArendenByPersOrgNrAndRoleResponse.class));
+		verify(mockByggrFilterUtility).filterCasesForApplicant(anyList(), eq(processedIdentifier));
 		verify(mockApiResponseMapper).mapToKeyValueResponseList(anyList());
 		verifyNoMoreInterations();
 	}
@@ -294,6 +319,6 @@ class ByggrIntegratorServiceTest {
 	}
 
 	private void verifyNoMoreInterations() {
-		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper, mockHttpServletResponse);
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockByggrFilterUtility, mockApiResponseMapper, mockHttpServletResponse);
 	}
 }

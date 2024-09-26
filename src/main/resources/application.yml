@@ -5,7 +5,9 @@ integration:
   byggr:
     connect-timeout-in-seconds: 10
     read-timeout-in-seconds: 60
-    mapper:
+service:
+  byggr:
+    filter-util:
       applicant:
         roles: SOK
 logging:

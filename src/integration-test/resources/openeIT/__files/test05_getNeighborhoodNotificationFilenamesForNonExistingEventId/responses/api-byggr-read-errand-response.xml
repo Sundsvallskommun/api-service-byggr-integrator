@@ -1,0 +1,442 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+	<s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+		<GetArendeResponse xmlns="www.tekis.se/ServiceContract">
+			<GetArendeResult arendeId="233697" dnr="BYGG 2024-000670" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="A" arendeklass="TRA" namndkod="SBN" kalla="3" checksum="15">
+				<status xmlns="www.tekis.se/arende">Pågående</status>
+				<beskrivning xmlns="www.tekis.se/arende">Bygglov för nybyggnad av transformatorstation</beskrivning>
+				<ankomstDatum xmlns="www.tekis.se/arende">2024-08-27</ankomstDatum>
+				<uppdateradDatum xmlns="www.tekis.se/arende">2024-08-27</uppdateradDatum>
+				<registreradDatum xmlns="www.tekis.se/arende">2024-08-27</registreradDatum>
+				<handlaggare handlaggareId="1607" signatur="SYSTEM" xmlns="www.tekis.se/arende">
+					<fornamn>Systemanvändare</fornamn>
+					<efternamn>System</efternamn>
+				</handlaggare>
+				<intressentLista xmlns="www.tekis.se/arende">
+					<intressent intressentId="38334" persOrgNr="16212000-2411" arForetag="true" intressentVersionId="215712" kundnr="12296" arInternKund="false" arAktiv="true" checksum="2092815284|1926702523">
+						<namn>SUNDSVALLS KOMMUN</namn>
+						<postNr>851 85</postNr>
+						<ort>SUNDSVALL</ort>
+						<land>Sverige</land>
+						<intressentKommunikationLista>
+							<intressentKommunikation arAktiv="true" checksum="740967109">
+								<beskrivning>0701111111</beskrivning>
+								<komtyp>HEM</komtyp>
+							</intressentKommunikation>
+							<intressentKommunikation arAktiv="true" checksum="-1143432453">
+								<beskrivning>0702222222</beskrivning>
+								<komtyp>MOB</komtyp>
+							</intressentKommunikation>
+							<intressentKommunikation arAktiv="true" checksum="-1737721936">
+								<beskrivning>firmatecknare.org@test.se</beskrivning>
+								<komtyp>Epost</komtyp>
+							</intressentKommunikation>
+						</intressentKommunikationLista>
+						<rollLista>
+							<roll>FAG</roll>
+						</rollLista>
+					</intressent>
+					<intressent intressentId="132347" persOrgNr="19010203-4567" arForetag="true" intressentVersionId="216061" kundnr="100347" arInternKund="false" arAktiv="true" checksum="2096161796|2096161796">
+						<namn>Biancas fik</namn>
+						<adress>Castafioregränd 10</adress>
+						<postNr>851 10</postNr>
+						<ort>SUNDSVALL</ort>
+						<intressentKommunikationLista>
+							<intressentKommunikation arAktiv="true" checksum="222597226">
+								<beskrivning>0701234568</beskrivning>
+								<komtyp>HEM</komtyp>
+							</intressentKommunikation>
+							<intressentKommunikation arAktiv="true" checksum="-322344577">
+								<beskrivning>bianca.castafiore@noreply.com</beskrivning>
+								<komtyp>Epost</komtyp>
+							</intressentKommunikation>
+						</intressentKommunikationLista>
+						<rollLista>
+							<roll>SOK</roll>
+						</rollLista>
+					</intressent>
+					<intressent intressentId="132362" persOrgNr="19020304-5678" arForetag="true" intressentVersionId="216062" kundnr="132323" arInternKund="false" arAktiv="true" checksum="2090326708|2090326708">
+						<namn>Kapten Haddock</namn>
+						<intressentKommunikationLista>
+							<intressentKommunikation arAktiv="true" checksum="740967108">
+								<beskrivning>0701111111</beskrivning>
+								<komtyp>MOB</komtyp>
+							</intressentKommunikation>
+						</intressentKommunikationLista>
+						<rollLista>
+							<roll>KPER</roll>
+						</rollLista>
+					</intressent>
+				</intressentLista>
+				<handelseLista xmlns="www.tekis.se/arende">
+					<handelse handelseId="1465833" checksum="14">
+						<riktning>In</riktning>
+						<rubrik>Bygglov</rubrik>
+						<startDatum>2024-08-27T10:38:00+02:00</startDatum>
+						<anteckning/>
+						<handelseslag>Bygglov</handelseslag>
+						<handelsetyp>ANSÖKAN</handelsetyp>
+						<sekretess>false</sekretess>
+						<makulerad>false</makulerad>
+						<handlingLista>
+							<handling handlingId="1484434" checksum="14">
+								<typ>ANS</typ>
+								<status>Inkommen</status>
+								<handlingDatum>2024-08-27</handlingDatum>
+								<anteckning>16475.pdf</anteckning>
+								<uuid>7552f2d9-e2ec-480f-83d1-cfe32126878a</uuid>
+								<arkivStatus>Arkiveras</arkivStatus>
+								<makulerad>false</makulerad>
+								<dokument dokId="250324720" checksum="1774580553|638603519370000000">
+									<namn>16475.pdf</namn>
+								</dokument>
+							</handling>
+						</handlingLista>
+						<intressentLista/>
+						<arbetsmaterial>false</arbetsmaterial>
+						<handlaggare signatur="SYSTEM"/>
+					</handelse>
+					<handelse handelseId="1465834" checksum="35">
+						<riktning>Ut</riktning>
+						<rubrik>Grannehörande Utskick, omg. 1</rubrik>
+						<startDatum>2024-09-05T09:45:00+02:00</startDatum>
+						<anteckning>TEST</anteckning>
+						<handelseslag>GRAUTS</handelseslag>
+						<handelsetyp>GRANHO</handelsetyp>
+						<sekretess>false</sekretess>
+						<makulerad>false</makulerad>
+						<handlingLista>
+							<handling handlingId="1484434" checksum="14">
+								<typ>ANS</typ>
+								<status>Inkommen</status>
+								<handlingDatum>2024-08-27</handlingDatum>
+								<anteckning>16475.pdf</anteckning>
+								<uuid>7552f2d9-e2ec-480f-83d1-cfe32126878a</uuid>
+								<arkivStatus>Arkiveras</arkivStatus>
+								<makulerad>false</makulerad>
+								<dokument dokId="250324720" checksum="1774580553|638603519370000000">
+									<namn>16475.pdf</namn>
+								</dokument>
+								<refTyp>Bifogad</refTyp>
+							</handling>
+						</handlingLista>
+						<intressentLista>
+							<intressent intressentId="2162" persOrgNr="19030405-6789" arForetag="false" intressentVersionId="2210" kundnr="2162" arInternKund="false" arAktiv="true" checksum="-563383106|-1177159065">
+								<namn>Dupont and Dupont</namn>
+								<adress>Detektivgatan 12</adress>
+								<postNr>852 10</postNr>
+								<ort>SUNDSVALL</ort>
+								<fornamn>Dupont</fornamn>
+								<efternamn>Dupont</efternamn>
+								<intressentKommunikationLista>
+									<intressentKommunikation arAktiv="true" checksum="2051834648">
+										<beskrivning>070-2342323</beskrivning>
+										<komtyp>MOB</komtyp>
+									</intressentKommunikation>
+								</intressentKommunikationLista>
+								<rollLista>
+									<roll>GRAN</roll>
+								</rollLista>
+							</intressent>
+						</intressentLista>
+						<arbetsmaterial>false</arbetsmaterial>
+						<handlaggare signatur="SYSTEM"/>
+					</handelse>
+					<handelse handelseId="1465848" checksum="36">
+						<riktning>In</riktning>
+						<rubrik>Grannehörande Svar med erinran, BALDER 5, null</rubrik>
+						<startDatum>2024-09-09T13:57:00+02:00</startDatum>
+						<anteckning>Alles gut</anteckning>
+						<handelseslag>GRASVA</handelseslag>
+						<handelsetyp>GRANHO</handelsetyp>
+						<sekretess>false</sekretess>
+						<makulerad>false</makulerad>
+						<handlingLista>
+							<handling handlingId="1484443" checksum="39">
+								<typ>UNDERE</typ>
+								<status>Inkommen</status>
+								<handlingDatum>2024-09-09</handlingDatum>
+								<anteckning>16542.pdf</anteckning>
+								<uuid>2701e123-2458-49c4-9e9e-f616283d6911</uuid>
+								<arkivStatus>Arkiveras</arkivStatus>
+								<makulerad>false</makulerad>
+								<dokument dokId="250324728" checksum="1855751238|638614870450000000">
+									<namn>16542.pdf</namn>
+								</dokument>
+							</handling>
+							<handling handlingId="1484444" checksum="39">
+								<typ>UNDERE</typ>
+								<status>Inkommen</status>
+								<handlingDatum>2024-09-09</handlingDatum>
+								<anteckning>document blip.pdf</anteckning>
+								<uuid>8d087fae-1527-4149-a04f-f66c7acaf3ca</uuid>
+								<arkivStatus>Arkiveras</arkivStatus>
+								<makulerad>false</makulerad>
+								<dokument dokId="250324729" checksum="1098495446|638614870450000000">
+									<namn>document blip.pdf</namn>
+								</dokument>
+							</handling>
+						</handlingLista>
+						<intressentLista>
+							<intressent intressentId="2162" persOrgNr="19030405-6789" arForetag="false" intressentVersionId="2210" kundnr="2162" arInternKund="false" arAktiv="true" checksum="-563022389|-1177159065">
+								<namn>Dupont and Dupont</namn>
+								<adress>Detektivgatan 12</adress>
+								<postNr>852 10</postNr>
+								<ort>SUNDSVALL</ort>
+								<fornamn>Dupont</fornamn>
+								<efternamn>Dupont</efternamn>
+								<intressentKommunikationLista>
+									<intressentKommunikation arAktiv="true" checksum="2051834648">
+										<beskrivning>070-2342323</beskrivning>
+										<komtyp>MOB</komtyp>
+									</intressentKommunikation>
+								</intressentKommunikationLista>
+								<rollLista>
+									<roll>GRAN</roll>
+								</rollLista>
+							</intressent>
+						</intressentLista>
+						<arbetsmaterial>false</arbetsmaterial>
+						<handlaggare signatur="SYSTEM"/>
+					</handelse>
+					<handelse handelseId="1465849" checksum="30">
+						<riktning>In</riktning>
+						<rubrik>Grannehörande Svar utan erinran, BALDER 5, null</rubrik>
+						<startDatum>2024-09-09T13:59:00+02:00</startDatum>
+						<anteckning/>
+						<handelseslag>GRASVA</handelseslag>
+						<handelsetyp>GRANHO</handelsetyp>
+						<sekretess>false</sekretess>
+						<makulerad>false</makulerad>
+						<handlingLista>
+							<handling handlingId="1484445" checksum="29">
+								<typ>UNDERE</typ>
+								<status>Inkommen</status>
+								<handlingDatum>2024-09-09</handlingDatum>
+								<anteckning>16543.pdf</anteckning>
+								<uuid>42655d11-d5a7-4ebf-9876-c4459511daac</uuid>
+								<arkivStatus>Arkiveras</arkivStatus>
+								<makulerad>false</makulerad>
+								<dokument dokId="250324730" checksum="1855752261|638614871730000000">
+									<namn>16543.pdf</namn>
+								</dokument>
+							</handling>
+						</handlingLista>
+						<intressentLista>
+							<intressent intressentId="2162" persOrgNr="19030405-6789" arForetag="false" intressentVersionId="2210" kundnr="2162" arInternKund="false" arAktiv="true" checksum="-563022389|-1177159065">
+								<namn>Dupont and Dupont</namn>
+								<adress>Detektivgatan 12</adress>
+								<postNr>852 10</postNr>
+								<ort>SUNDSVALL</ort>
+								<fornamn>Dupont</fornamn>
+								<efternamn>Dupont</efternamn>
+								<intressentKommunikationLista>
+									<intressentKommunikation arAktiv="true" checksum="2051834648">
+										<beskrivning>070-2342323</beskrivning>
+										<komtyp>MOB</komtyp>
+									</intressentKommunikation>
+								</intressentKommunikationLista>
+								<rollLista>
+									<roll>GRAN</roll>
+								</rollLista>
+							</intressent>
+						</intressentLista>
+						<arbetsmaterial>false</arbetsmaterial>
+						<handlaggare signatur="SYSTEM"/>
+					</handelse>
+					<handelse handelseId="1465850" checksum="57">
+						<riktning>In</riktning>
+						<rubrik>Grannehörande Svar med erinran, SUNDSVALL PLANKAN 11, Dupont and Dupont</rubrik>
+						<startDatum>2024-09-10T11:22:00+02:00</startDatum>
+						<anteckning>Blä!</anteckning>
+						<handelseslag>GRASVA</handelseslag>
+						<handelsetyp>GRANHO</handelsetyp>
+						<sekretess>false</sekretess>
+						<makulerad>false</makulerad>
+						<handlingLista/>
+						<intressentLista>
+							<intressent intressentId="2162" persOrgNr="19030405-6789" arForetag="false" intressentVersionId="2210" kundnr="2162" arInternKund="false" arAktiv="true" checksum="-563022389|-1177159065">
+								<namn>Dupont and Dupont</namn>
+								<adress>Detektivgatan 12</adress>
+								<postNr>852 10</postNr>
+								<ort>SUNDSVALL</ort>
+								<fornamn>Dupont</fornamn>
+								<efternamn>Dupont</efternamn>
+								<intressentKommunikationLista>
+									<intressentKommunikation arAktiv="true" checksum="2051834648">
+										<beskrivning>070-2342323</beskrivning>
+										<komtyp>MOB</komtyp>
+									</intressentKommunikation>
+								</intressentKommunikationLista>
+								<rollLista>
+									<roll>GRAN</roll>
+								</rollLista>
+							</intressent>
+						</intressentLista>
+						<arbetsmaterial>false</arbetsmaterial>
+						<handlaggare signatur="SYSTEM"/>
+					</handelse>
+					<handelse handelseId="1465851" checksum="29">
+						<riktning>In</riktning>
+						<rubrik>Grannehörande Svar med erinran, SUNDSVALL STOCKEN 10, DUPONT AND DUPONT</rubrik>
+						<startDatum>2024-09-10T15:41:00+02:00</startDatum>
+						<anteckning>Blabläblabla.</anteckning>
+						<handelseslag>GRASVA</handelseslag>
+						<handelsetyp>GRANHO</handelsetyp>
+						<sekretess>false</sekretess>
+						<makulerad>false</makulerad>
+						<handlingLista>
+							<handling handlingId="1484446" checksum="29">
+								<typ>UNDERE</typ>
+								<status>Inkommen</status>
+								<handlingDatum>2024-09-10</handlingDatum>
+								<anteckning>document blip.pdf</anteckning>
+								<uuid>9c1ed3ec-f5c4-4fd8-8c52-01df723e6eca</uuid>
+								<arkivStatus>Arkiveras</arkivStatus>
+								<makulerad>false</makulerad>
+								<dokument dokId="250324731" checksum="1098495446|638615797080000000">
+									<namn>document blip.pdf</namn>
+								</dokument>
+							</handling>
+						</handlingLista>
+						<intressentLista>
+							<intressent intressentId="2162" persOrgNr="19030405-6789" arForetag="false" intressentVersionId="2210" kundnr="2162" arInternKund="false" arAktiv="true" checksum="-563022389|-1177159065">
+								<namn>Dupont and Dupont</namn>
+								<adress>Detektivgatan 12</adress>
+								<postNr>852 10</postNr>
+								<ort>SUNDSVALL</ort>
+								<fornamn>Dupont</fornamn>
+								<efternamn>Dupont</efternamn>
+								<intressentKommunikationLista>
+									<intressentKommunikation arAktiv="true" checksum="2051834648">
+										<beskrivning>070-2342323</beskrivning>
+										<komtyp>MOB</komtyp>
+									</intressentKommunikation>
+								</intressentKommunikationLista>
+								<rollLista>
+									<roll>GRAN</roll>
+								</rollLista>
+							</intressent>
+						</intressentLista>
+						<arbetsmaterial>false</arbetsmaterial>
+						<handlaggare signatur="SYSTEM"/>
+					</handelse>
+					<handelse handelseId="1465852" checksum="10">
+						<riktning>Ut</riktning>
+						<rubrik>Grannehörande Utskick - test till företag</rubrik>
+						<startDatum>2024-09-11T09:49:00+02:00</startDatum>
+						<anteckning>Test till företag</anteckning>
+						<handelseslag>GRAUTS</handelseslag>
+						<handelsetyp>GRANHO</handelsetyp>
+						<sekretess>false</sekretess>
+						<makulerad>false</makulerad>
+						<handlingLista>
+							<handling handlingId="1484447" checksum="8">
+								<typ>BIL</typ>
+								<status>Expedierad</status>
+								<handlingDatum>2024-09-11</handlingDatum>
+								<anteckning>ANSÖKAN B-LOV, NYBYGGNAD FRITIDSHUS, VIVSTA 5.26.pdf</anteckning>
+								<uuid>4cce3b29-8aa4-4a30-a674-6e53e39f4c5d</uuid>
+								<makulerad>false</makulerad>
+								<dokument dokId="250324732" checksum="-1855850124|638616450570000000">
+									<namn>ANSÖKAN B-LOV, NYBYGGNAD FRITIDSHUS, VIVSTA 5.26.pdf</namn>
+									<beskrivning>Bilaga</beskrivning>
+								</dokument>
+								<refTyp>Bifogad</refTyp>
+							</handling>
+						</handlingLista>
+						<intressentLista>
+							<intressent intressentId="132360" persOrgNr="16556000-1234" arForetag="true" intressentVersionId="215809" kundnr="132360" arInternKund="false" arAktiv="true" checksum="-562864465|1337238894">
+								<namn>Testbolag 3</namn>
+								<adress>Testgatan 3</adress>
+								<postNr>88888</postNr>
+								<ort>SUNDSVALL</ort>
+								<intressentKommunikationLista>
+									<intressentKommunikation arAktiv="true" checksum="1451241427">
+										<beskrivning>070111233</beskrivning>
+										<komtyp>MOB</komtyp>
+										<attention attentionId="47203" checksum="520971691">
+											<attention>test</attention>
+										</attention>
+									</intressentKommunikation>
+								</intressentKommunikationLista>
+								<rollLista>
+									<roll>KPER</roll>
+								</rollLista>
+							</intressent>
+						</intressentLista>
+						<arbetsmaterial>false</arbetsmaterial>
+						<handlaggare signatur="SYSTEM"/>
+					</handelse>
+					<handelse handelseId="1465853" checksum="24">
+						<riktning>Ut</riktning>
+						<rubrik>Grannehörande Utskick TEST Brf</rubrik>
+						<startDatum>2024-09-11T10:42:00+02:00</startDatum>
+						<anteckning>TEST Brf</anteckning>
+						<handelseslag>GRAUTS</handelseslag>
+						<handelsetyp>GRANHO</handelsetyp>
+						<sekretess>false</sekretess>
+						<makulerad>false</makulerad>
+						<handlingLista>
+							<handling handlingId="1484448" checksum="24">
+								<typ>BIL</typ>
+								<status>Expedierad</status>
+								<handlingDatum>2024-09-11</handlingDatum>
+								<anteckning>Testor 1_114.pdf</anteckning>
+								<uuid>b2ada294-1236-4a49-a499-54dd3e2ed54b</uuid>
+								<makulerad>false</makulerad>
+								<dokument dokId="250324733" checksum="1641286985|638616481710000000">
+									<namn>Testor 1_114.pdf</namn>
+									<beskrivning>Bilaga</beskrivning>
+								</dokument>
+								<refTyp>Bifogad</refTyp>
+							</handling>
+						</handlingLista>
+						<intressentLista>
+							<intressent intressentId="37068" persOrgNr="16716123-1234" arForetag="true" intressentVersionId="57302" kundnr="37068" arInternKund="false" arAktiv="true" checksum="-562861307|-1938438728">
+								<namn>Brf Flugsvampen</namn>
+								<adress>Box 123</adress>
+								<postNr>851 00</postNr>
+								<ort>SUNDSVALL</ort>
+								<rollLista>
+									<roll>GRAN</roll>
+								</rollLista>
+							</intressent>
+						</intressentLista>
+						<arbetsmaterial>false</arbetsmaterial>
+						<handlaggare signatur="SYSTEM"/>
+					</handelse>
+					<handelse handelseId="1465854" checksum="34">
+						<riktning>Okänd</riktning>
+						<rubrik>t</rubrik>
+						<startDatum>2024-09-11T11:47:00+02:00</startDatum>
+						<anteckning/>
+						<handelsetyp>ANM</handelsetyp>
+						<sekretess>false</sekretess>
+						<makulerad>false</makulerad>
+						<handlingLista/>
+						<intressentLista>
+							<intressent intressentId="132384" persOrgNr="19920222-1234" arForetag="false" intressentVersionId="216063" kundnr="132384" arInternKund="false" arAktiv="true" checksum="0|1646973928">
+								<namn>Herr Tintin</namn>
+								<fornamn>Herr</fornamn>
+								<efternamn>Tintin</efternamn>
+								<rollLista/>
+							</intressent>
+						</intressentLista>
+						<arbetsmaterial>true</arbetsmaterial>
+						<handlaggare signatur="SYSTEM"/>
+					</handelse>
+				</handelseLista>
+				<projektnr xmlns="www.tekis.se/arende">evas fik</projektnr>
+				<bevakningLista xmlns="www.tekis.se/arende"/>
+				<objektLista xmlns="www.tekis.se/arende">
+					<abstractArendeObjekt xsi:type="arendeFastighet" arendeObjektId="246180" arHuvudObjekt="true" checksum="1|">
+						<fastighet checksum="-439890031|" fnr="22069908">
+							<trakt>BALDUR</trakt>
+							<fbetNr>50</fbetNr>
+						</fastighet>
+					</abstractArendeObjekt>
+				</objektLista>
+			</GetArendeResult>
+		</GetArendeResponse>
+	</s:Body>
+</s:Envelope>

@@ -1,3 +1,4 @@
+
 package se.sundsvall.byggrintegrator;
 
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import generated.se.sundsvall.arendeexport.GetDocumentResponse;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 
 public final class TestObjectFactory {
 
@@ -42,6 +44,7 @@ public final class TestObjectFactory {
 	 *
 	 * @return A populated response
 	 */
+
 	public static GetRelateradeArendenByPersOrgNrAndRoleResponse generateRelateradeArendenResponse() throws Exception {
 		return generateRelateradeArendenResponse(CASE_APPLICANT, NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER);
 	}
@@ -52,9 +55,11 @@ public final class TestObjectFactory {
 	 * @return A populated response
 	 * @throws DatatypeConfigurationException
 	 */
-	public static GetRelateradeArendenByPersOrgNrAndRoleResponse generateRelateradeArendenResponse(String caseApplicant, String neighborhoodStakeholder) throws Exception {
+	public static GetRelateradeArendenByPersOrgNrAndRoleResponse generateRelateradeArendenResponse(String caseApplicant,
+		String neighborhoodStakeholder) throws Exception {
 		final var response = OBJECT_FACTORY.createGetRelateradeArendenByPersOrgNrAndRoleResponse();
-		final var arendeList = List.of(createArende(BYGGR_ARENDE_NR_1, true, caseApplicant, neighborhoodStakeholder), createArende(BYGGR_ARENDE_NR_2, false, caseApplicant, neighborhoodStakeholder));
+		final var arendeList = List.of(createArende(BYGGR_ARENDE_NR_1, true, caseApplicant, neighborhoodStakeholder),
+			createArende(BYGGR_ARENDE_NR_2, false, caseApplicant, neighborhoodStakeholder));
 		return response.withGetRelateradeArendenByPersOrgNrAndRoleResult(new ArrayOfArende1().withArende(arendeList));
 	}
 
@@ -146,17 +151,15 @@ public final class TestObjectFactory {
 		return List.of(
 			ByggrErrandDto.builder()
 				.withByggrCaseNumber("dnr123")
-				.withPropertyDesignation(List.of(
-					ByggrErrandDto.PropertyDesignation.builder().withProperty("des-1").withDesignation("type1").build(),
-					ByggrErrandDto.PropertyDesignation.builder().withProperty("des-2").withDesignation("type2").build()))
-				.withNeighborhoodEventIds(List.of(123, 234))
+				.withEvents(List.of(
+					Event.builder().withId(123).build(),
+					Event.builder().withId(234).build()))
 				.build(),
 			ByggrErrandDto.builder()
 				.withByggrCaseNumber("dnr456")
-				.withPropertyDesignation(List.of(
-					ByggrErrandDto.PropertyDesignation.builder().withProperty("des-3").withDesignation("type3").build(),
-					ByggrErrandDto.PropertyDesignation.builder().withProperty("des-4").withDesignation("type4").build()))
-				.withNeighborhoodEventIds(List.of(345, 456))
+				.withEvents(List.of(
+					Event.builder().withId(345).build(),
+					Event.builder().withId(456).build()))
 				.build());
 	}
 

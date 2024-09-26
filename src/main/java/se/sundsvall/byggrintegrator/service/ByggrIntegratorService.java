@@ -42,12 +42,14 @@ public class ByggrIntegratorService {
 	private final ByggrIntegration byggrIntegration;
 	private final ApiResponseMapper apiResponseMapper;
 	private final TemplateMapper templateMapper;
+	private final ByggrFilterUtility filterUtility;
 
-	public ByggrIntegratorService(ByggrIntegrationMapper byggrIntegrationMapper, ByggrIntegration byggrIntegration, ApiResponseMapper apiResponseMapper, TemplateMapper templateMapper) {
+	public ByggrIntegratorService(ByggrIntegrationMapper byggrIntegrationMapper, ByggrIntegration byggrIntegration, ApiResponseMapper apiResponseMapper, TemplateMapper templateMapper, ByggrFilterUtility filterUtility) {
 		this.byggrIntegrationMapper = byggrIntegrationMapper;
 		this.byggrIntegration = byggrIntegration;
 		this.apiResponseMapper = apiResponseMapper;
 		this.templateMapper = templateMapper;
+		this.filterUtility = filterUtility;
 	}
 
 	public List<KeyValue> findNeighborhoodNotifications(String identifier) {
@@ -59,22 +61,26 @@ public class ByggrIntegratorService {
 		// Prefix identifier if it contains organisation legal id and add hyphen to identifier as ByggR integration formats
 		// legal id that way
 		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
-		final var matches = byggrIntegration.getErrands(processedIdentifier, roles);
+		// Fetch answer from ByggR
+		final var result = byggrIntegration.getErrands(processedIdentifier, roles);
+		// Filter on neighborhood notifications where identifier matches stakeholder
+		final var matches = filterUtility.filterNeighborhoodNotifications(byggrIntegrationMapper.mapToByggErrandDtos(result), processedIdentifier);
 
-		final var byggrErrandList = byggrIntegrationMapper.mapToNeighborhoodNotifications(matches, processedIdentifier);
-
-		return apiResponseMapper.mapToNeighborhoodKeyValueResponseList(byggrErrandList);
+		// Map to API response
+		return apiResponseMapper.mapToNeighborhoodKeyValueResponseList(matches);
 	}
 
 	public List<KeyValue> findApplicantErrands(String identifier) {
 		// Prefix identifier if it contains organisation legal id and add hyphen to identifier as ByggR integration formats
 		// legal id that way
 		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
-		final var matches = byggrIntegration.getErrands(processedIdentifier, null);
+		// Fetch answer from ByggR
+		final var result = byggrIntegration.getErrands(processedIdentifier, null);
+		// Filter on errands where applicant matches identifier
+		final var matches = filterUtility.filterCasesForApplicant(byggrIntegrationMapper.mapToByggErrandDtos(result), processedIdentifier);
 
-		final var byggrErrandList = byggrIntegrationMapper.mapToApplicantErrands(matches, processedIdentifier);
-
-		return apiResponseMapper.mapToKeyValueResponseList(byggrErrandList);
+		// Map to API response
+		return apiResponseMapper.mapToKeyValueResponseList(matches);
 	}
 
 	public Weight getErrandType(String dnr) {
@@ -85,10 +91,14 @@ public class ByggrIntegratorService {
 			.orElseThrow(() -> createProblem(NOT_FOUND, ERROR_ERRAND_NOT_FOUND.formatted(dnr)));
 	}
 
-	public String listNeighborhoodNotificationFiles(String municipalityId, String caseNumber) {
-		final var response = byggrIntegration.getErrand(caseNumber);
-		final var byggrErrandDto = byggrIntegrationMapper.mapToNeighborhoodNotificationFiles(response);
-		return templateMapper.generateFileList(municipalityId, byggrErrandDto);
+	public String listNeighborhoodNotificationFiles(String municipalityId, String caseNumber, int eventId) {
+		// Fetch answer from ByggR
+		final var result = byggrIntegration.getErrand(caseNumber);
+		// Filter on event that matches incoming id
+		final var matches = filterUtility.filterEvent(byggrIntegrationMapper.mapToByggErrandDto(result), eventId);
+
+		// Map to API response
+		return templateMapper.generateFileList(municipalityId, matches);
 	}
 
 	public void readFile(String fileId, HttpServletResponse response) {
