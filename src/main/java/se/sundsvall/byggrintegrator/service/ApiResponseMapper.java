@@ -54,7 +54,7 @@ public class ApiResponseMapper {
 
 	public Weight mapToWeight(GetArendeResponse errand) {
 		return Weight.builder()
-			.withValue(errand.getGetArendeResult().getArendetyp())
+			.withValue(CaseTypeEnum.translate(errand.getGetArendeResult().getArendetyp()))
 			.build();
 	}
 }

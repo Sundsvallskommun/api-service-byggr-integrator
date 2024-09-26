@@ -12,7 +12,7 @@ import org.thymeleaf.context.Context;
 
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.FileTemplateDto;
-import se.sundsvall.byggrintegrator.service.ByggrFilterUtility;
+import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 
 @Component
 public class TemplateMapper {

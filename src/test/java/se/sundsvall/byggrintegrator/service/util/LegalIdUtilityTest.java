@@ -1,8 +1,8 @@
-package se.sundsvall.byggrintegrator.service;
+package se.sundsvall.byggrintegrator.service.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static se.sundsvall.byggrintegrator.service.LegalIdUtility.addHyphen;
-import static se.sundsvall.byggrintegrator.service.LegalIdUtility.prefixOrgnbr;
+import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.addHyphen;
+import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.prefixOrgnbr;
 
 import java.util.stream.Stream;
 

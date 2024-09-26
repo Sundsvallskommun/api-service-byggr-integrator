@@ -8,8 +8,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import se.sundsvall.byggrintegrator.TestObjectFactory;
-
 class ApiResponseMapperTest {
 
 	private final ApiResponseMapper apiResponseMapper = new ApiResponseMapper();
@@ -46,7 +44,7 @@ class ApiResponseMapperTest {
 		// Act
 		final var response = apiResponseMapper.mapToWeight(generateArendeResponse("dnr"));
 
-		assertThat(response.getValue()).isEqualTo(TestObjectFactory.ARENDE_TYP_LH);
+		assertThat(response.getValue()).isEqualTo("11"); // BL translated to integer value according to the CaseTypeEnum
 	}
 
 	@Test

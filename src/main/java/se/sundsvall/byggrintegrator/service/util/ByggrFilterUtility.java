@@ -1,4 +1,4 @@
-package se.sundsvall.byggrintegrator.service;
+package se.sundsvall.byggrintegrator.service.util;
 
 import static java.time.LocalDate.now;
 import static java.util.Optional.ofNullable;
@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
-import se.sundsvall.byggrintegrator.service.ByggrFilterProperties.ApplicantProperties;
-import se.sundsvall.byggrintegrator.service.ByggrFilterProperties.NotificationProperties;
+import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.ApplicantProperties;
+import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.NotificationProperties;
 
 /**
  * The filter utility has two configuratble settings:

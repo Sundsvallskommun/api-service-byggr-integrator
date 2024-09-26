@@ -1,4 +1,3 @@
-
 package se.sundsvall.byggrintegrator;
 
 import java.time.LocalDate;
@@ -33,7 +32,7 @@ public final class TestObjectFactory {
 	public static final String HANDELSETYP_GRANHO = "GRANHO";
 	public static final String HANDELSESLAG_GRASVA = "GRASVA";
 	public static final String HANDELSESLAG_GRAUTS = "GRAUTS";
-	public static final String ARENDE_TYP_LH = "LH";
+	public static final String ARENDE_TYP_BL = "BL";
 	public static final String BYGGR_ARENDE_NR_1 = "BYGG 2024-000123";
 	public static final String BYGGR_ARENDE_NR_2 = "BYGG 2024-000234";
 	public static final String DOCUMENT_FILE_NAME = "random.txt";
@@ -95,7 +94,7 @@ public final class TestObjectFactory {
 					.withPersOrgNr(errandApplicant)
 					.withRollLista(
 						OBJECT_FACTORY.createArrayOfString2().withRoll(APPLICANT_ROLE))))
-			.withArendetyp(ARENDE_TYP_LH)
+			.withArendetyp(ARENDE_TYP_BL)
 			.withHandelseLista(createArrayOfHandelse(validEvents, neighborhoodStakeholder))
 			.withObjektLista(createObjektLista());
 	}

@@ -1,5 +1,5 @@
 
-package se.sundsvall.byggrintegrator.service;
+package se.sundsvall.byggrintegrator.service.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
