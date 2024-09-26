@@ -18,6 +18,5 @@
 		},
 		"status": 500,
 		"bodyFileName": "test03_getFileForNonNumericId/responses/api-byggr-get-document-response.xml"
-		}
 	}
 }

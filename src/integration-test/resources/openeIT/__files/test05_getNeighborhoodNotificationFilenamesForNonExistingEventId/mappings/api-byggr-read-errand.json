@@ -18,6 +18,5 @@
 		},
 		"status": 200,
 		"bodyFileName": "test05_getNeighborhoodNotificationFilenamesForNonExistingEventId/responses/api-byggr-read-errand-response.xml"
-		}
 	}
 }

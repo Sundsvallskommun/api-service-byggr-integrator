@@ -18,6 +18,5 @@
 		},
 		"status": 500,
 		"bodyFileName": "test02_getTypeForNonExistingErrand/responses/api-byggr-read-errand-response.xml"
-		}
 	}
 }
