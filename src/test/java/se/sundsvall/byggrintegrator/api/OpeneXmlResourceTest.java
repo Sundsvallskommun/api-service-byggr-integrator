@@ -35,6 +35,7 @@ class OpeneXmlResourceTest {
 	private static final String VALUE = "value";
 
 	private static final String ERRAND_TYPE_URL = "/{municipalityId}/opene/cases/{caseNumber}/type";
+	private static final String ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL = "/{municipalityId}/opene/cases/type";
 
 	// ----------------------------------------------------------------
 	// ErrandType resources tests
@@ -77,4 +78,41 @@ class OpeneXmlResourceTest {
 		verifyNoInteractions(mockByggrIntegratorService);
 	}
 
+	@Test
+	void testGetErrandTypeWithRequestParameter() {
+		final var weight = Weight.builder().withValue(VALUE).build();
+
+		when(mockByggrIntegratorService.getErrandType(CASE_NUMBER)).thenReturn(weight);
+
+		final var responseBody = webTestClient.get()
+			.uri(builder -> builder.path(ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL).queryParam("caseNumber", CASE_NUMBER).build(VALID_MUNICIPALITY_ID))
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader()
+			.contentType(APPLICATION_XML)
+			.expectBody(String.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull().isEqualToIgnoringNewLines("<Weight>value</Weight>");
+
+		verify(mockByggrIntegratorService).getErrandType(CASE_NUMBER);
+		verifyNoMoreInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void testGetErrandTypeWithRequestParameter_faultyMunicipalityId_shouldThrowException() {
+		final var responseBody = webTestClient.get()
+			.uri(builder -> builder.path(ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL).queryParam("caseNumber", CASE_NUMBER).build(INVALID_MUNICIPALITY_ID))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_XML)
+			.expectBody(String.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull().contains("getErrandTypeWithRequestParameter.municipalityId: not a valid municipality ID");
+
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
 }

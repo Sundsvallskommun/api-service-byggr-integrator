@@ -17,8 +17,8 @@ import se.sundsvall.byggrintegrator.api.interceptor.OpeneHtmlInterceptor;
 @ExtendWith(MockitoExtension.class)
 class InterceptorConfigTest {
 
-	private static final String PATH_PATTERN = "/{municipalityId}/opene/neighborhood-notifications/*/filenames";
-
+	private static final String PATH_PATTERN_1 = "/{municipalityId}/opene/neighborhood-notifications/*/filenames";
+	private static final String PATH_PATTERN_2 = "/{municipalityId}/opene/neighborhood-notifications/filenames";
 	@Mock
 	private InterceptorRegistry mockRegistry;
 
@@ -34,7 +34,7 @@ class InterceptorConfigTest {
 		config.addInterceptors(mockRegistry);
 
 		verify(mockRegistry).addInterceptor(any(OpeneHtmlInterceptor.class));
-		verify(mockRegistration).addPathPatterns(PATH_PATTERN);
+		verify(mockRegistration).addPathPatterns(PATH_PATTERN_1, PATH_PATTERN_2);
 		verifyNoMoreInteractions(mockRegistry, mockRegistration);
 	}
 }

@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
@@ -44,6 +45,15 @@ public class OpeneXmlResource {
 	public Weight getErrandType(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "caseNumber", description = "Case number from ByggR", example = "BYGG 2001-123456") @NotBlank @PathVariable String caseNumber) {
+
+		return byggrIntegratorService.getErrandType(caseNumber);
+	}
+
+	@GetMapping(path = "/cases/type", produces = { APPLICATION_XML_VALUE, APPLICATION_PROBLEM_XML_VALUE })
+	@Operation(summary = "Return xml structure errand type for the errand matching sent in case number")
+	public Weight getErrandTypeWithRequestParameter(
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "caseNumber", description = "Case number from ByggR", example = "BYGG 2001-123456") @NotBlank @RequestParam("caseNumber") String caseNumber) {
 
 		return byggrIntegratorService.getErrandType(caseNumber);
 	}

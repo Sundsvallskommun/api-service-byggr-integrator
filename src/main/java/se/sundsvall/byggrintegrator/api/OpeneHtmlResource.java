@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
@@ -44,6 +45,15 @@ public class OpeneHtmlResource {
 	public ResponseEntity<String> findNeighborhoodNotificationFiles(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "caseNumberAndEventId", description = "Case number from ByggR to match", example = "BYGG 2001-123456 [1234]") @NotBlank @PathVariable String caseNumberAndEventId) {
+
+		return ResponseEntity.ok(byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, parseDiaryNumber(caseNumberAndEventId), parseEventId(caseNumberAndEventId)));
+	}
+
+	@GetMapping(path = "/neighborhood-notifications/filenames", produces = { TEXT_HTML_VALUE })
+	@Operation(summary = "Return html structure for all neighborhood-notification files belonging to the event that matches the sent in case number and event id")
+	public ResponseEntity<String> findNeighborhoodNotificationFilesWithRequestParameter(
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "caseNumberAndEventId", description = "Case number from ByggR to match", example = "BYGG 2001-123456 [1234]") @NotBlank @RequestParam("caseNumberAndEventId") String caseNumberAndEventId) {
 
 		return ResponseEntity.ok(byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, parseDiaryNumber(caseNumberAndEventId), parseEventId(caseNumberAndEventId)));
 	}

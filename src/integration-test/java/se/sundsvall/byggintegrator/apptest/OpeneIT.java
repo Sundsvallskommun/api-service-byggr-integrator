@@ -81,4 +81,28 @@ class OpeneIT extends AbstractAppTest {
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
 	}
+
+	@Test
+	void test06_getTypeForExistingErrandWithRequestParameter() {
+		setupCall()
+			.withServicePath("/2281/opene/cases/type?caseNumber=BYGG 2024-000666")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_XML_VALUE))
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test07_getNeighborhoodNotificationFilenamesForErrandAndEventWithRequestParameter() {
+		setupCall()
+			.withServicePath("/2281/opene/neighborhood-notifications/filenames?caseNumberAndEventId=BYGG 2024-000668 [1465852]")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponseHeader(CONTENT_TYPE, List.of(TEXT_HTML_VALUE + ";" + "charset=UTF-8"))
+			.withExpectedResponseHeader(INFO_QUERY_RESPONSE_HEADER_NAME, List.of("true"))
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
 }
