@@ -1,4 +1,4 @@
-package se.sundsvall.byggrintegrator.service;
+package se.sundsvall.byggrintegrator.service.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.util.ReflectionTestUtils.setField;

@@ -1,4 +1,4 @@
-package se.sundsvall.byggrintegrator.service;
+package se.sundsvall.byggrintegrator.service.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.util.StreamUtils.copyToByteArray;
@@ -25,14 +25,14 @@ class MimeTypeUtilityTest {
 	void detectMimeTypeThrowsException() {
 		assertThat(MimeTypeUtility.detectMimeType(null, null)).isEqualTo("application/octet-stream");
 	}
-	
+
 	@ParameterizedTest
 	@MethodSource("mimeTypeArguments")
 	void detectMimeType(String fileName, byte[] fileBytes, String expectedTypeWithFilename, String expectedTypeWithoutFilename) {
 		assertThat(MimeTypeUtility.detectMimeType(fileName, fileBytes)).isEqualTo(expectedTypeWithFilename);
 		assertThat(MimeTypeUtility.detectMimeType(null, fileBytes)).isEqualTo(expectedTypeWithoutFilename);
 	}
-	
+
 	private static Stream<Arguments> mimeTypeArguments() throws IOException {
 		return Stream.of(
 			Arguments.of(IMG_FILE_NAME, copyToByteArray(new ClassPathResource(PATH + IMG_FILE_NAME).getInputStream()), "image/jpeg", "image/jpeg"),

@@ -6,9 +6,9 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.util.StreamUtils.copy;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 import static org.zalando.problem.Status.NOT_FOUND;
-import static se.sundsvall.byggrintegrator.service.LegalIdUtility.addHyphen;
-import static se.sundsvall.byggrintegrator.service.LegalIdUtility.prefixOrgnbr;
-import static se.sundsvall.byggrintegrator.service.MimeTypeUtility.detectMimeType;
+import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.addHyphen;
+import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.prefixOrgnbr;
+import static se.sundsvall.byggrintegrator.service.util.MimeTypeUtility.detectMimeType;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -28,6 +28,7 @@ import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
 import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
+import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 
 @Service
 public class ByggrIntegratorService {

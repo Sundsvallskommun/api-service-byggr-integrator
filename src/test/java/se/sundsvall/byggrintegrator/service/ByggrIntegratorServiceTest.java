@@ -47,6 +47,7 @@ import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
+import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrIntegratorServiceTest {
@@ -227,7 +228,7 @@ class ByggrIntegratorServiceTest {
 		final var errandType = service.getErrandType(dnr);
 
 		// Assert
-		assertThat(errandType.getValue()).isEqualTo(TestObjectFactory.ARENDE_TYP_LH);
+		assertThat(errandType.getValue()).isEqualTo("11"); // BL translated to integer value according to the CaseTypeEnum
 
 		verify(mockByggrIntegration).getErrand(dnr);
 		verify(mockApiResponseMapper).mapToWeight(any(GetArendeResponse.class));

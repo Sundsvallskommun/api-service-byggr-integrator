@@ -1,4 +1,4 @@
-package se.sundsvall.byggrintegrator.service;
+package se.sundsvall.byggrintegrator.service.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

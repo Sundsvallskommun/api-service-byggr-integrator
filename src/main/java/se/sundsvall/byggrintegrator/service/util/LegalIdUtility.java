@@ -1,4 +1,4 @@
-package se.sundsvall.byggrintegrator.service;
+package se.sundsvall.byggrintegrator.service.util;
 
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.containsNone;
