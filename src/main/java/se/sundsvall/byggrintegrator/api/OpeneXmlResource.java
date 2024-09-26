@@ -3,6 +3,7 @@ package se.sundsvall.byggrintegrator.api;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_XML_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,19 +43,19 @@ public class OpeneXmlResource {
 
 	@GetMapping(path = "/cases/{caseNumber}/type", produces = { APPLICATION_XML_VALUE, APPLICATION_PROBLEM_XML_VALUE })
 	@Operation(summary = "Return xml structure errand type for the errand matching sent in case number")
-	public Weight getErrandType(
+	public ResponseEntity<Weight> getErrandType(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "caseNumber", description = "Case number from ByggR", example = "BYGG 2001-123456") @NotBlank @PathVariable String caseNumber) {
 
-		return byggrIntegratorService.getErrandType(caseNumber);
+		return ResponseEntity.ok(byggrIntegratorService.getErrandType(caseNumber));
 	}
 
 	@GetMapping(path = "/cases/type", produces = { APPLICATION_XML_VALUE, APPLICATION_PROBLEM_XML_VALUE })
 	@Operation(summary = "Return xml structure errand type for the errand matching sent in case number")
-	public Weight getErrandTypeWithRequestParameter(
+	public ResponseEntity<Weight> getErrandTypeWithRequestParameter(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "caseNumber", description = "Case number from ByggR", example = "BYGG 2001-123456") @NotBlank @RequestParam("caseNumber") String caseNumber) {
 
-		return byggrIntegratorService.getErrandType(caseNumber);
+		return ResponseEntity.ok(byggrIntegratorService.getErrandType(caseNumber));
 	}
 }
