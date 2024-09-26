@@ -17,6 +17,6 @@
 			"Content-Type": "application/xml"
 		},
 		"status": 200,
-		"bodyFileName": "test01_getTypeForExistingErrand/responses/api-byggr-read-errand-response.xml"
+		"bodyFileName": "test06_getTypeForExistingErrandWithRequestParameter/responses/api-byggr-read-errand-response.xml"
 	}
 }

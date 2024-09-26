@@ -10,7 +10,11 @@ import se.sundsvall.byggrintegrator.api.interceptor.OpeneHtmlInterceptor;
 public class InterceptorConfig implements WebMvcConfigurer {
 
 	/**
-	 * Intercept all html responses from the "/{municipalityId}/opene/neighborhood-notifications/{wildcard}/filenames"
+	 * Intercept all html responses from following paths:
+	 *
+	 * "/{municipalityId}/opene/neighborhood-notifications/{wildcard}/filenames"
+	 * "/{municipalityId}/opene/neighborhood-notifications/filenames"
+	 *
 	 * endpoint.
 	 *
 	 * @param registry the interceptor registry
@@ -18,6 +22,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new OpeneHtmlInterceptor())
-			.addPathPatterns("/{municipalityId}/opene/neighborhood-notifications/*/filenames");
+			.addPathPatterns(
+				"/{municipalityId}/opene/neighborhood-notifications/*/filenames",
+				"/{municipalityId}/opene/neighborhood-notifications/filenames");
 	}
 }

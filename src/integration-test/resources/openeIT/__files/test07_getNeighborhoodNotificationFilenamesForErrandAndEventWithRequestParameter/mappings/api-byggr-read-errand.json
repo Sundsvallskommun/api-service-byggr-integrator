@@ -17,6 +17,6 @@
 			"Content-Type": "application/xml"
 		},
 		"status": 200,
-		"bodyFileName": "test03_getNeighborhoodNotificationFilenamesForErrandAndEvent/responses/api-byggr-read-errand-response.xml"
+		"bodyFileName": "test07_getNeighborhoodNotificationFilenamesForErrandAndEventWithRequestParameter/responses/api-byggr-read-errand-response.xml"
 	}
 }
