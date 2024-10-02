@@ -45,8 +45,7 @@ import generated.se.sundsvall.arendeexport.StatusFilter;
 @Component
 public class ByggrIntegrationMapper {
 	private static final ObjectFactory OBJECT_FACTORY = new ObjectFactory();
-
-	private static final String DOCUMENT_TYPE_ANS = "ANS"; // Document type to filter out
+	private static final List<String> DOCUMENT_TYPES_TO_OMIT = List.of("ANS", "ANM"); // Document type to filter out
 
 	public GetRoller createGetRolesRequest() {
 		return OBJECT_FACTORY.createGetRoller()
@@ -130,7 +129,7 @@ public class ByggrIntegrationMapper {
 			.map(wrapper -> ofNullable(wrapper.getHandling()).orElse(emptyList()))
 			.stream()
 			.flatMap(Collection::stream)
-			.filter(handling -> !DOCUMENT_TYPE_ANS.equals(handling.getTyp()))   //Remove all documents of type ANS
+			.filter(handling -> !DOCUMENT_TYPES_TO_OMIT.contains(handling.getTyp()))   //Remove all documents of type ANS/ANM
 			.map(HandelseHandling::getDokument)
 			.filter(Objects::nonNull)
 			.filter(document -> Objects.nonNull(document.getDokId()))
