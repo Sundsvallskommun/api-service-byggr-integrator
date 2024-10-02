@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 import se.sundsvall.byggrintegrator.Application;
 
@@ -29,7 +30,14 @@ import generated.se.sundsvall.arendeexport.GetRollerResponse;
 import generated.se.sundsvall.arendeexport.Roll;
 
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("junit")
+@SpringBootTest(
+	classes = Application.class,
+	webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+	properties = {
+		"spring.cache.type=SIMPLE",
+		"spring.cache.cache-names=getRelateradeArendenByPersOrgNrAndRoleCache,getRollerCache,getArendeCache,getDocumentCache"
+	})
 class ByggrIntegrationCacheTest {
 
 	@Autowired

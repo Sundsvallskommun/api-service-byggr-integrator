@@ -126,8 +126,6 @@ public class ByggrFilterUtility {
 			.filter(event -> event.getStakeholders().stream().anyMatch(stakeholder -> identifier.equals(stakeholder.getLegalId())))
 			.toList();
 
-		filteredEvents.forEach(event -> LOG.info("AFTER:{} - {}", event.getId(), event.getEventDate()));
-
 		errand.setEvents(filteredEvents);
 		return errand;
 	}
