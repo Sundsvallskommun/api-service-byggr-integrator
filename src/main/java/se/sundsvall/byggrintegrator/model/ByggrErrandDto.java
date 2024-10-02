@@ -41,6 +41,7 @@ public class ByggrErrandDto {
 		private LocalDate eventDate; // Maps to startDatum
 		private Map<String, String> files; // Map<dokumentId, documentName>
 		private List<Stakeholder> stakeholders;
+		private String heading;     //Used as heading in the template
 	}
 
 	@Getter

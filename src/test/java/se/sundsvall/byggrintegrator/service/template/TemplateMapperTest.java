@@ -32,7 +32,7 @@ class TemplateMapperTest {
 	private TemplateMapper templateMapper;
 
 	@Test
-	void test() {
+	void testGenerateHtmlFromTemplate() {
 		when(mockProperties.domain()).thenReturn("http://somewhere.com/");
 		when(mockProperties.subDirectory()).thenReturn("/files/");
 
@@ -41,15 +41,18 @@ class TemplateMapperTest {
 			ByggrErrandDto.builder()
 				.withByggrCaseNumber("BYGG 2001-1234")
 				.withEvents(List.of(Event.builder()
+					.withHeading("Heading")
+					.withId(1)
 					.withEventType("GRANHO")
 					.withEventSubtype("GRAUTS")
 					.withFiles(Map.of(
 						"file1", "file1.txt",
 						"file2", "file2.txt"))
 					.build()))
-				.build());
+				.build(),
+			1);
 
-		assertThat(html).isEqualTo("<ul><li><a href=\"http://somewhere.com/1234/files/file2\">file2.txt</a></li><li><a href=\"http://somewhere.com/1234/files/file1\">file1.txt</a></li></ul>");
+		assertThat(html).isEqualTo("<p><b>Heading</b></p><ul><li><a href=\"http://somewhere.com/1234/files/file2\">file2.txt</a></li><li><a href=\"http://somewhere.com/1234/files/file1\">file1.txt</a></li></ul>");
 		verify(mockProperties, times(2)).domain();
 		verify(mockProperties, times(2)).subDirectory();
 		verifyNoMoreInteractions(mockProperties);

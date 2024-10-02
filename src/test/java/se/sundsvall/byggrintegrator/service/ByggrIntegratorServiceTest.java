@@ -5,6 +5,7 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -37,17 +38,18 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
-import generated.se.sundsvall.arendeexport.GetArendeResponse;
-import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
-import generated.se.sundsvall.arendeexport.ObjectFactory;
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.byggrintegrator.TestObjectFactory;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
+
+import generated.se.sundsvall.arendeexport.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
+import generated.se.sundsvall.arendeexport.ObjectFactory;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrIntegratorServiceTest {
@@ -171,7 +173,7 @@ class ByggrIntegratorServiceTest {
 		when(mockByggrIntegration.getErrand(BYGGR_ERRAND_NUMBER)).thenReturn(OBJECT_FACTORY.createGetArendeResponse());
 		when(mockByggrIntegrationMapper.mapToByggErrandDto(any())).thenReturn(ByggrErrandDto.builder().build());
 		when(mockByggrFilterUtility.filterEvent(any(ByggrErrandDto.class), eq(EVENT_ID))).thenReturn(ByggrErrandDto.builder().build());
-		when(mockTemplateMapper.generateFileList(any(String.class), any(ByggrErrandDto.class))).thenReturn("html");
+		when(mockTemplateMapper.generateFileList(any(String.class), any(ByggrErrandDto.class), anyInt())).thenReturn("html");
 
 		final var html = service.listNeighborhoodNotificationFiles(MUNICIPALITY_ID, BYGGR_ERRAND_NUMBER, EVENT_ID);
 
@@ -179,7 +181,7 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegration).getErrand(BYGGR_ERRAND_NUMBER);
 		verify(mockByggrIntegrationMapper).mapToByggErrandDto(any(GetArendeResponse.class));
 		verify(mockByggrFilterUtility).filterEvent(any(ByggrErrandDto.class), eq(EVENT_ID));
-		verify(mockTemplateMapper).generateFileList(eq(MUNICIPALITY_ID), any(ByggrErrandDto.class));
+		verify(mockTemplateMapper).generateFileList(eq(MUNICIPALITY_ID), any(ByggrErrandDto.class), anyInt());
 		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrFilterUtility, mockApiResponseMapper, mockApiResponseMapper);
 		verifyNoInteractions(mockApiResponseMapper);
 	}

@@ -10,8 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import se.sundsvall.byggrintegrator.Application;
 
-@SpringBootTest(classes = Application.class)
-
+@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("junit")
 class ByggrPropertiesTest {
 

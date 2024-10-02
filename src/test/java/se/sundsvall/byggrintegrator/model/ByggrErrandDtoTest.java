@@ -102,6 +102,7 @@ class ByggrErrandDtoTest {
 		final var files = Map.of("file1", "file1.txt");
 		final var id = 123;
 		final var stakeholders = List.of(Stakeholder.builder().build());
+		final var heading = "heading";
 
 		final var dto = Event.builder()
 			.withEventDate(date)
@@ -110,6 +111,7 @@ class ByggrErrandDtoTest {
 			.withFiles(files)
 			.withId(id)
 			.withStakeholders(stakeholders)
+			.withHeading(heading)
 			.build();
 
 		assertThat(dto).isNotNull().hasNoNullFieldsOrProperties();
@@ -119,6 +121,7 @@ class ByggrErrandDtoTest {
 		assertThat(dto.getFiles()).isEqualTo(files);
 		assertThat(dto.getId()).isEqualTo(id);
 		assertThat(dto.getStakeholders()).isEqualTo(stakeholders);
+		assertThat(dto.getHeading()).isEqualTo(heading);
 	}
 
 	@Test
