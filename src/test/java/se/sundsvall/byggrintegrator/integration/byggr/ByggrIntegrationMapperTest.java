@@ -10,10 +10,14 @@ import static se.sundsvall.byggrintegrator.TestObjectFactory.HANDELSESLAG_GRASVA
 import static se.sundsvall.byggrintegrator.TestObjectFactory.HANDELSESLAG_GRAUTS;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.HANDELSETYP_GRANHO;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.WANTED_DOCUMENT_ID;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.WANTED_DOCUMENT_NAME;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeResponse;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeArendenResponse;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,5 +164,22 @@ class ByggrIntegrationMapperTest {
 
 		assertThat(request.getDocumentId()).isEqualTo(fileId);
 		assertThat(request.isInkluderaFil()).isTrue();
+	}
+
+	@Test
+	void testMapToErrandDto_shouldOmitUnwantedDocumentTypes() throws Exception {
+		final var dnr = "ByggrDiaryNumber";
+		final var response = generateArendeResponse(dnr);
+
+		var byggrErrandDto = mapper.mapToByggErrandDto(response);
+
+		//Get the files
+		var fileList = byggrErrandDto.getEvents().stream()
+			.flatMap(event -> event.getFiles().entrySet().stream())
+			.toList();
+
+		//Assert that all files are of the wanted type
+		assertThat(fileList.stream().map(Map.Entry::getKey)).allMatch(WANTED_DOCUMENT_ID::equals);
+		assertThat(fileList.stream().map(Map.Entry::getValue)).allMatch(WANTED_DOCUMENT_NAME::equals);
 	}
 }
