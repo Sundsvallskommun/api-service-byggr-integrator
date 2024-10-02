@@ -23,7 +23,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.cache.annotation.Cacheable;
 
 import generated.se.sundsvall.arendeexport.GetArende;
 import generated.se.sundsvall.arendeexport.GetDocument;
@@ -259,25 +258,5 @@ class ByggrIntegrationTest {
 		assertThat(getDocumentCaptor.getValue().isInkluderaFil()).isTrue();
 		assertThat(exception).isInstanceOf(SOAPFaultException.class);
 		assertThat(exception.getFault().getFaultReasonText(Locale.ENGLISH)).isEqualTo(reasonText);
-	}
-
-	@Test
-	void testGetErrandsHasCorrectCacheAnnotation() throws NoSuchMethodException {
-		assertThat(ByggrIntegration.class.getMethod("getErrands", String.class, List.class).getAnnotation(Cacheable.class).value()).containsExactly("getRelateradeArendenByPersOrgNrAndRoleCache");
-	}
-
-	@Test
-	void testGetRolesHasCorrectCacheAnnotation() throws NoSuchMethodException {
-		assertThat(ByggrIntegration.class.getMethod("getRoles").getAnnotation(Cacheable.class).value()).containsExactly("getRollerCache");
-	}
-
-	@Test
-	void testGetErrandHasCorrectCacheAnnotation() throws NoSuchMethodException {
-		assertThat(ByggrIntegration.class.getMethod("getErrand", String.class).getAnnotation(Cacheable.class).value()).containsExactly("getArendeCache");
-	}
-
-	@Test
-	void testGetDocumentHasCorrectCacheAnnotation() throws NoSuchMethodException {
-		assertThat(ByggrIntegration.class.getMethod("getDocument", String.class).getAnnotation(Cacheable.class).value()).containsExactly("getDocumentCache");
 	}
 }
