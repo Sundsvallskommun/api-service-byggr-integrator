@@ -20,15 +20,16 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.StatusType;
 import org.zalando.problem.ThrowableProblem;
 
-import generated.se.sundsvall.arendeexport.Dokument;
-import generated.se.sundsvall.arendeexport.GetDocumentResponse;
-import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
 import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
+
+import generated.se.sundsvall.arendeexport.Dokument;
+import generated.se.sundsvall.arendeexport.GetDocumentResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class ByggrIntegratorService {
@@ -95,11 +96,12 @@ public class ByggrIntegratorService {
 	public String listNeighborhoodNotificationFiles(String municipalityId, String caseNumber, int eventId) {
 		// Fetch answer from ByggR
 		final var result = byggrIntegration.getErrand(caseNumber);
+
 		// Filter on event that matches incoming id
 		final var matches = filterUtility.filterEvent(byggrIntegrationMapper.mapToByggErrandDto(result), eventId);
 
 		// Map to API response
-		return templateMapper.generateFileList(municipalityId, matches);
+		return templateMapper.generateFileList(municipalityId, matches, eventId);
 	}
 
 	public void readFile(String fileId, HttpServletResponse response) {

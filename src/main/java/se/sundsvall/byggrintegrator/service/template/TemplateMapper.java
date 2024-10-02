@@ -34,7 +34,7 @@ public class TemplateMapper {
 	 * @param byggrErrandDto The errand to generate the file list for
 	 * @return The HTML as a string
 	 */
-	public String generateFileList(String municipalityId, ByggrErrandDto byggrErrandDto) {
+	public String generateFileList(String municipalityId, ByggrErrandDto byggrErrandDto, int eventId) {
 		final var fileTemplateDtoList = ofNullable(byggrErrandDto)
 			.map(errandDto -> mapByggrFilesToList(municipalityId, errandDto))
 			.orElse(List.of());
@@ -42,8 +42,25 @@ public class TemplateMapper {
 		final var context = new Context(Locale.of("sv", "SE"));
 		// Add the list of files to the context (as "fileList") so Thymeleaf can use it
 		context.setVariable("fileList", fileTemplateDtoList);
+		context.setVariable("heading", getHeading(byggrErrandDto, eventId));
 
 		return templateEngine.process(TEMPLATE_FILE, context);
+	}
+
+	/**
+	 * Get the heading for the event
+	 * @param byggrErrandDto The errand containing the event to get the heading from
+	 * @param eventId The id of the event to get the heading from
+	 * @return The heading of the event
+	 */
+	private String getHeading(ByggrErrandDto byggrErrandDto, int eventId) {
+		return ofNullable(byggrErrandDto)
+			.map(ByggrErrandDto::getEvents)
+			.flatMap(events -> events.stream()
+				.filter(event -> event.getId() == eventId)
+				.findFirst())
+			.map(ByggrErrandDto.Event::getHeading)
+			.orElse("");
 	}
 
 	// Create a list that we iterate over with Thymeleaf

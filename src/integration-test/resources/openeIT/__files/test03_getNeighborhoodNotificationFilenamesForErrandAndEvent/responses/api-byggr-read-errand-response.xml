@@ -343,6 +343,19 @@
 								</dokument>
 								<refTyp>Bifogad</refTyp>
 							</handling>
+							<handling handlingId="1484449" checksum="24">
+								<typ>ANS</typ>
+								<status>Expedierad</status>
+								<handlingDatum>2024-09-11</handlingDatum>
+								<anteckning>Testor 1_115.pdf</anteckning>
+								<uuid>b2ada294-1236-4a49-a499-54dd3e2ed54b</uuid>
+								<makulerad>false</makulerad>
+								<dokument dokId="250324733" checksum="1641286985|638616481710000000">
+									<namn>Testor 1_115.pdf</namn>
+									<beskrivning>Bilaga</beskrivning>
+								</dokument>
+								<refTyp>Bifogad</refTyp>
+							</handling>
 						</handlingLista>
 						<intressentLista>
 							<intressent intressentId="132360" persOrgNr="16556000-1234" arForetag="true" intressentVersionId="215809" kundnr="132360" arInternKund="false" arAktiv="true" checksum="-562864465|1337238894">

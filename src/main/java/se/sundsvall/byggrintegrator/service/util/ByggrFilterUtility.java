@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,6 +81,7 @@ public class ByggrFilterUtility {
 	 */
 	public List<ByggrErrandDto> filterNeighborhoodNotifications(List<ByggrErrandDto> errands, String identifier) {
 		return errands.stream()
+			.filter(errand -> CollectionUtils.isNotEmpty(errand.getEvents()))
 			.filter(errand -> hasValidEvent(errand.getByggrCaseNumber(), errand.getEvents()))
 			.map(errand -> filterEvents(identifier, errand))
 			.filter(errand -> !errand.getEvents().isEmpty())
@@ -105,7 +107,7 @@ public class ByggrFilterUtility {
 	}
 
 	private boolean hasInvalidEvent(Event event) {
-		final boolean unwantedEvent = ofNullable(unwantedSubtypes)
+		final boolean unwantedEvent = Objects.nonNull(event) && ofNullable(unwantedSubtypes)
 			.map(list -> WANTED_TYPE.equalsIgnoreCase(event.getEventType()) && list.stream().anyMatch(event.getEventSubtype()::equalsIgnoreCase))
 			.orElse(false);
 

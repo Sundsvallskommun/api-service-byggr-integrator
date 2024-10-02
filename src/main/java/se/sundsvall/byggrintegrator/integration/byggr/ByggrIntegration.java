@@ -33,7 +33,7 @@ public class ByggrIntegration {
 		this.byggrIntegrationMapper = byggrIntegrationMapper;
 	}
 
-	@Cacheable(value = "getRelateradeArendenByPersOrgNrAndRoleCache", key = "{#root.methodName, #identifier, #roles != null ? #roles.hashCode() : 0}")
+	@Cacheable(value = "getRelateradeArendenByPersOrgNrAndRoleCache")
 	public GetRelateradeArendenByPersOrgNrAndRoleResponse getErrands(String identifier, List<String> roles) {
 		final var request = byggrIntegrationMapper.mapToGetRelateradeArendenRequest(identifier)
 			.withArendeIntressentRoller(rolesToArrayOfString(roles));
@@ -45,7 +45,7 @@ public class ByggrIntegration {
 		return Objects.isNull(roles) ? null : new ArrayOfString().withString(roles);
 	}
 
-	@Cacheable(value = "getRollerCache", key = "{#root.methodName}")
+	@Cacheable(value = "getRollerCache")
 	public List<String> getRoles() {
 		final var roller = byggrClient.getRoller(byggrIntegrationMapper.createGetRolesRequest());
 
@@ -57,7 +57,7 @@ public class ByggrIntegration {
 			.orElse(List.of());
 	}
 
-	@Cacheable(value = "getArendeCache", key = "{#root.methodName, #dnr}")
+	@Cacheable(value = "getArendeCache")
 	public GetArendeResponse getErrand(String dnr) {
 		try {
 			return byggrClient.getArende(byggrIntegrationMapper.mapToGetArendeRequest(dnr));
@@ -70,7 +70,7 @@ public class ByggrIntegration {
 		}
 	}
 
-	@Cacheable(value = "getDocumentCache", key = "{#root.methodName, #documentId}")
+	@Cacheable(value = "getDocumentCache")
 	public GetDocumentResponse getDocument(String documentId) {
 		try {
 			return byggrClient.getDocument(byggrIntegrationMapper.mapToGetDocumentRequest(documentId));
