@@ -1,8 +1,10 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
@@ -33,8 +35,19 @@ public class ByggrIntegration {
 		this.byggrIntegrationMapper = byggrIntegrationMapper;
 	}
 
-	@Cacheable(value = "getRelateradeArendenByPersOrgNrAndRoleCache")
-	public GetRelateradeArendenByPersOrgNrAndRoleResponse getErrands(String identifier, List<String> roles) {
+	@Cacheable(value = "getErrandsCache")
+	public List<GetRelateradeArendenByPersOrgNrAndRoleResponse> getErrands(String identifier, List<String> roles) {
+
+		final var identifiers = new LinkedHashSet<String>();
+		identifiers.add(identifier);
+		Stream.of(identifier).filter(id -> id.startsWith("16")).map(id -> id.substring(2)).findAny().ifPresent(identifiers::add);
+
+		return identifiers.stream()
+			.map(id -> getErrandsInternal(id, roles))
+			.toList();
+	}
+
+	private GetRelateradeArendenByPersOrgNrAndRoleResponse getErrandsInternal(String identifier, List<String> roles) {
 		final var request = byggrIntegrationMapper.mapToGetRelateradeArendenRequest(identifier)
 			.withArendeIntressentRoller(rolesToArrayOfString(roles));
 
@@ -45,7 +58,7 @@ public class ByggrIntegration {
 		return Objects.isNull(roles) ? null : new ArrayOfString().withString(roles);
 	}
 
-	@Cacheable(value = "getRollerCache")
+	@Cacheable(value = "getRolesCache")
 	public List<String> getRoles() {
 		final var roller = byggrClient.getRoller(byggrIntegrationMapper.createGetRolesRequest());
 
@@ -57,7 +70,7 @@ public class ByggrIntegration {
 			.orElse(List.of());
 	}
 
-	@Cacheable(value = "getArendeCache")
+	@Cacheable(value = "getErrandCache")
 	public GetArendeResponse getErrand(String dnr) {
 		try {
 			return byggrClient.getArende(byggrIntegrationMapper.mapToGetArendeRequest(dnr));

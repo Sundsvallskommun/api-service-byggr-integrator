@@ -24,13 +24,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import generated.se.sundsvall.arendeexport.RollTyp;
+import generated.se.sundsvall.arendeexport.StatusFilter;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
-
-import generated.se.sundsvall.arendeexport.RollTyp;
-import generated.se.sundsvall.arendeexport.StatusFilter;
-
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("junit")
@@ -65,7 +63,7 @@ class ByggrIntegrationMapperTest {
 	@Test
 	void testMapToByggErrandDtos() throws Exception {
 		// Arrange
-		final var response = generateRelateradeArendenResponse();
+		final var response = List.of(generateRelateradeArendenResponse());
 
 		// Act
 		final var byggErrandDtos = mapper.mapToByggErrandDtos(response);
@@ -171,14 +169,14 @@ class ByggrIntegrationMapperTest {
 		final var dnr = "ByggrDiaryNumber";
 		final var response = generateArendeResponse(dnr);
 
-		var byggrErrandDto = mapper.mapToByggErrandDto(response);
+		final var byggrErrandDto = mapper.mapToByggErrandDto(response);
 
-		//Get the files
-		var fileList = byggrErrandDto.getEvents().stream()
+		// Get the files
+		final var fileList = byggrErrandDto.getEvents().stream()
 			.flatMap(event -> event.getFiles().entrySet().stream())
 			.toList();
 
-		//Assert that all files are of the wanted type
+		// Assert that all files are of the wanted type
 		assertThat(fileList.stream().map(Map.Entry::getKey)).allMatch(WANTED_DOCUMENT_ID::equals);
 		assertThat(fileList.stream().map(Map.Entry::getValue)).allMatch(WANTED_DOCUMENT_NAME::equals);
 	}
