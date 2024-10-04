@@ -107,7 +107,7 @@ public class ByggrFilterUtility {
 	}
 
 	private boolean hasInvalidEvent(Event event) {
-		final boolean unwantedEvent = Objects.nonNull(event) && ofNullable(unwantedSubtypes)
+		final var unwantedEvent = Objects.nonNull(event) && ofNullable(unwantedSubtypes)
 			.map(list -> WANTED_TYPE.equalsIgnoreCase(event.getEventType()) && list.stream().anyMatch(event.getEventSubtype()::equalsIgnoreCase))
 			.orElse(false);
 
@@ -123,7 +123,7 @@ public class ByggrFilterUtility {
 			.filter(event -> WANTED_TYPE.equalsIgnoreCase(event.getEventType()))
 			.filter(event -> WANTED_SUBTYPE.equalsIgnoreCase(event.getEventSubtype()))
 			.filter(event -> ofNullable(event.getEventDate()).map(eventDate -> eventDate.isAfter(now().minusDays(31))).orElse(false)) // Events must have a date and not be older than 30 days to be included
-			.filter(event -> event.getStakeholders().stream().anyMatch(stakeholder -> identifier.equals(stakeholder.getLegalId())))
+			.filter(event -> event.getStakeholders().stream().anyMatch(stakeholder -> isEqual(stakeholder.getLegalId(), identifier)))
 			.toList();
 
 		errand.setEvents(filteredEvents);
@@ -145,9 +145,21 @@ public class ByggrFilterUtility {
 
 	private boolean isApplicant(List<Stakeholder> stakeholders, String identifier) {
 		return ofNullable(stakeholders).orElse(Collections.emptyList()).stream()
-			.filter(stakeholder -> StringUtils.equals(stakeholder.getLegalId(), identifier))
+			.filter(stakeholder -> isEqual(stakeholder.getLegalId(), identifier))
 			.map(Stakeholder::getRoles)
 			.anyMatch(roller -> roller.stream().anyMatch(applicantRoles::contains));
+	}
+
+	/**
+	 * Extra logic to evaluate if legalId matches, and also match without prefix 16 if evaluated legalId starts with 16
+	 *
+	 * @param legalIdToMatch
+	 * @param evaluatedLegalId
+	 * @return true if sent in string matches exactly or if they match when leading 16 is removed from evaluated string
+	 */
+	private boolean isEqual(String legalIdToMatch, String evaluatedLegalId) {
+		return StringUtils.equals(legalIdToMatch, evaluatedLegalId) ||
+			(evaluatedLegalId.startsWith("16") && StringUtils.equals(legalIdToMatch, evaluatedLegalId.substring(2)));
 	}
 
 	/**

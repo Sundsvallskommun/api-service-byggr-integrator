@@ -83,9 +83,10 @@ class ByggrIntegrationTest {
 			assertThat(list.getString()).hasSize(1);
 			assertThat(list.getString()).isEqualTo(roles);
 		});
-		assertThat(errands).isNotNull();
-		assertThat(errands.getGetRelateradeArendenByPersOrgNrAndRoleResult()).isNotNull();
-		assertThat(errands.getGetRelateradeArendenByPersOrgNrAndRoleResult().getArende()).isNotEmpty();
+		assertThat(errands).isNotEmpty().satisfiesExactly(errand -> {
+			assertThat(errand.getGetRelateradeArendenByPersOrgNrAndRoleResult()).isNotNull();
+			assertThat(errand.getGetRelateradeArendenByPersOrgNrAndRoleResult().getArende()).isNotEmpty();
+		});
 	}
 
 	@Test

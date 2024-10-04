@@ -15,10 +15,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.springframework.stereotype.Component;
 
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
-
 import generated.se.sundsvall.arendeexport.Arende;
 import generated.se.sundsvall.arendeexport.ArendeIntressent;
 import generated.se.sundsvall.arendeexport.ArrayOfArendeIntressent2;
@@ -38,6 +34,9 @@ import generated.se.sundsvall.arendeexport.HandelseIntressent;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
 import generated.se.sundsvall.arendeexport.RollTyp;
 import generated.se.sundsvall.arendeexport.StatusFilter;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
 
 /**
  * Mapper for handling mappings between ByggR responses and the internal dto class used in the service layer
@@ -70,9 +69,10 @@ public class ByggrIntegrationMapper {
 			.withInkluderaFil(true);
 	}
 
-	public List<ByggrErrandDto> mapToByggErrandDtos(GetRelateradeArendenByPersOrgNrAndRoleResponse response) {
-		return extractErrands(response)
-			.stream()
+	public List<ByggrErrandDto> mapToByggErrandDtos(List<GetRelateradeArendenByPersOrgNrAndRoleResponse> responses) {
+		return ofNullable(responses).orElse(emptyList()).stream()
+			.map(this::extractErrands)
+			.flatMap(Collection::stream)
 			.map(this::toByggErrandDto)
 			.toList();
 	}
@@ -129,7 +129,7 @@ public class ByggrIntegrationMapper {
 			.map(wrapper -> ofNullable(wrapper.getHandling()).orElse(emptyList()))
 			.stream()
 			.flatMap(Collection::stream)
-			.filter(handling -> !DOCUMENT_TYPES_TO_OMIT.contains(handling.getTyp()))   //Remove all documents of type ANS/ANM
+			.filter(handling -> !DOCUMENT_TYPES_TO_OMIT.contains(handling.getTyp())) // Remove all documents of type ANS/ANM
 			.map(HandelseHandling::getDokument)
 			.filter(Objects::nonNull)
 			.filter(document -> Objects.nonNull(document.getDokId()))
