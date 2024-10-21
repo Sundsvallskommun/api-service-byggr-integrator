@@ -17,30 +17,44 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.ApplicantProperties;
+import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.DocumentProperties;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.NotificationProperties;
 
+import generated.se.sundsvall.arendeexport.HandelseHandling;
+
 /**
- * The filter utility has two configuratble settings:
- *
+ * The filter utility has three configurable settings:
+ * <p>
  * <code>
- *   service:
- *     byggr:
- *       filter-utility:
- *         applicant:
- *           roles: <comma separated list of role>
- *         notifications:
- *           unwanted-event-types: <comma separated list of unwanted event type>
+ * service:
+ * byggr:
+ * filter-utility:
+ * applicant:
+ * roles:
+ * - Example
+ * - Example2
+ * notifications:
+ * unwanted-event-types:
+ * - Example
+ * - Example2
+ * document-types:
+ * unwanted-document-types:
+ * - Example
+ * - Example2
  * </code>
- *
+ * <p>
  * The first setting (applicant roles) contains the list of the roles that will be matched against to establish if the
  * stakeholder is to be interpreted as applicant for the errand or not. If the stakeholder matches one of the values in
  * the list, it is interpreted as applicant for the errand.
- *
+ * <p>
  * The second setting (notification unwanted-event-types) is used to filter out errands when collecting neighborhood
  * notifications. If an errand contains an event with event type matching one of the defined value(s), the errand is
  * filtered out from the returned response. If property is not set, then no filtering is made. Observe that filtering is
  * always done regarding that the errand must have a GRANHO event with event type GRAUTS to be returned in the response.
- *
+ * <p>
+ * The third setting (document-types unwanted-document-types) is used to filter documents when fetching a
+ * neighborhood-notification. There is some documents that should not be included in the response and this setting
+ * is used to filter out those documents. If property is not set, then no filtering is made.
  */
 @Component
 public class ByggrFilterUtility {
@@ -51,6 +65,7 @@ public class ByggrFilterUtility {
 
 	private final List<String> applicantRoles;
 	private final List<String> unwantedSubtypes;
+	private final List<String> unwantedDocumentTypes;
 
 	public ByggrFilterUtility(final ByggrFilterProperties byggrProperties) {
 		this.applicantRoles = ofNullable(byggrProperties)
@@ -60,6 +75,10 @@ public class ByggrFilterUtility {
 		this.unwantedSubtypes = ofNullable(byggrProperties)
 			.map(ByggrFilterProperties::notifications)
 			.map(NotificationProperties::unwantedEventTypes)
+			.orElse(null);
+		this.unwantedDocumentTypes = ofNullable(byggrProperties)
+			.map(ByggrFilterProperties::documentTypes)
+			.map(DocumentProperties::unwantedDocumentTypes)
 			.orElse(null);
 	}
 
@@ -75,7 +94,7 @@ public class ByggrFilterUtility {
 	 * Filters the incoming list to a narrowed down list containing all neighborhood notifications for a specific
 	 * stakeholder
 	 *
-	 * @param errands    A list containing the full response from Byggr
+	 * @param errands A list containing the full response from Byggr
 	 * @param identifier The identifier for the neighbor stakeholder to use when filtering errands
 	 * @return A list containing neighborhood notifications where neighborhood legal id matches sent in identfier
 	 */
@@ -130,6 +149,13 @@ public class ByggrFilterUtility {
 		return errand;
 	}
 
+	public boolean hasValidDocumentType(HandelseHandling handling) {
+		return ofNullable(handling)
+			.map(HandelseHandling::getTyp)
+			.map(type -> !unwantedDocumentTypes.contains(type))
+			.orElse(true);
+	}
+
 	/**
 	 * Filters the incoming list to a narrowed down list with errands where sent in legal id is applicant
 	 *
@@ -153,8 +179,8 @@ public class ByggrFilterUtility {
 	/**
 	 * Extra logic to evaluate if legalId matches, and also match without prefix 16 if evaluated legalId starts with 16
 	 *
-	 * @param legalIdToMatch
-	 * @param evaluatedLegalId
+	 * @param legalIdToMatch The legal id to match against
+	 * @param evaluatedLegalId The legal id to evaluate
 	 * @return true if sent in string matches exactly or if they match when leading 16 is removed from evaluated string
 	 */
 	private boolean isEqual(String legalIdToMatch, String evaluatedLegalId) {
@@ -164,9 +190,9 @@ public class ByggrFilterUtility {
 
 	/**
 	 * Filters the incoming list to a narrowed down list containing only the event matching the
-	 * sent in event id (and it's parent case)
+	 * event id (and it's parent case)
 	 *
-	 * @param errand  The full response from Byggr
+	 * @param errand The full response from Byggr
 	 * @param eventId The id to filter on regarding which event that should be present in the response
 	 * @return An errand where only the event matching the provided event id is present
 	 */

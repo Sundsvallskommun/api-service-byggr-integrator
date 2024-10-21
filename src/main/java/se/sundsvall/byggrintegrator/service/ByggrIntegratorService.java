@@ -14,6 +14,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.zalando.problem.Problem;
@@ -29,7 +31,6 @@ import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 
 import generated.se.sundsvall.arendeexport.Dokument;
 import generated.se.sundsvall.arendeexport.GetDocumentResponse;
-import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class ByggrIntegratorService {

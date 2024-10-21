@@ -15,6 +15,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.springframework.stereotype.Component;
 
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
+import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
+
 import generated.se.sundsvall.arendeexport.Arende;
 import generated.se.sundsvall.arendeexport.ArendeIntressent;
 import generated.se.sundsvall.arendeexport.ArrayOfArendeIntressent2;
@@ -34,9 +39,6 @@ import generated.se.sundsvall.arendeexport.HandelseIntressent;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
 import generated.se.sundsvall.arendeexport.RollTyp;
 import generated.se.sundsvall.arendeexport.StatusFilter;
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
 
 /**
  * Mapper for handling mappings between ByggR responses and the internal dto class used in the service layer
@@ -44,7 +46,11 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
 @Component
 public class ByggrIntegrationMapper {
 	private static final ObjectFactory OBJECT_FACTORY = new ObjectFactory();
-	private static final List<String> DOCUMENT_TYPES_TO_OMIT = List.of("ANS", "ANM"); // Document type to filter out
+	private final ByggrFilterUtility filterUtility;
+
+	public ByggrIntegrationMapper(final ByggrFilterUtility filterUtility) {
+		this.filterUtility = filterUtility;
+	}
 
 	public GetRoller createGetRolesRequest() {
 		return OBJECT_FACTORY.createGetRoller()
@@ -129,7 +135,7 @@ public class ByggrIntegrationMapper {
 			.map(wrapper -> ofNullable(wrapper.getHandling()).orElse(emptyList()))
 			.stream()
 			.flatMap(Collection::stream)
-			.filter(handling -> !DOCUMENT_TYPES_TO_OMIT.contains(handling.getTyp())) // Remove all documents of type ANS/ANM
+			.filter(filterUtility::hasValidDocumentType) // Filter out unwanted document types
 			.map(HandelseHandling::getDokument)
 			.filter(Objects::nonNull)
 			.filter(document -> Objects.nonNull(document.getDokId()))

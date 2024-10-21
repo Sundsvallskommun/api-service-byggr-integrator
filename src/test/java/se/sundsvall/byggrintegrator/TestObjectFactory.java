@@ -39,8 +39,8 @@ public final class TestObjectFactory {
 	public static final String BYGGR_ARENDE_NR_2 = "BYGG 2024-000234";
 	public static final String DOCUMENT_FILE_NAME = "random.txt";
 	public static final byte[] DOCUMENT_CONTENT = "Some not so interesting text".getBytes();
-	public static final String UNWANTED_DOKUMENT_TYPE_ANM = "ANM";
-	public static final String UNWANTED_DOKUMENT_TYPE_ANS = "ANS";
+	public static final String UNWANTED_DOCUMENT_TYPE_GRA = "GRA";
+	public static final String UNWANTED_DOCUMENT_TYPE_UNDUT = "UNDUT";
 	public static final String WANTED_DOKUMENT_TYPE = "WANTED";
 	public static final String WANTED_DOCUMENT_NAME = "wantedDocumentName";
 	public static final String WANTED_DOCUMENT_ID = "wantedDocumentId";
@@ -140,12 +140,12 @@ public final class TestObjectFactory {
 					.withDokId(WANTED_DOCUMENT_ID)
 					.withNamn(WANTED_DOCUMENT_NAME)))
 			.withHandling(OBJECT_FACTORY.createHandelseHandling()
-				.withTyp(UNWANTED_DOKUMENT_TYPE_ANS)
+				.withTyp(UNWANTED_DOCUMENT_TYPE_GRA)
 				.withDokument(OBJECT_FACTORY.createDokument()
 					.withDokId("documentId2")
 					.withNamn("documentName2")))
 			.withHandling(OBJECT_FACTORY.createHandelseHandling()
-				.withTyp(UNWANTED_DOKUMENT_TYPE_ANM)
+				.withTyp(UNWANTED_DOCUMENT_TYPE_UNDUT)
 				.withDokument(OBJECT_FACTORY.createDokument()
 					.withDokId("documentId3")
 					.withNamn("documentName4")));
