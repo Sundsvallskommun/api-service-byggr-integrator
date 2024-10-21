@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
@@ -113,7 +114,7 @@ public class ByggrIntegrationMapper {
 		return ofNullable(arende)
 			.map(Arende::getObjektLista)
 			.map(ArrayOfAbstractArendeObjekt2::getAbstractArendeObjekt)
-			.filter(list -> !list.isEmpty())
+			.filter(CollectionUtils::isNotEmpty)
 			.map(List::getFirst)
 			.filter(ArendeFastighet.class::isInstance)
 			.map(ArendeFastighet.class::cast)
