@@ -1,4 +1,3 @@
-
 package se.sundsvall.byggrintegrator.service.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,7 +18,8 @@ class ByggrFilterPropertiesTest {
 
 	@Test
 	void testProperties() {
-		assertThat(properties.applicant().roles()).containsExactly("SOK", "KPER");
+		assertThat(properties.applicant().roles()).containsExactly("SOK", "MSOK", "KPER", "OMB", "KOA");
 		assertThat(properties.notifications().unwantedEventTypes()).containsExactly("UNWANTED1", "UNWANTED2");
+		assertThat(properties.documentTypes().unwantedDocumentTypes()).containsExactly("GRA", "REMISS", "UNDUT");
 	}
 }

@@ -13,3 +13,22 @@ neighborhood-notification-template:
 spring:
   cache:
     type: none
+service:
+  byggr:
+    filter-util:
+      applicant:
+        roles:
+          - SOK
+          - MSOK
+          - KPER
+          - OMB
+          - KOA
+      notifications:
+        unwanted-event-types:
+          - UNWANTED1
+          - UNWANTED2
+      document-types:
+        unwanted-document-types:
+          - GRA
+          - REMISS
+          - UNDUT

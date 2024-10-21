@@ -1,4 +1,3 @@
-
 package se.sundsvall.byggrintegrator.service;
 
 import static java.util.Collections.emptyList;
@@ -8,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -26,6 +26,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,16 +41,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
-import generated.se.sundsvall.arendeexport.GetArendeResponse;
-import generated.se.sundsvall.arendeexport.ObjectFactory;
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.byggrintegrator.TestObjectFactory;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
+
+import generated.se.sundsvall.arendeexport.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.ObjectFactory;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrIntegratorServiceTest {
@@ -87,20 +89,22 @@ class ByggrIntegratorServiceTest {
 	private static final String MUNICIPALITY_ID = "2281";
 
 	@ParameterizedTest
-
 	@MethodSource("identifierProvider")
-	void testFindNeighborhoodNotifications(String indentifier, String processedIdentifier) throws Exception {
+	void testFindNeighborhoodNotifications(String identifier, String processedIdentifier) throws Exception {
 		// Arrange
 		final var response = List.of(generateRelateradeArendenResponse(CASE_APPLICANT, processedIdentifier));
+		setField(mockByggrIntegrationMapper, "filterUtility", mockByggrFilterUtility);
+		setField(mockByggrFilterUtility, "unwantedDocumentTypes", List.of("GRA", "UNDUT"));
 
 		when(mockByggrIntegration.getRoles()).thenReturn(ROLES);
 		when(mockByggrIntegration.getErrands(processedIdentifier, ROLES)).thenReturn(response);
 		when(mockByggrIntegrationMapper.mapToByggErrandDtos(response)).thenCallRealMethod();
+		when(mockByggrFilterUtility.hasValidDocumentType(any())).thenCallRealMethod();
 		when(mockByggrFilterUtility.filterNeighborhoodNotifications(anyList(), eq(processedIdentifier))).thenCallRealMethod();
 		when(mockApiResponseMapper.mapToNeighborhoodKeyValueResponseList(any())).thenCallRealMethod();
 
 		// Act
-		final var neighborNotifications = service.findNeighborhoodNotifications(indentifier);
+		final var neighborNotifications = service.findNeighborhoodNotifications(identifier);
 
 		// Assert
 		assertThat(neighborNotifications).hasSize(3).satisfiesExactlyInAnyOrder(notification -> {
@@ -117,14 +121,14 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegration).getErrands(processedIdentifier, ROLES);
 		verify(mockByggrIntegrationMapper).mapToByggErrandDtos(response);
 		verify(mockByggrFilterUtility).filterNeighborhoodNotifications(anyList(), eq(processedIdentifier));
+		verify(mockByggrFilterUtility, times(6)).hasValidDocumentType(any());
 		verify(mockApiResponseMapper).mapToNeighborhoodKeyValueResponseList(anyList());
 		verifyNoMoreInterations();
 	}
 
 	@ParameterizedTest
-
 	@MethodSource("identifierProvider")
-	void testFindNeighborhoodNotifications_whenEmpty_shouldReturnEmptyList(String indentifier, String processedIdentifier) {
+	void testFindNeighborhoodNotifications_whenEmpty_shouldReturnEmptyList(String identifier, String processedIdentifier) {
 		// Arrange
 		final var response = List.of(OBJECT_FACTORY.createGetRelateradeArendenByPersOrgNrAndRoleResponse());
 
@@ -135,7 +139,7 @@ class ByggrIntegratorServiceTest {
 		when(mockApiResponseMapper.mapToNeighborhoodKeyValueResponseList(anyList())).thenCallRealMethod();
 
 		// Act
-		final var neighborNotifications = service.findNeighborhoodNotifications(indentifier);
+		final var neighborNotifications = service.findNeighborhoodNotifications(identifier);
 
 		// Assert
 		assertThat(neighborNotifications).isEmpty();
@@ -148,8 +152,7 @@ class ByggrIntegratorServiceTest {
 	}
 
 	@ParameterizedTest
-
-	@ValueSource(strings = { ORG_IDENTIFIER, PRIVATE_IDENTIFIER })
+	@ValueSource(strings = {ORG_IDENTIFIER, PRIVATE_IDENTIFIER})
 	void testFindNeighborhoodNotifications_noRoles_shouldThrow404(String identifier) {
 		// Arrange
 		when(mockByggrIntegration.getRoles()).thenReturn(emptyList());
@@ -187,11 +190,12 @@ class ByggrIntegratorServiceTest {
 	}
 
 	@ParameterizedTest
-
 	@MethodSource("identifierProvider")
 	void testFindApplicantErrands(String indentifier, String processedIdentifier) throws Exception {
 		// Prepare list of unwanted handelseslag
 		setField(mockByggrFilterUtility, "applicantRoles", List.of(APPLICANT_ROLE));
+		setField(mockByggrIntegrationMapper, "filterUtility", mockByggrFilterUtility);
+		setField(mockByggrFilterUtility, "unwantedDocumentTypes", List.of("GRA", "UNDUT"));
 
 		// Arrange
 		final var response = List.of(generateRelateradeArendenResponse(processedIdentifier, NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER));
@@ -216,6 +220,7 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegrationMapper).mapToByggErrandDtos(response);
 		verify(mockByggrFilterUtility).filterCasesForApplicant(anyList(), eq(processedIdentifier));
 		verify(mockApiResponseMapper).mapToKeyValueResponseList(anyList());
+		verify(mockByggrFilterUtility, times(6)).hasValidDocumentType(any());
 		verifyNoMoreInterations();
 	}
 

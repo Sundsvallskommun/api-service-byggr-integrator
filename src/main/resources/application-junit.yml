@@ -10,10 +10,21 @@ service:
   byggr:
     filter-util:
       applicant:
-        roles: SOK, KPER
+        roles:
+          - SOK
+          - MSOK
+          - KPER
+          - OMB
+          - KOA
       notifications:
-        unwanted-event-types: UNWANTED1, UNWANTED2
-
+        unwanted-event-types:
+          - UNWANTED1
+          - UNWANTED2
+      document-types:
+        unwanted-document-types:
+          - GRA
+          - REMISS
+          - UNDUT
 neighborhood-notification-template:
   byggr-files:
     domain: http://somewhere.com/

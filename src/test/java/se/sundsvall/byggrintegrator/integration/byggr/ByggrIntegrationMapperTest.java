@@ -1,4 +1,3 @@
-
 package se.sundsvall.byggrintegrator.integration.byggr;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,11 +23,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import generated.se.sundsvall.arendeexport.RollTyp;
-import generated.se.sundsvall.arendeexport.StatusFilter;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
+
+import generated.se.sundsvall.arendeexport.RollTyp;
+import generated.se.sundsvall.arendeexport.StatusFilter;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("junit")

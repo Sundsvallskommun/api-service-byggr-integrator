@@ -7,12 +7,15 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties("service.byggr.filter-util")
-public record ByggrFilterProperties(ApplicantProperties applicant, NotificationProperties notifications) {
+public record ByggrFilterProperties(ApplicantProperties applicant, NotificationProperties notifications, DocumentProperties documentTypes) {
 
 	public record ApplicantProperties(List<String> roles) {
 	}
 
 	public record NotificationProperties(List<String> unwantedEventTypes) {
+	}
+
+	public record DocumentProperties(List<String> unwantedDocumentTypes) {
 	}
 
 }
