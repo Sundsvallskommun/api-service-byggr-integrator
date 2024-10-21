@@ -105,4 +105,28 @@ class OpeneIT extends AbstractAppTest {
 			.sendRequestAndVerifyResponse();
 	}
 
+	@Test
+	void test08_getPropertyDesignationForExistingErrand() {
+		setupCall()
+			.withServicePath("/2281/opene/cases/BYGG 2024-000666/property-designation")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponseHeader(CONTENT_TYPE, List.of(TEXT_HTML_VALUE + ";" + "charset=UTF-8"))
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test09_getPropertyDesignationForExistingErrandWithRequestParameter() {
+		setupCall()
+			.withServicePath("/2281/opene/cases/property-designation?caseNumber=BYGG 2024-000666")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponseHeader(CONTENT_TYPE, List.of(TEXT_HTML_VALUE + ";" + "charset=UTF-8"))
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+
+
 }

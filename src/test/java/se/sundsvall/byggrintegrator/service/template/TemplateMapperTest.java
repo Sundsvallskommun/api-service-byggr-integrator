@@ -4,6 +4,7 @@ package se.sundsvall.byggrintegrator.service.template;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -57,5 +58,27 @@ class TemplateMapperTest {
 		verify(mockProperties, times(2)).domain();
 		verify(mockProperties, times(2)).subDirectory();
 		verifyNoMoreInteractions(mockProperties);
+	}
+
+	@Test
+	void getPropertyDesignationInHtml(){
+		var html = templateMapper.getPropertyDesignation(
+			ByggrErrandDto.builder()
+				.withByggrCaseNumber("BYGG 2001-1234")
+				.withDescription("Bygglov för tillbyggnad av fritidshus")
+				.withPropertyDesignation("RUNSVIK 1:22")
+				.withEvents(List.of(Event.builder()
+					.withHeading("Heading")
+					.withId(1)
+					.withEventType("GRANHO")
+					.withEventSubtype("GRAUTS")
+					.withFiles(Map.of(
+						"file1", "file1.txt",
+						"file2", "file2.txt"))
+					.build()))
+				.build());
+
+		assertThat(html).isEqualTo("<p>RUNSVIK 1:22</p>");
+		verifyNoInteractions(mockProperties);
 	}
 }

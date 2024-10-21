@@ -67,7 +67,7 @@ public class ByggrIntegratorService {
 		// Fetch answer from ByggR
 		final var result = byggrIntegration.getErrands(processedIdentifier, roles);
 		// Filter on neighborhood notifications where identifier matches stakeholder
-		final var matches = filterUtility.filterNeighborhoodNotifications(byggrIntegrationMapper.mapToByggErrandDtos(result), processedIdentifier);
+		final var matches = filterUtility.filterNeighborhoodNotifications(byggrIntegrationMapper.mapToByggrErrandDtos(result), processedIdentifier);
 
 		// Map to API response
 		return apiResponseMapper.mapToNeighborhoodKeyValueResponseList(matches);
@@ -80,10 +80,18 @@ public class ByggrIntegratorService {
 		// Fetch answer from ByggR
 		final var result = byggrIntegration.getErrands(processedIdentifier, null);
 		// Filter on errands where applicant matches identifier
-		final var matches = filterUtility.filterCasesForApplicant(byggrIntegrationMapper.mapToByggErrandDtos(result), processedIdentifier);
+		final var matches = filterUtility.filterCasesForApplicant(byggrIntegrationMapper.mapToByggrErrandDtos(result), processedIdentifier);
 
 		// Map to API response
 		return apiResponseMapper.mapToKeyValueResponseList(matches);
+	}
+
+	public String getPropertyDesignation(final String caseNumber) {
+		var errand = byggrIntegration.getErrand(caseNumber);
+
+		var byggrErrand = byggrIntegrationMapper.mapToByggrErrandDto(errand);
+
+		return templateMapper.getPropertyDesignation(byggrErrand);
 	}
 
 	public Weight getErrandType(String dnr) {
@@ -99,7 +107,7 @@ public class ByggrIntegratorService {
 		final var result = byggrIntegration.getErrand(caseNumber);
 
 		// Filter on event that matches incoming id
-		final var matches = filterUtility.filterEvent(byggrIntegrationMapper.mapToByggErrandDto(result), eventId);
+		final var matches = filterUtility.filterEvent(byggrIntegrationMapper.mapToByggrErrandDto(result), eventId);
 
 		// Map to API response
 		return templateMapper.generateFileList(municipalityId, matches, eventId);
@@ -133,4 +141,6 @@ public class ByggrIntegratorService {
 			.withDetail(detail)
 			.build();
 	}
+
+
 }

@@ -61,12 +61,12 @@ class ByggrIntegrationMapperTest {
 	}
 
 	@Test
-	void testMapToByggErrandDtos() throws Exception {
+	void testMapToByggrErrandDtos() throws Exception {
 		// Arrange
 		final var response = List.of(generateRelateradeArendenResponse());
 
 		// Act
-		final var byggErrandDtos = mapper.mapToByggErrandDtos(response);
+		final var byggErrandDtos = mapper.mapToByggrErrandDtos(response);
 
 		// Assert
 		assertThat(byggErrandDtos).hasSize(2).satisfiesExactlyInAnyOrder(errand -> {
@@ -119,13 +119,13 @@ class ByggrIntegrationMapperTest {
 	}
 
 	@Test
-	void testMapToByggErrandDto() throws Exception {
+	void testMapToByggrErrandDto() throws Exception {
 		// Arrange
 		final var dnr = "ByggrDiaryNumber";
 		final var response = generateArendeResponse(dnr);
 
 		// Act
-		final var byggErrandDto = mapper.mapToByggErrandDto(response);
+		final var byggErrandDto = mapper.mapToByggrErrandDto(response);
 
 		// Assert
 		assertThat(byggErrandDto).isNotNull().satisfies(errand -> {
@@ -169,7 +169,7 @@ class ByggrIntegrationMapperTest {
 		final var dnr = "ByggrDiaryNumber";
 		final var response = generateArendeResponse(dnr);
 
-		final var byggrErrandDto = mapper.mapToByggErrandDto(response);
+		final var byggrErrandDto = mapper.mapToByggrErrandDto(response);
 
 		// Get the files
 		final var fileList = byggrErrandDto.getEvents().stream()

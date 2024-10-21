@@ -23,6 +23,7 @@ import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 import generated.se.sundsvall.arendeexport.Arende;
 import generated.se.sundsvall.arendeexport.ArendeFastighet;
 import generated.se.sundsvall.arendeexport.ArendeIntressent;
+import generated.se.sundsvall.arendeexport.ArrayOfAbstractArendeObjekt2;
 import generated.se.sundsvall.arendeexport.ArrayOfArendeIntressent2;
 import generated.se.sundsvall.arendeexport.ArrayOfHandelse;
 import generated.se.sundsvall.arendeexport.ArrayOfHandelseHandling;
@@ -76,18 +77,18 @@ public class ByggrIntegrationMapper {
 			.withInkluderaFil(true);
 	}
 
-	public List<ByggrErrandDto> mapToByggErrandDtos(List<GetRelateradeArendenByPersOrgNrAndRoleResponse> responses) {
+	public List<ByggrErrandDto> mapToByggrErrandDtos(List<GetRelateradeArendenByPersOrgNrAndRoleResponse> responses) {
 		return ofNullable(responses).orElse(emptyList()).stream()
 			.map(this::extractErrands)
 			.flatMap(Collection::stream)
-			.map(this::toByggErrandDto)
+			.map(this::toByggrErrandDto)
 			.toList();
 	}
 
-	public ByggrErrandDto mapToByggErrandDto(GetArendeResponse response) {
+	public ByggrErrandDto mapToByggrErrandDto(GetArendeResponse response) {
 		return ofNullable(response)
 			.map(GetArendeResponse::getGetArendeResult)
-			.map(this::toByggErrandDto)
+			.map(this::toByggrErrandDto)
 			.orElse(null);
 	}
 
@@ -98,7 +99,7 @@ public class ByggrIntegrationMapper {
 			.toList();
 	}
 
-	private ByggrErrandDto toByggErrandDto(Arende arende) {
+	private ByggrErrandDto toByggrErrandDto(Arende arende) {
 		return ByggrErrandDto.builder()
 			.withByggrCaseNumber(arende.getDnr())
 			.withDescription(arende.getBeskrivning())
@@ -110,9 +111,14 @@ public class ByggrIntegrationMapper {
 
 	private String toPropertyDesignation(Arende arende) {
 		return ofNullable(arende)
-			.map(a -> (ArendeFastighet) a.getObjektLista().getAbstractArendeObjekt().getFirst())
+			.map(Arende::getObjektLista)
+			.map(ArrayOfAbstractArendeObjekt2::getAbstractArendeObjekt)
+			.filter(list -> !list.isEmpty())
+			.map(List::getFirst)
+			.filter(ArendeFastighet.class::isInstance)
+			.map(ArendeFastighet.class::cast)
 			.map(ArendeFastighet::getFastighet)
-			.map(f -> f.getTrakt() + " " + f.getFbetNr())
+			.map(fastighet -> fastighet.getTrakt() + " " + fastighet.getFbetNr())
 			.orElse(null);
 	}
 
