@@ -63,6 +63,8 @@ class ByggrErrandDtoTest {
 		final var events = List.of(
 			Event.builder().withId(123).build(),
 			Event.builder().withId(456).build());
+		final var description = "description";
+		final var propertyDesignation = "propertyDesignation";
 
 		final var stakeholders = List.of(
 			Stakeholder.builder().withLegalId("123456").build(),
@@ -70,11 +72,15 @@ class ByggrErrandDtoTest {
 
 		final var dto = ByggrErrandDto.builder()
 			.withByggrCaseNumber(dnr)
+			.withPropertyDesignation(propertyDesignation)
+			.withDescription(description)
 			.withEvents(events)
 			.withStakeholders(stakeholders)
 			.build();
 
 		assertThat(dto).isNotNull().hasNoNullFieldsOrProperties();
+		assertThat(dto.getDescription()).isEqualTo(description);
+		assertThat(dto.getPropertyDesignation()).isEqualTo(propertyDesignation);
 		assertThat(dto.getByggrCaseNumber()).isEqualTo(dnr);
 		assertThat(dto.getEvents()).isEqualTo(events);
 		assertThat(dto.getStakeholders()).isEqualTo(stakeholders);

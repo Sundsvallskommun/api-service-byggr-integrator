@@ -21,6 +21,7 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 
 import generated.se.sundsvall.arendeexport.Arende;
+import generated.se.sundsvall.arendeexport.ArendeFastighet;
 import generated.se.sundsvall.arendeexport.ArendeIntressent;
 import generated.se.sundsvall.arendeexport.ArrayOfArendeIntressent2;
 import generated.se.sundsvall.arendeexport.ArrayOfHandelse;
@@ -100,9 +101,19 @@ public class ByggrIntegrationMapper {
 	private ByggrErrandDto toByggErrandDto(Arende arende) {
 		return ByggrErrandDto.builder()
 			.withByggrCaseNumber(arende.getDnr())
+			.withDescription(arende.getBeskrivning())
+			.withPropertyDesignation(toPropertyDesignation(arende))
 			.withEvents(toEvents(arende.getHandelseLista()))
 			.withStakeholders(toStakeholders(arende.getIntressentLista()))
 			.build();
+	}
+
+	private String toPropertyDesignation(Arende arende) {
+		return ofNullable(arende)
+			.map(a -> (ArendeFastighet) a.getObjektLista().getAbstractArendeObjekt().getFirst())
+			.map(ArendeFastighet::getFastighet)
+			.map(f -> f.getTrakt() + " " + f.getFbetNr())
+			.orElse(null);
 	}
 
 	private List<Event> toEvents(ArrayOfHandelse handelser) {

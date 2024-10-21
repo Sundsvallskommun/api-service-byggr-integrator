@@ -43,6 +43,7 @@ public class TemplateMapper {
 		// Add the list of files to the context (as "fileList") so Thymeleaf can use it
 		context.setVariable("fileList", fileTemplateDtoList);
 		context.setVariable("heading", getHeading(byggrErrandDto, eventId));
+		context.setVariable("supplementaryHeader", createSupplementaryHeader(byggrErrandDto));
 
 		return templateEngine.process(TEMPLATE_FILE, context);
 	}
@@ -60,6 +61,18 @@ public class TemplateMapper {
 				.filter(event -> event.getId() == eventId)
 				.findFirst())
 			.map(ByggrErrandDto.Event::getHeading)
+			.orElse("");
+	}
+
+	/**
+	 * Create a supplementary header for the file list
+	 * The supplementary header is the description of the errand concatenated with the property designation
+	 * @param byggrErrandDto The errand
+	 * @return
+	 */
+	private String createSupplementaryHeader(ByggrErrandDto byggrErrandDto) {
+		return ofNullable(byggrErrandDto)
+			.map(header -> byggrErrandDto.getDescription() + " (" + byggrErrandDto.getPropertyDesignation() + ")")
 			.orElse("");
 	}
 
