@@ -24,7 +24,7 @@ import generated.se.sundsvall.arendeexport.HandelseHandling;
 
 /**
  * The filter utility has three configurable settings:
- * <p>
+ *
  * <code>
  * service:
  * byggr:
@@ -42,7 +42,6 @@ import generated.se.sundsvall.arendeexport.HandelseHandling;
  * - Example
  * - Example2
  * </code>
- * <p>
  * The first setting (applicant roles) contains the list of the roles that will be matched against to establish if the
  * stakeholder is to be interpreted as applicant for the errand or not. If the stakeholder matches one of the values in
  * the list, it is interpreted as applicant for the errand.
@@ -58,6 +57,7 @@ import generated.se.sundsvall.arendeexport.HandelseHandling;
  */
 @Component
 public class ByggrFilterUtility {
+
 	private static final Logger LOG = LoggerFactory.getLogger(ByggrFilterUtility.class);
 
 	private static final String WANTED_TYPE = "GRANHO";
