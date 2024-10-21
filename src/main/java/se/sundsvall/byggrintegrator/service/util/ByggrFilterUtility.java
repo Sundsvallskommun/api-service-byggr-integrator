@@ -24,24 +24,26 @@ import generated.se.sundsvall.arendeexport.HandelseHandling;
 
 /**
  * The filter utility has three configurable settings:
- *
+ * <p>
  * <code>
  * service:
- * byggr:
- * filter-utility:
- * applicant:
- * roles:
- * - Example
- * - Example2
- * notifications:
- * unwanted-event-types:
- * - Example
- * - Example2
- * document-types:
- * unwanted-document-types:
- * - Example
- * - Example2
+ *   byggr:
+ *     filter-utility:
+ *       applicant:
+ *         roles:
+ *           - Example
+ *           - Example2
+ *       notifications:
+ *         unwanted-event-types:
+ *           - Example
+ *           - Example2
+ *           - Example3
+ *       document-types:
+ *         unwanted-document-types:
+ *           - Example
+ *           - Example2
  * </code>
+ * <p>
  * The first setting (applicant roles) contains the list of the roles that will be matched against to establish if the
  * stakeholder is to be interpreted as applicant for the errand or not. If the stakeholder matches one of the values in
  * the list, it is interpreted as applicant for the errand.
