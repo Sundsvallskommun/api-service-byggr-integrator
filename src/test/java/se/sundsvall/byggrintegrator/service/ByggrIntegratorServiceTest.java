@@ -35,6 +35,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -75,6 +77,9 @@ class ByggrIntegratorServiceTest {
 	@Mock
 	private ServletOutputStream mockServletOutputStream;
 
+	@Captor
+	private ArgumentCaptor<ByggrErrandDto> errandDtoCaptor;
+
 	@InjectMocks
 	private ByggrIntegratorService service;
 
@@ -98,7 +103,7 @@ class ByggrIntegratorServiceTest {
 
 		when(mockByggrIntegration.getRoles()).thenReturn(ROLES);
 		when(mockByggrIntegration.getErrands(processedIdentifier, ROLES)).thenReturn(response);
-		when(mockByggrIntegrationMapper.mapToByggErrandDtos(response)).thenCallRealMethod();
+		when(mockByggrIntegrationMapper.mapToByggrErrandDtos(response)).thenCallRealMethod();
 		when(mockByggrFilterUtility.hasValidDocumentType(any())).thenCallRealMethod();
 		when(mockByggrFilterUtility.filterNeighborhoodNotifications(anyList(), eq(processedIdentifier))).thenCallRealMethod();
 		when(mockApiResponseMapper.mapToNeighborhoodKeyValueResponseList(any())).thenCallRealMethod();
@@ -119,7 +124,7 @@ class ByggrIntegratorServiceTest {
 		});
 		verify(mockByggrIntegration).getRoles();
 		verify(mockByggrIntegration).getErrands(processedIdentifier, ROLES);
-		verify(mockByggrIntegrationMapper).mapToByggErrandDtos(response);
+		verify(mockByggrIntegrationMapper).mapToByggrErrandDtos(response);
 		verify(mockByggrFilterUtility).filterNeighborhoodNotifications(anyList(), eq(processedIdentifier));
 		verify(mockByggrFilterUtility, times(6)).hasValidDocumentType(any());
 		verify(mockApiResponseMapper).mapToNeighborhoodKeyValueResponseList(anyList());
@@ -134,7 +139,7 @@ class ByggrIntegratorServiceTest {
 
 		when(mockByggrIntegration.getRoles()).thenReturn(ROLES);
 		when(mockByggrIntegration.getErrands(processedIdentifier, ROLES)).thenReturn(response);
-		when(mockByggrIntegrationMapper.mapToByggErrandDtos(response)).thenCallRealMethod();
+		when(mockByggrIntegrationMapper.mapToByggrErrandDtos(response)).thenCallRealMethod();
 		when(mockByggrFilterUtility.filterNeighborhoodNotifications(anyList(), eq(processedIdentifier))).thenCallRealMethod();
 		when(mockApiResponseMapper.mapToNeighborhoodKeyValueResponseList(anyList())).thenCallRealMethod();
 
@@ -145,7 +150,7 @@ class ByggrIntegratorServiceTest {
 		assertThat(neighborNotifications).isEmpty();
 		verify(mockByggrIntegration).getRoles();
 		verify(mockByggrIntegration).getErrands(processedIdentifier, ROLES);
-		verify(mockByggrIntegrationMapper).mapToByggErrandDtos(response);
+		verify(mockByggrIntegrationMapper).mapToByggrErrandDtos(response);
 		verify(mockByggrFilterUtility).filterNeighborhoodNotifications(anyList(), eq(processedIdentifier));
 		verify(mockApiResponseMapper).mapToNeighborhoodKeyValueResponseList(emptyList());
 		verifyNoMoreInterations();
@@ -174,7 +179,7 @@ class ByggrIntegratorServiceTest {
 	@Test
 	void testListNeighborhoodNotificationFiles() {
 		when(mockByggrIntegration.getErrand(BYGGR_ERRAND_NUMBER)).thenReturn(OBJECT_FACTORY.createGetArendeResponse());
-		when(mockByggrIntegrationMapper.mapToByggErrandDto(any())).thenReturn(ByggrErrandDto.builder().build());
+		when(mockByggrIntegrationMapper.mapToByggrErrandDto(any())).thenReturn(ByggrErrandDto.builder().build());
 		when(mockByggrFilterUtility.filterEvent(any(ByggrErrandDto.class), eq(EVENT_ID))).thenReturn(ByggrErrandDto.builder().build());
 		when(mockTemplateMapper.generateFileList(any(String.class), any(ByggrErrandDto.class), anyInt())).thenReturn("html");
 
@@ -182,7 +187,7 @@ class ByggrIntegratorServiceTest {
 
 		assertThat(html).isEqualTo("html");
 		verify(mockByggrIntegration).getErrand(BYGGR_ERRAND_NUMBER);
-		verify(mockByggrIntegrationMapper).mapToByggErrandDto(any(GetArendeResponse.class));
+		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(any(GetArendeResponse.class));
 		verify(mockByggrFilterUtility).filterEvent(any(ByggrErrandDto.class), eq(EVENT_ID));
 		verify(mockTemplateMapper).generateFileList(eq(MUNICIPALITY_ID), any(ByggrErrandDto.class), anyInt());
 		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrFilterUtility, mockApiResponseMapper, mockApiResponseMapper);
@@ -201,7 +206,7 @@ class ByggrIntegratorServiceTest {
 		final var response = List.of(generateRelateradeArendenResponse(processedIdentifier, NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER));
 
 		when(mockByggrIntegration.getErrands(processedIdentifier, null)).thenReturn(response);
-		when(mockByggrIntegrationMapper.mapToByggErrandDtos(response)).thenCallRealMethod();
+		when(mockByggrIntegrationMapper.mapToByggrErrandDtos(response)).thenCallRealMethod();
 		when(mockByggrFilterUtility.filterCasesForApplicant(anyList(), eq(processedIdentifier))).thenCallRealMethod();
 		when(mockApiResponseMapper.mapToKeyValueResponseList(anyList())).thenCallRealMethod();
 
@@ -217,10 +222,31 @@ class ByggrIntegratorServiceTest {
 			assertThat(notification.value()).isEqualTo("BYGG 2024-000234");
 		});
 		verify(mockByggrIntegration).getErrands(processedIdentifier, null);
-		verify(mockByggrIntegrationMapper).mapToByggErrandDtos(response);
+		verify(mockByggrIntegrationMapper).mapToByggrErrandDtos(response);
 		verify(mockByggrFilterUtility).filterCasesForApplicant(anyList(), eq(processedIdentifier));
 		verify(mockApiResponseMapper).mapToKeyValueResponseList(anyList());
 		verify(mockByggrFilterUtility, times(6)).hasValidDocumentType(any());
+		verifyNoMoreInterations();
+	}
+
+	@Test
+	void getPropertyDesignation() throws Exception {
+		setField(mockByggrIntegrationMapper, "filterUtility", mockByggrFilterUtility);
+		var dnr = "BYGG 2024-000123";
+		var byggrErrandDto = ByggrErrandDto.builder()
+			.build();
+
+		when(mockByggrIntegration.getErrand(dnr)).thenReturn(generateArendeResponse(dnr));
+		when(mockByggrIntegrationMapper.mapToByggrErrandDto(any())).thenReturn(byggrErrandDto);
+		when(mockTemplateMapper.getPropertyDesignation(any(ByggrErrandDto.class))).thenReturn("RUNSVIK 1:22");
+
+		var propertyDesignation = service.getPropertyDesignation(dnr);
+
+		assertThat(propertyDesignation).isNotNull().isEqualTo("RUNSVIK 1:22");
+		verify(mockByggrIntegration).getErrand(dnr);
+		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(any(GetArendeResponse.class));
+		verify(mockTemplateMapper).getPropertyDesignation(any(ByggrErrandDto.class));
+
 		verifyNoMoreInterations();
 	}
 

@@ -19,6 +19,7 @@ public class TemplateMapper {
 
 	// Name of the file Thymeleaf should use as template
 	private static final String TEMPLATE_FILE = "neighborhood-notification-file-list";
+	private static final String PROPERTY_DESIGNATION_TEMPLATE_FILE = "property-designation";
 
 	private final TemplateProperties templateProperties;
 	private final ITemplateEngine templateEngine;
@@ -46,6 +47,13 @@ public class TemplateMapper {
 		context.setVariable("supplementaryHeader", createSupplementaryHeader(byggrErrandDto));
 
 		return templateEngine.process(TEMPLATE_FILE, context);
+	}
+
+	public String getPropertyDesignation(ByggrErrandDto byggrErrandDto) {
+		final var context = new Context(Locale.of("sv", "SE"));
+		context.setVariable("propertyDesignation", byggrErrandDto.getPropertyDesignation());
+
+		return templateEngine.process(PROPERTY_DESIGNATION_TEMPLATE_FILE, context);
 	}
 
 	/**
