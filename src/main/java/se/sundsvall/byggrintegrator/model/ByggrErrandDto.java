@@ -24,6 +24,8 @@ import lombok.ToString;
 @EqualsAndHashCode
 public class ByggrErrandDto {
 	private String byggrCaseNumber;
+	private String description;
+	private String propertyDesignation;
 	private List<Event> events;
 	private List<Stakeholder> stakeholders;
 

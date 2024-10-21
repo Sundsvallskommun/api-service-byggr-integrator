@@ -21,7 +21,6 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 
 @ActiveProfiles("junit")
-
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class TemplateMapperTest {
 
@@ -40,6 +39,8 @@ class TemplateMapperTest {
 			"1234",
 			ByggrErrandDto.builder()
 				.withByggrCaseNumber("BYGG 2001-1234")
+				.withDescription("Bygglov för tillbyggnad av fritidshus")
+				.withPropertyDesignation("RUNSVIK 1:22")
 				.withEvents(List.of(Event.builder()
 					.withHeading("Heading")
 					.withId(1)
@@ -52,7 +53,7 @@ class TemplateMapperTest {
 				.build(),
 			1);
 
-		assertThat(html).isEqualTo("<p>Heading</p><ul><li><a href=\"http://somewhere.com/1234/files/file2\">file2.txt</a></li><li><a href=\"http://somewhere.com/1234/files/file1\">file1.txt</a></li></ul>");
+		assertThat(html).isEqualTo("<p>Bygglov för tillbyggnad av fritidshus (RUNSVIK 1:22)</p><p>Heading</p><ul><li><a href=\"http://somewhere.com/1234/files/file2\">file2.txt</a></li><li><a href=\"http://somewhere.com/1234/files/file1\">file1.txt</a></li></ul>");
 		verify(mockProperties, times(2)).domain();
 		verify(mockProperties, times(2)).subDirectory();
 		verifyNoMoreInteractions(mockProperties);
