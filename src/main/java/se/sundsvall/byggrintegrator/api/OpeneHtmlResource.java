@@ -64,7 +64,7 @@ public class OpeneHtmlResource {
 	@Operation(summary = "Return html structure with the property designations belonging to the case number")
 	public ResponseEntity<String> findPropertyDesignation(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "caseNumberAndEventId", description = "Case number from ByggR to match", example = "BYGG 2001-123456") @NotBlank @PathVariable("caseNumber") String caseNumber) {
+		@Parameter(name = "caseNumber", description = "Case number from ByggR to match", example = "BYGG 2001-123456") @NotBlank @PathVariable("caseNumber") String caseNumber) {
 
 		return ResponseEntity.ok(byggrIntegratorService.getPropertyDesignation(caseNumber));
 	}
@@ -73,7 +73,7 @@ public class OpeneHtmlResource {
 	@Operation(summary = "Return html structure with the property designations belonging to the case number")
 	public ResponseEntity<String> findPropertyDesignationWithRequestParameter(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "caseNumberAndEventId", description = "Case number from ByggR to match", example = "BYGG 2001-123456") @NotBlank @RequestParam("caseNumber") String caseNumber) {
+		@Parameter(name = "caseNumber", description = "Case number from ByggR to match", example = "BYGG 2001-123456") @NotBlank @RequestParam("caseNumber") String caseNumber) {
 
 		return ResponseEntity.ok(byggrIntegratorService.getPropertyDesignation(caseNumber));
 	}
