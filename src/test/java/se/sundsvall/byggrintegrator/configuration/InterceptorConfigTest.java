@@ -19,6 +19,8 @@ class InterceptorConfigTest {
 
 	private static final String PATH_PATTERN_1 = "/{municipalityId}/opene/neighborhood-notifications/*/filenames";
 	private static final String PATH_PATTERN_2 = "/{municipalityId}/opene/neighborhood-notifications/filenames";
+	private static final String PATH_PATTERN_3 = "/{municipalityId}/opene/cases/*/property-designation";
+	private static final String PATH_PATTERN_4 = "/{municipalityId}/opene/cases/property-designation";
 	@Mock
 	private InterceptorRegistry mockRegistry;
 
@@ -34,7 +36,7 @@ class InterceptorConfigTest {
 		config.addInterceptors(mockRegistry);
 
 		verify(mockRegistry).addInterceptor(any(OpeneHtmlInterceptor.class));
-		verify(mockRegistration).addPathPatterns(PATH_PATTERN_1, PATH_PATTERN_2);
+		verify(mockRegistration).addPathPatterns(PATH_PATTERN_1, PATH_PATTERN_2, PATH_PATTERN_3, PATH_PATTERN_4);
 		verifyNoMoreInteractions(mockRegistry, mockRegistration);
 	}
 }
