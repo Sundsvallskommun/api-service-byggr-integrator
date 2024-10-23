@@ -24,6 +24,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
 		registry.addInterceptor(new OpeneHtmlInterceptor())
 			.addPathPatterns(
 				"/{municipalityId}/opene/neighborhood-notifications/*/filenames",
-				"/{municipalityId}/opene/neighborhood-notifications/filenames");
+				"/{municipalityId}/opene/neighborhood-notifications/filenames",
+				"/{municipalityId}/opene/cases/*/property-designation",
+				"/{municipalityId}/opene/cases/property-designation");
 	}
 }
