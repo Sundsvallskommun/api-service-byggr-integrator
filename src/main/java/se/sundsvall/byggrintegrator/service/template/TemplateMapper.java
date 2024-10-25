@@ -51,7 +51,7 @@ public class TemplateMapper {
 
 	public String getPropertyDesignation(ByggrErrandDto byggrErrandDto) {
 		final var context = new Context(Locale.of("sv", "SE"));
-		context.setVariable("propertyDesignation", byggrErrandDto.getPropertyDesignation());
+		context.setVariable("descriptionAndPropertyDesignation", createSupplementaryHeader(byggrErrandDto));
 
 		return templateEngine.process(PROPERTY_DESIGNATION_TEMPLATE_FILE, context);
 	}

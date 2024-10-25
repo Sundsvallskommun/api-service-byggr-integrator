@@ -78,7 +78,7 @@ class TemplateMapperTest {
 					.build()))
 				.build());
 
-		assertThat(html).isEqualTo("<p>RUNSVIK 1:22</p>");
+		assertThat(html).isEqualTo("<p>Bygglov för tillbyggnad av fritidshus (RUNSVIK 1:22)</p>");
 		verifyNoInteractions(mockProperties);
 	}
 }
