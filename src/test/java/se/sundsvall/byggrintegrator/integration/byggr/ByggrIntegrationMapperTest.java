@@ -23,12 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import generated.se.sundsvall.arendeexport.RollTyp;
+import generated.se.sundsvall.arendeexport.StatusFilter;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
-
-import generated.se.sundsvall.arendeexport.RollTyp;
-import generated.se.sundsvall.arendeexport.StatusFilter;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("junit")
@@ -77,12 +76,14 @@ class ByggrIntegrationMapperTest {
 				assertThat(event.getEventType()).isEqualTo(HANDELSETYP_GRANHO);
 				assertThat(event.getEventSubtype()).isEqualTo(HANDELSESLAG_GRAUTS);
 				assertThat(event.getEventDate()).isEqualTo(LocalDate.now());
+				assertThat(event.getFiles()).isNotEmpty().containsExactlyInAnyOrderEntriesOf(Map.of("wantedDocumentId", "wantedDocumentName"));
 				assertEventStakeholders(event);
 			}, event -> {
 				assertThat(event.getId()).isEqualTo(2);
 				assertThat(event.getEventType()).isEqualTo(HANDELSETYP_GRANHO);
 				assertThat(event.getEventSubtype()).isEqualTo(HANDELSESLAG_GRAUTS);
 				assertThat(event.getEventDate()).isEqualTo(LocalDate.now());
+				assertThat(event.getFiles()).isEmpty();
 				assertEventStakeholders(event);
 			});
 		}, errand -> {
@@ -93,12 +94,14 @@ class ByggrIntegrationMapperTest {
 				assertThat(event.getEventType()).isEqualTo(HANDELSETYP_GRANHO);
 				assertThat(event.getEventSubtype()).isEqualTo(HANDELSESLAG_GRASVA);
 				assertThat(event.getEventDate()).isEqualTo(LocalDate.now());
+				assertThat(event.getFiles()).isNotEmpty().containsExactlyInAnyOrderEntriesOf(Map.of("wantedDocumentId", "wantedDocumentName"));
 				assertEventStakeholders(event);
 			}, event -> {
 				assertThat(event.getId()).isEqualTo(2);
 				assertThat(event.getEventType()).isEqualTo(HANDELSETYP_GRANHO);
 				assertThat(event.getEventSubtype()).isEqualTo(HANDELSESLAG_GRAUTS);
 				assertThat(event.getEventDate()).isEqualTo(LocalDate.now());
+				assertThat(event.getFiles()).isEmpty();
 				assertEventStakeholders(event);
 			});
 		});

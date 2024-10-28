@@ -26,9 +26,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -43,15 +40,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
 
+import generated.se.sundsvall.arendeexport.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.ObjectFactory;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.byggrintegrator.TestObjectFactory;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
-
-import generated.se.sundsvall.arendeexport.GetArendeResponse;
-import generated.se.sundsvall.arendeexport.ObjectFactory;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrIntegratorServiceTest {
@@ -126,7 +124,7 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegration).getErrands(processedIdentifier, ROLES);
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDtos(response);
 		verify(mockByggrFilterUtility).filterNeighborhoodNotifications(anyList(), eq(processedIdentifier));
-		verify(mockByggrFilterUtility, times(6)).hasValidDocumentType(any());
+		verify(mockByggrFilterUtility, times(8)).hasValidDocumentType(any());
 		verify(mockApiResponseMapper).mapToNeighborhoodKeyValueResponseList(anyList());
 		verifyNoMoreInterations();
 	}
@@ -157,7 +155,7 @@ class ByggrIntegratorServiceTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {ORG_IDENTIFIER, PRIVATE_IDENTIFIER})
+	@ValueSource(strings = { ORG_IDENTIFIER, PRIVATE_IDENTIFIER })
 	void testFindNeighborhoodNotifications_noRoles_shouldThrow404(String identifier) {
 		// Arrange
 		when(mockByggrIntegration.getRoles()).thenReturn(emptyList());
@@ -225,22 +223,22 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDtos(response);
 		verify(mockByggrFilterUtility).filterCasesForApplicant(anyList(), eq(processedIdentifier));
 		verify(mockApiResponseMapper).mapToKeyValueResponseList(anyList());
-		verify(mockByggrFilterUtility, times(6)).hasValidDocumentType(any());
+		verify(mockByggrFilterUtility, times(8)).hasValidDocumentType(any());
 		verifyNoMoreInterations();
 	}
 
 	@Test
 	void getPropertyDesignation() throws Exception {
 		setField(mockByggrIntegrationMapper, "filterUtility", mockByggrFilterUtility);
-		var dnr = "BYGG 2024-000123";
-		var byggrErrandDto = ByggrErrandDto.builder()
+		final var dnr = "BYGG 2024-000123";
+		final var byggrErrandDto = ByggrErrandDto.builder()
 			.build();
 
 		when(mockByggrIntegration.getErrand(dnr)).thenReturn(generateArendeResponse(dnr));
 		when(mockByggrIntegrationMapper.mapToByggrErrandDto(any())).thenReturn(byggrErrandDto);
 		when(mockTemplateMapper.getDescriptionAndPropertyDesignation(any(ByggrErrandDto.class))).thenReturn("RUNSVIK 1:22");
 
-		var propertyDesignation = service.getPropertyDesignation(dnr);
+		final var propertyDesignation = service.getPropertyDesignation(dnr);
 
 		assertThat(propertyDesignation).isNotNull().isEqualTo("RUNSVIK 1:22");
 		verify(mockByggrIntegration).getErrand(dnr);

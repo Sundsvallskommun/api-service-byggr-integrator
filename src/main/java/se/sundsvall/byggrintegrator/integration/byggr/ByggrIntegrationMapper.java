@@ -16,11 +16,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
-import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
-
 import generated.se.sundsvall.arendeexport.Arende;
 import generated.se.sundsvall.arendeexport.ArendeFastighet;
 import generated.se.sundsvall.arendeexport.ArendeIntressent;
@@ -42,6 +37,10 @@ import generated.se.sundsvall.arendeexport.HandelseIntressent;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
 import generated.se.sundsvall.arendeexport.RollTyp;
 import generated.se.sundsvall.arendeexport.StatusFilter;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
+import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 
 /**
  * Mapper for handling mappings between ByggR responses and the internal dto class used in the service layer
@@ -159,7 +158,7 @@ public class ByggrIntegrationMapper {
 			.filter(document -> Objects.nonNull(document.getDokId()))
 			.filter(document -> Objects.nonNull(document.getNamn()))
 			.map(document -> Map.entry(document.getDokId(), document.getNamn()))
-			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a1, a2) -> a1)); // In case of duplicate dokIds within the event, just pick the first one of them
 	}
 
 	private List<Stakeholder> toStakeholders(ArrayOfHandelseIntressent2 intressenter) {

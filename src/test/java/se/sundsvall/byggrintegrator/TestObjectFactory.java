@@ -7,9 +7,6 @@ import java.util.List;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
-
 import generated.se.sundsvall.arendeexport.AbstractArendeObjekt;
 import generated.se.sundsvall.arendeexport.Arende;
 import generated.se.sundsvall.arendeexport.ArrayOfAbstractArendeObjekt2;
@@ -21,6 +18,8 @@ import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetDocumentResponse;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 
 public final class TestObjectFactory {
 
@@ -135,6 +134,11 @@ public final class TestObjectFactory {
 		final var arrayOfHandelseHandling = OBJECT_FACTORY.createArrayOfHandelseHandling();
 		return arrayOfHandelseHandling
 			.withHandling(OBJECT_FACTORY.createHandelseHandling()
+				.withTyp(WANTED_DOKUMENT_TYPE)
+				.withDokument(OBJECT_FACTORY.createDokument()
+					.withDokId(WANTED_DOCUMENT_ID)
+					.withNamn(WANTED_DOCUMENT_NAME)))
+			.withHandling(OBJECT_FACTORY.createHandelseHandling() // Create a handling with a duplicate of document, to verify that only one remains after mapping
 				.withTyp(WANTED_DOKUMENT_TYPE)
 				.withDokument(OBJECT_FACTORY.createDokument()
 					.withDokId(WANTED_DOCUMENT_ID)
