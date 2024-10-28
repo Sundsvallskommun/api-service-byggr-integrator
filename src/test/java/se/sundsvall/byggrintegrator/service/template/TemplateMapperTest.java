@@ -61,8 +61,8 @@ class TemplateMapperTest {
 	}
 
 	@Test
-	void getPropertyDesignationInHtml(){
-		var html = templateMapper.getPropertyDesignation(
+	void getDescriptionAndPropertyDesignationInHtml(){
+		var html = templateMapper.getDescriptionAndPropertyDesignation(
 			ByggrErrandDto.builder()
 				.withByggrCaseNumber("BYGG 2001-1234")
 				.withDescription("Bygglov för tillbyggnad av fritidshus")
