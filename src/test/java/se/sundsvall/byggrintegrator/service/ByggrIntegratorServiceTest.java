@@ -238,14 +238,14 @@ class ByggrIntegratorServiceTest {
 
 		when(mockByggrIntegration.getErrand(dnr)).thenReturn(generateArendeResponse(dnr));
 		when(mockByggrIntegrationMapper.mapToByggrErrandDto(any())).thenReturn(byggrErrandDto);
-		when(mockTemplateMapper.getPropertyDesignation(any(ByggrErrandDto.class))).thenReturn("RUNSVIK 1:22");
+		when(mockTemplateMapper.getDescriptionAndPropertyDesignation(any(ByggrErrandDto.class))).thenReturn("RUNSVIK 1:22");
 
 		var propertyDesignation = service.getPropertyDesignation(dnr);
 
 		assertThat(propertyDesignation).isNotNull().isEqualTo("RUNSVIK 1:22");
 		verify(mockByggrIntegration).getErrand(dnr);
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(any(GetArendeResponse.class));
-		verify(mockTemplateMapper).getPropertyDesignation(any(ByggrErrandDto.class));
+		verify(mockTemplateMapper).getDescriptionAndPropertyDesignation(any(ByggrErrandDto.class));
 
 		verifyNoMoreInterations();
 	}

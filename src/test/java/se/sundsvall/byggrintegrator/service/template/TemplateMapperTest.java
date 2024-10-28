@@ -61,8 +61,8 @@ class TemplateMapperTest {
 	}
 
 	@Test
-	void getPropertyDesignationInHtml(){
-		var html = templateMapper.getPropertyDesignation(
+	void getDescriptionAndPropertyDesignationInHtml(){
+		var html = templateMapper.getDescriptionAndPropertyDesignation(
 			ByggrErrandDto.builder()
 				.withByggrCaseNumber("BYGG 2001-1234")
 				.withDescription("Bygglov för tillbyggnad av fritidshus")
@@ -78,7 +78,7 @@ class TemplateMapperTest {
 					.build()))
 				.build());
 
-		assertThat(html).isEqualTo("<p>RUNSVIK 1:22</p>");
+		assertThat(html).isEqualTo("<p>Bygglov för tillbyggnad av fritidshus (RUNSVIK 1:22)</p>");
 		verifyNoInteractions(mockProperties);
 	}
 }

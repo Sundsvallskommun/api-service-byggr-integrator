@@ -91,7 +91,7 @@ public class ByggrIntegratorService {
 
 		var byggrErrand = byggrIntegrationMapper.mapToByggrErrandDto(errand);
 
-		return templateMapper.getPropertyDesignation(byggrErrand);
+		return templateMapper.getDescriptionAndPropertyDesignation(byggrErrand);
 	}
 
 	public Weight getErrandType(String dnr) {
