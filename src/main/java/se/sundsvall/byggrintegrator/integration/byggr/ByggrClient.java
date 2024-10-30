@@ -19,15 +19,23 @@ public interface ByggrClient {
 
 	String TEXT_XML_UTF8 = "text/xml;charset=UTF-8";
 
-	@PostMapping(consumes = TEXT_XML_UTF8, produces = TEXT_XML_UTF8, headers = { "SOAPAction=www.tekis.se/ServiceContract/V8/IExportArenden/GetRelateradeArendenByPersOrgNrAndRole" })
+	@PostMapping(consumes = TEXT_XML_UTF8, produces = TEXT_XML_UTF8, headers = {
+		"SOAPAction=www.tekis.se/ServiceContract/V8/IExportArenden/GetRelateradeArendenByPersOrgNrAndRole"
+	})
 	GetRelateradeArendenByPersOrgNrAndRoleResponse getRelateradeArendenByPersOrgNrAndRole(GetRelateradeArendenByPersOrgNrAndRole request);
 
-	@PostMapping(consumes = TEXT_XML_UTF8, produces = TEXT_XML_UTF8, headers = { "SOAPAction=www.tekis.se/ServiceContract/V8/IExportArenden/GetRoller" })
+	@PostMapping(consumes = TEXT_XML_UTF8, produces = TEXT_XML_UTF8, headers = {
+		"SOAPAction=www.tekis.se/ServiceContract/V8/IExportArenden/GetRoller"
+	})
 	GetRollerResponse getRoller(GetRoller request);
 
-	@PostMapping(consumes = TEXT_XML_UTF8, produces = TEXT_XML_UTF8, headers = { "SOAPAction=www.tekis.se/ServiceContract/V8/IExportArenden/GetArende" })
+	@PostMapping(consumes = TEXT_XML_UTF8, produces = TEXT_XML_UTF8, headers = {
+		"SOAPAction=www.tekis.se/ServiceContract/V8/IExportArenden/GetArende"
+	})
 	GetArendeResponse getArende(GetArende request);
 
-	@PostMapping(consumes = TEXT_XML_UTF8, produces = TEXT_XML_UTF8, headers = { "SOAPAction=www.tekis.se/ServiceContract/V8/IExportArenden/GetDocument" })
+	@PostMapping(consumes = TEXT_XML_UTF8, produces = TEXT_XML_UTF8, headers = {
+		"SOAPAction=www.tekis.se/ServiceContract/V8/IExportArenden/GetDocument"
+	})
 	GetDocumentResponse getDocument(GetDocument request);
 }

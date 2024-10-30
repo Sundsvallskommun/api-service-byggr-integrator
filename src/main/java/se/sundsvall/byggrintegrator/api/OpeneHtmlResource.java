@@ -31,7 +31,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Open-E", description = "ByggR Integrator Open-E resources")
 @RequestMapping(path = "/{municipalityId}/opene")
 @ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
-@ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
+@ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(oneOf = {
+	Problem.class, ConstraintViolationProblem.class
+})))
 @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(schema = @Schema(implementation = Problem.class)))
@@ -42,7 +44,9 @@ public class OpeneHtmlResource {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
-	@GetMapping(path = "/neighborhood-notifications/{caseNumberAndEventId}/filenames", produces = { TEXT_HTML_VALUE })
+	@GetMapping(path = "/neighborhood-notifications/{caseNumberAndEventId}/filenames", produces = {
+		TEXT_HTML_VALUE
+	})
 	@Operation(summary = "Return html structure for all neighborhood-notification files belonging to the event that matches the sent in case number and event id")
 	public ResponseEntity<String> findNeighborhoodNotificationFiles(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
@@ -51,7 +55,9 @@ public class OpeneHtmlResource {
 		return ResponseEntity.ok(byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, parseDiaryNumber(caseNumberAndEventId), parseEventId(caseNumberAndEventId)));
 	}
 
-	@GetMapping(path = "/neighborhood-notifications/filenames", produces = { TEXT_HTML_VALUE })
+	@GetMapping(path = "/neighborhood-notifications/filenames", produces = {
+		TEXT_HTML_VALUE
+	})
 	@Operation(summary = "Return html structure for all neighborhood-notification files belonging to the event that matches the sent in case number and event id")
 	public ResponseEntity<String> findNeighborhoodNotificationFilesWithRequestParameter(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
@@ -60,7 +66,9 @@ public class OpeneHtmlResource {
 		return ResponseEntity.ok(byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, parseDiaryNumber(caseNumberAndEventId), parseEventId(caseNumberAndEventId)));
 	}
 
-	@GetMapping(path = "/cases/{caseNumber}/property-designation", produces = { TEXT_HTML_VALUE })
+	@GetMapping(path = "/cases/{caseNumber}/property-designation", produces = {
+		TEXT_HTML_VALUE
+	})
 	@Operation(summary = "Return html structure with the property designations belonging to the case number")
 	public ResponseEntity<String> findPropertyDesignation(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
@@ -69,7 +77,9 @@ public class OpeneHtmlResource {
 		return ResponseEntity.ok(byggrIntegratorService.getPropertyDesignation(caseNumber));
 	}
 
-	@GetMapping(path = "/cases/property-designation", produces = { TEXT_HTML_VALUE })
+	@GetMapping(path = "/cases/property-designation", produces = {
+		TEXT_HTML_VALUE
+	})
 	@Operation(summary = "Return html structure with the property designations belonging to the case number")
 	public ResponseEntity<String> findPropertyDesignationWithRequestParameter(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
@@ -77,6 +87,5 @@ public class OpeneHtmlResource {
 
 		return ResponseEntity.ok(byggrIntegratorService.getPropertyDesignation(caseNumber));
 	}
-
 
 }

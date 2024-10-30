@@ -29,7 +29,9 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 @Tag(name = "Open-E", description = "ByggR Integrator Open-E resources")
 @RequestMapping(path = "/{municipalityId}/opene")
 @ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
-@ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
+@ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(oneOf = {
+	Problem.class, ConstraintViolationProblem.class
+})))
 @ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(schema = @Schema(implementation = Problem.class)))
@@ -41,7 +43,9 @@ public class OpeneXmlResource {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
-	@GetMapping(path = "/cases/{caseNumber}/type", produces = { APPLICATION_XML_VALUE, APPLICATION_PROBLEM_XML_VALUE })
+	@GetMapping(path = "/cases/{caseNumber}/type", produces = {
+		APPLICATION_XML_VALUE, APPLICATION_PROBLEM_XML_VALUE
+	})
 	@Operation(summary = "Return xml structure errand type for the errand matching sent in case number")
 	public ResponseEntity<Weight> getErrandType(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
@@ -50,7 +54,9 @@ public class OpeneXmlResource {
 		return ResponseEntity.ok(byggrIntegratorService.getErrandType(caseNumber));
 	}
 
-	@GetMapping(path = "/cases/type", produces = { APPLICATION_XML_VALUE, APPLICATION_PROBLEM_XML_VALUE })
+	@GetMapping(path = "/cases/type", produces = {
+		APPLICATION_XML_VALUE, APPLICATION_PROBLEM_XML_VALUE
+	})
 	@Operation(summary = "Return xml structure errand type for the errand matching sent in case number")
 	public ResponseEntity<Weight> getErrandTypeWithRequestParameter(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,

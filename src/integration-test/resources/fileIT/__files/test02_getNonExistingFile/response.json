@@ -1,5 +1,5 @@
 {
+	"detail": "No file with id 123123123 was found",
 	"title": "Not Found",
-	"status": 404,
-	"detail": "No file with id 123123123 was found"
+	"status": 404
 }

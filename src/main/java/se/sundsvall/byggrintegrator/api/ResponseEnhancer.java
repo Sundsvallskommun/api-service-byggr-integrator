@@ -10,7 +10,7 @@ public final class ResponseEnhancer {
 	private static final String INFO_QUERY_RESPONSE_HEADER_VALUE = "true";
 
 	private ResponseEnhancer() {
-		//Shouldn't be instantiated
+		// Shouldn't be instantiated
 	}
 
 	public static void addInfoQueryResponseHeader(HttpServletResponse response) {

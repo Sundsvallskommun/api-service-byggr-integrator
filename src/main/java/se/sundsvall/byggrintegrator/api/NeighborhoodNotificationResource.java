@@ -31,7 +31,9 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 @Tag(name = "Neighborhood notifications", description = "Neighborhood notification resources")
 @RequestMapping(path = "/{municipalityId}")
 @ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
-@ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
+@ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(oneOf = {
+	Problem.class, ConstraintViolationProblem.class
+})))
 @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(schema = @Schema(implementation = Problem.class)))
 public class NeighborhoodNotificationResource {
@@ -42,7 +44,9 @@ public class NeighborhoodNotificationResource {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
-	@GetMapping(path = "/neighborhood-notifications/{identifier}/errands", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+	@GetMapping(path = "/neighborhood-notifications/{identifier}/errands", produces = {
+		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = Problem.class)))
 	@Operation(summary = "Lists all neighborhood notifications where the provided identifier is a stakeholder")
 	public ResponseEntity<List<KeyValue>> findNeighborhoodNotifications(

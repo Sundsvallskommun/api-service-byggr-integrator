@@ -27,7 +27,9 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 @Validated
 @RequestMapping(path = "/{municipalityId}")
 @Tag(name = "Files", description = "File operations")
-@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
+@ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(oneOf = {
+	Problem.class, ConstraintViolationProblem.class
+})))
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 public class FileResource {
 
@@ -37,7 +39,9 @@ public class FileResource {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
-	@GetMapping(path = "/files/{fileId}", produces = { APPLICATION_OCTET_STREAM_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+	@GetMapping(path = "/files/{fileId}", produces = {
+		APPLICATION_OCTET_STREAM_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@Operation(summary = "Return file content for file matching the provided id")
 	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
 	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))

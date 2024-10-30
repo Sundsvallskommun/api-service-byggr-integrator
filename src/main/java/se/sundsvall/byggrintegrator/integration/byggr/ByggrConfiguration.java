@@ -25,7 +25,6 @@ public class ByggrConfiguration {
 		.withSOAPProtocol(SOAPConstants.SOAP_1_1_PROTOCOL)
 		.withWriteXmlDeclaration(true);
 
-
 	@Bean
 	public FeignBuilderCustomizer feignBuilderCustomizer(final ByggrProperties byggrProperties) {
 		return FeignMultiCustomizer.create()

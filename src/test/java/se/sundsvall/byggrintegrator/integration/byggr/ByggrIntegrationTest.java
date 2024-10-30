@@ -57,7 +57,9 @@ class ByggrIntegrationTest {
 	private static final ObjectFactory OBJECT_FACTORY = new ObjectFactory();
 
 	@ParameterizedTest
-	@ValueSource(strings = { "ANM" })
+	@ValueSource(strings = {
+		"ANM"
+	})
 	@NullSource
 	void testGetErrandsFromByggr(String role) throws Exception {
 		// Arrange
@@ -214,7 +216,9 @@ class ByggrIntegrationTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = { "Error getting GemDmsdoclink something something", "Something is not a numeric value" })
+	@ValueSource(strings = {
+		"Error getting GemDmsdoclink something something", "Something is not a numeric value"
+	})
 	void testGetDocument_soapFaultNotFound(String faultText) throws Exception {
 		// Arrange
 		final var fileId = "fileId";
