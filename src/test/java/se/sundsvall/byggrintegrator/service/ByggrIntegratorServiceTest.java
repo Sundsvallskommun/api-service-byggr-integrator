@@ -155,7 +155,9 @@ class ByggrIntegratorServiceTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = { ORG_IDENTIFIER, PRIVATE_IDENTIFIER })
+	@ValueSource(strings = {
+		ORG_IDENTIFIER, PRIVATE_IDENTIFIER
+	})
 	void testFindNeighborhoodNotifications_noRoles_shouldThrow404(String identifier) {
 		// Arrange
 		when(mockByggrIntegration.getRoles()).thenReturn(emptyList());

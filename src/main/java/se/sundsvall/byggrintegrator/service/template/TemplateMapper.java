@@ -32,8 +32,8 @@ public class TemplateMapper {
 	/**
 	 * Generate a list of files as HTML
 	 *
-	 * @param byggrErrandDto The errand to generate the file list for
-	 * @return The HTML as a string
+	 * @param  byggrErrandDto The errand to generate the file list for
+	 * @return                The HTML as a string
 	 */
 	public String generateFileList(String municipalityId, ByggrErrandDto byggrErrandDto, int eventId) {
 		final var fileTemplateDtoList = ofNullable(byggrErrandDto)
@@ -58,9 +58,10 @@ public class TemplateMapper {
 
 	/**
 	 * Get the heading for the event
-	 * @param byggrErrandDto The errand containing the event to get the heading from
-	 * @param eventId The id of the event to get the heading from
-	 * @return The heading of the event
+	 * 
+	 * @param  byggrErrandDto The errand containing the event to get the heading from
+	 * @param  eventId        The id of the event to get the heading from
+	 * @return                The heading of the event
 	 */
 	private String getHeading(ByggrErrandDto byggrErrandDto, int eventId) {
 		return ofNullable(byggrErrandDto)
@@ -75,7 +76,8 @@ public class TemplateMapper {
 	/**
 	 * Create a supplementary header for the file list
 	 * The supplementary header is the description of the errand concatenated with the property designation
-	 * @param byggrErrandDto The errand
+	 * 
+	 * @param  byggrErrandDto The errand
 	 * @return
 	 */
 	private String createSupplementaryHeader(ByggrErrandDto byggrErrandDto) {

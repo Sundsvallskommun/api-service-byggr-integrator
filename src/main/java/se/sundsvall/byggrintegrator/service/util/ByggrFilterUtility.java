@@ -96,9 +96,9 @@ public class ByggrFilterUtility {
 	 * Filters the incoming list to a narrowed down list containing all neighborhood notifications for a specific
 	 * stakeholder
 	 *
-	 * @param errands A list containing the full response from Byggr
-	 * @param identifier The identifier for the neighbor stakeholder to use when filtering errands
-	 * @return A list containing neighborhood notifications where neighborhood legal id matches sent in identfier
+	 * @param  errands    A list containing the full response from Byggr
+	 * @param  identifier The identifier for the neighbor stakeholder to use when filtering errands
+	 * @return            A list containing neighborhood notifications where neighborhood legal id matches sent in identfier
 	 */
 	public List<ByggrErrandDto> filterNeighborhoodNotifications(List<ByggrErrandDto> errands, String identifier) {
 		return errands.stream()
@@ -161,9 +161,9 @@ public class ByggrFilterUtility {
 	/**
 	 * Filters the incoming list to a narrowed down list with errands where sent in legal id is applicant
 	 *
-	 * @param errands A list containing the full response from Byggr
-	 * @param legalId The legal id for the applicant party to filter out errands on
-	 * @return A list containing errands where sent in legal id is applicant
+	 * @param  errands A list containing the full response from Byggr
+	 * @param  legalId The legal id for the applicant party to filter out errands on
+	 * @return         A list containing errands where sent in legal id is applicant
 	 */
 	public List<ByggrErrandDto> filterCasesForApplicant(List<ByggrErrandDto> errands, String legalId) {
 		return errands.stream()
@@ -181,9 +181,10 @@ public class ByggrFilterUtility {
 	/**
 	 * Extra logic to evaluate if legalId matches, and also match without prefix 16 if evaluated legalId starts with 16
 	 *
-	 * @param legalIdToMatch The legal id to match against
-	 * @param evaluatedLegalId The legal id to evaluate
-	 * @return true if sent in string matches exactly or if they match when leading 16 is removed from evaluated string
+	 * @param  legalIdToMatch   The legal id to match against
+	 * @param  evaluatedLegalId The legal id to evaluate
+	 * @return                  true if sent in string matches exactly or if they match when leading 16 is removed from
+	 *                          evaluated string
 	 */
 	private boolean isEqual(String legalIdToMatch, String evaluatedLegalId) {
 		return StringUtils.equals(legalIdToMatch, evaluatedLegalId) ||
@@ -194,9 +195,9 @@ public class ByggrFilterUtility {
 	 * Filters the incoming list to a narrowed down list containing only the event matching the
 	 * event id (and it's parent case)
 	 *
-	 * @param errand The full response from Byggr
-	 * @param eventId The id to filter on regarding which event that should be present in the response
-	 * @return An errand where only the event matching the provided event id is present
+	 * @param  errand  The full response from Byggr
+	 * @param  eventId The id to filter on regarding which event that should be present in the response
+	 * @return         An errand where only the event matching the provided event id is present
 	 */
 	public ByggrErrandDto filterEvent(ByggrErrandDto errand, int eventId) {
 		if (Objects.isNull(errand)) {

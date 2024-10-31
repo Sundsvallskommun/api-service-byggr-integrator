@@ -11,9 +11,9 @@ import org.springframework.util.MimeTypeUtils;
 public class MimeTypeUtility {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MimeTypeUtility.class);
 	private static final MimeTypeDetector DETECTOR = new MimeTypeDetector();
-	
+
 	private MimeTypeUtility() {}
-	
+
 	public static String detectMimeType(String fileName, byte[] byteArray) {
 		try (InputStream stream = new ByteArrayInputStream(byteArray)) {
 			return DETECTOR.detectMimeType(fileName, stream);

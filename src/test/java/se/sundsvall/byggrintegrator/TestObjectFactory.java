@@ -57,7 +57,7 @@ public final class TestObjectFactory {
 	/**
 	 * Creates a response with one valid and one invalid event
 	 *
-	 * @return A populated response
+	 * @return                                A populated response
 	 * @throws DatatypeConfigurationException
 	 */
 	public static GetRelateradeArendenByPersOrgNrAndRoleResponse generateRelateradeArendenResponse(String caseApplicant,

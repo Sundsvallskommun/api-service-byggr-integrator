@@ -31,7 +31,9 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 @Tag(name = "Applicant", description = "Applicant resources")
 @RequestMapping(path = "/{municipalityId}")
 @ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
-@ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(oneOf = { Problem.class, ConstraintViolationProblem.class })))
+@ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(oneOf = {
+	Problem.class, ConstraintViolationProblem.class
+})))
 @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(schema = @Schema(implementation = Problem.class)))
 public class ApplicantResource {
@@ -42,7 +44,9 @@ public class ApplicantResource {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
-	@GetMapping(path = "/applicants/{identifier}/errands", produces = { APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE })
+	@GetMapping(path = "/applicants/{identifier}/errands", produces = {
+		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
+	})
 	@Operation(summary = "Lists all errands where the provided identifier is applicant")
 	public ResponseEntity<List<KeyValue>> findApplicantErrands(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,

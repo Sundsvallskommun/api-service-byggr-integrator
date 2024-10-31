@@ -22,7 +22,9 @@ import jakarta.validation.ReportAsSingleViolation;
 @ValidPersonalNumber
 @ValidOrganizationNumber
 @ReportAsSingleViolation
-@Target({ ElementType.FIELD, ElementType.PARAMETER })
+@Target({
+	ElementType.FIELD, ElementType.PARAMETER
+})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidPersonalOrOrgNumber {
 

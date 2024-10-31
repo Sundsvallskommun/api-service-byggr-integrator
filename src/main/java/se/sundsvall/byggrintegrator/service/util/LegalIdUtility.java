@@ -15,8 +15,8 @@ public class LegalIdUtility {
 	 * - string has a character length of exactly 10
 	 * If sent in string doesn't pass the test above, the string is returned untouched.
 	 *
-	 * @param legalId string
-	 * @return string prefixed with 16 or untouched string if the it does not match the tests above
+	 * @param  legalId string
+	 * @return         string prefixed with 16 or untouched string if the it does not match the tests above
 	 */
 	public static String prefixOrgnbr(String legalId) {
 		return ofNullable(legalId)
@@ -32,8 +32,8 @@ public class LegalIdUtility {
 	 * - string contains no hyphen
 	 * If sent in string doesn't pass the test above, the string is returned untouched.
 	 *
-	 * @param legalId string
-	 * @return string with hyphen added or untouched string if it doesn't pass the tests above
+	 * @param  legalId string
+	 * @return         string with hyphen added or untouched string if it doesn't pass the tests above
 	 */
 	public static String addHyphen(String legalId) {
 		return ofNullable(legalId)

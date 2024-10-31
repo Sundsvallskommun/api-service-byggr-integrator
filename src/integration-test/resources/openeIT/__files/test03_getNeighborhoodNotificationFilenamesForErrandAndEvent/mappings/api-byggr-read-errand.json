@@ -1,22 +1,14 @@
 {
-	"name": "api-byggr-read-errand",
 	"request": {
+		"headers": {"Content-Type": {"equalTo": "text/xml;charset=UTF-8"}},
 		"method": "POST",
-		"urlPath": "/api-byggr/endpoint",
-		"headers": {
-			"Content-Type": {
-				"equalTo": "text/xml;charset=UTF-8"
-			}
-		},
-        "bodyPatterns" : [{
-          "equalToXml" : "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body><GetArende xmlns=\"www.tekis.se/ServiceContract\"><dnr>BYGG 2024-000668</dnr></GetArende></SOAP-ENV:Body></SOAP-ENV:Envelope>"
-	    }]
+		"bodyPatterns": [{"equalToXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body><GetArende xmlns=\"www.tekis.se/ServiceContract\"><dnr>BYGG 2024-000668<\/dnr><\/GetArende><\/SOAP-ENV:Body><\/SOAP-ENV:Envelope>"}],
+		"urlPath": "/api-byggr/endpoint"
 	},
 	"response": {
-		"headers": {
-			"Content-Type": "application/xml"
-		},
-		"status": 200,
-		"bodyFileName": "test03_getNeighborhoodNotificationFilenamesForErrandAndEvent/responses/api-byggr-read-errand-response.xml"
-	}
+		"headers": {"Content-Type": "application/xml"},
+		"bodyFileName": "test03_getNeighborhoodNotificationFilenamesForErrandAndEvent/responses/api-byggr-read-errand-response.xml",
+		"status": 200
+	},
+	"name": "api-byggr-read-errand"
 }
