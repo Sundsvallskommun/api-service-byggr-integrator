@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-
 import se.sundsvall.byggrintegrator.api.interceptor.OpeneHtmlInterceptor;
 
 @ExtendWith(MockitoExtension.class)

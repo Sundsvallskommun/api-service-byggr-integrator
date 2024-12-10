@@ -6,15 +6,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.test.context.ActiveProfiles;
-
 import generated.se.sundsvall.arendeexport.ArrayOfRoll;
 import generated.se.sundsvall.arendeexport.GetArende;
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
@@ -25,6 +16,13 @@ import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRol
 import generated.se.sundsvall.arendeexport.GetRoller;
 import generated.se.sundsvall.arendeexport.GetRollerResponse;
 import generated.se.sundsvall.arendeexport.Roll;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.test.context.ActiveProfiles;
 import se.sundsvall.byggrintegrator.Application;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {

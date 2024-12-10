@@ -1,12 +1,22 @@
 {
 	"request": {
-		"headers": {"Content-Type": {"equalTo": "text/xml;charset=UTF-8"}},
+		"headers": {
+			"Content-Type": {
+				"equalTo": "text/xml;charset=UTF-8"
+			}
+		},
 		"method": "POST",
-		"bodyPatterns": [{"equalToXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body><GetArende xmlns=\"www.tekis.se/ServiceContract\"><dnr>BYGG 2024-000667<\/dnr><\/GetArende><\/SOAP-ENV:Body><\/SOAP-ENV:Envelope>"}],
+		"bodyPatterns": [
+			{
+				"equalToXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body><GetArende xmlns=\"www.tekis.se/ServiceContract\"><dnr>BYGG 2024-000667</dnr></GetArende></SOAP-ENV:Body></SOAP-ENV:Envelope>"
+			}
+		],
 		"urlPath": "/api-byggr/endpoint"
 	},
 	"response": {
-		"headers": {"Content-Type": "application/xml"},
+		"headers": {
+			"Content-Type": "application/xml"
+		},
 		"bodyFileName": "test02_getTypeForNonExistingErrand/responses/api-byggr-read-errand-response.xml",
 		"status": 500
 	},

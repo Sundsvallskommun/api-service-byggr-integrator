@@ -5,7 +5,6 @@ import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.addHyphen
 import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.prefixOrgnbr;
 
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

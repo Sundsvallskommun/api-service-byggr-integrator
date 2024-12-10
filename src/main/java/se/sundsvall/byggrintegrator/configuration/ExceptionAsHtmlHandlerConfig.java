@@ -1,8 +1,8 @@
 package se.sundsvall.byggrintegrator.configuration;
 
+import jakarta.validation.ValidationException;
 import java.util.Locale;
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -19,11 +19,8 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.StatusType;
 import org.zalando.problem.ThrowableProblem;
-
 import se.sundsvall.byggrintegrator.api.OpeneHtmlResource;
 import se.sundsvall.dept44.requestid.RequestId;
-
-import jakarta.validation.ValidationException;
 
 /**
  * Configuration to convert exceptions and problems to HTML responses.
