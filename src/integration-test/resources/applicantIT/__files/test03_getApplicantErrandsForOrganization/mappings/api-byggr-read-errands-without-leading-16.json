@@ -1,12 +1,22 @@
 {
 	"request": {
-		"headers": {"Content-Type": {"equalTo": "text/xml;charset=UTF-8"}},
+		"headers": {
+			"Content-Type": {
+				"equalTo": "text/xml;charset=UTF-8"
+			}
+		},
 		"method": "POST",
-		"bodyPatterns": [{"equalToXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body><GetRelateradeArendenByPersOrgNrAndRole xmlns=\"www.tekis.se/ServiceContract\"><persOrgNr>556677-1234<\/persOrgNr><statusfilter>Aktiv<\/statusfilter><\/GetRelateradeArendenByPersOrgNrAndRole><\/SOAP-ENV:Body><\/SOAP-ENV:Envelope>"}],
+		"bodyPatterns": [
+			{
+				"equalToXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body><GetRelateradeArendenByPersOrgNrAndRole xmlns=\"www.tekis.se/ServiceContract\"><persOrgNr>556677-1234</persOrgNr><statusfilter>Aktiv</statusfilter></GetRelateradeArendenByPersOrgNrAndRole></SOAP-ENV:Body></SOAP-ENV:Envelope>"
+			}
+		],
 		"urlPath": "/api-byggr/endpoint"
 	},
 	"response": {
-		"headers": {"Content-Type": "application/xml"},
+		"headers": {
+			"Content-Type": "application/xml"
+		},
 		"bodyFileName": "test03_getApplicantErrandsForOrganization/responses/api-byggr-read-errands-without-leading-16-response.xml",
 		"status": 200
 	},

@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import feign.soap.SOAPDecoder;
+import feign.soap.SOAPEncoder;
+import feign.soap.SOAPErrorDecoder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -13,12 +16,7 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cloud.openfeign.FeignBuilderCustomizer;
-
 import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
-
-import feign.soap.SOAPDecoder;
-import feign.soap.SOAPEncoder;
-import feign.soap.SOAPErrorDecoder;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrConfigurationTest {

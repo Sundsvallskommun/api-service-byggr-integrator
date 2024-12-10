@@ -3,7 +3,6 @@ package se.sundsvall.byggrintegrator.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Test;
 
 class CaseTypeEnumTest {

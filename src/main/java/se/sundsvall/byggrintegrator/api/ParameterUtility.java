@@ -4,7 +4,6 @@ import static java.util.Optional.ofNullable;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringUtils;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;

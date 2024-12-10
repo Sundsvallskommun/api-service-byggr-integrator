@@ -7,6 +7,7 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.I_AM_A_TEAPOT;
 import static org.springframework.http.MediaType.TEXT_HTML;
 
+import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
-
-import jakarta.validation.ValidationException;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.dept44.requestid.RequestId;
 

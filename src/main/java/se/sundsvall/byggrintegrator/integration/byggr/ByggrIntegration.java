@@ -1,15 +1,5 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
-
 import generated.se.sundsvall.arendeexport.ArrayOfString;
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetDocumentResponse;
@@ -17,6 +7,14 @@ import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRol
 import generated.se.sundsvall.arendeexport.Roll;
 import jakarta.xml.soap.SOAPFault;
 import jakarta.xml.ws.soap.SOAPFaultException;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ByggrIntegration {

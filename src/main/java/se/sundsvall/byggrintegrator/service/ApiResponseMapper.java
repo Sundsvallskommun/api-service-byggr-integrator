@@ -3,13 +3,11 @@ package se.sundsvall.byggrintegrator.service;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 
+import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.springframework.stereotype.Component;
-
-import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;

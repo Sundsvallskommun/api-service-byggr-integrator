@@ -1,8 +1,7 @@
 package se.sundsvall.byggrintegrator.api;
 
-import java.util.Optional;
-
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Optional;
 
 public final class ResponseEnhancer {
 

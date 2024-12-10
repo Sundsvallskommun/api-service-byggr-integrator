@@ -10,27 +10,23 @@ import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.addHyphen
 import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.prefixOrgnbr;
 import static se.sundsvall.byggrintegrator.service.util.MimeTypeUtility.detectMimeType;
 
+import generated.se.sundsvall.arendeexport.Dokument;
+import generated.se.sundsvall.arendeexport.GetDocumentResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
-
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.zalando.problem.Problem;
 import org.zalando.problem.StatusType;
 import org.zalando.problem.ThrowableProblem;
-
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
 import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
-
-import generated.se.sundsvall.arendeexport.Dokument;
-import generated.se.sundsvall.arendeexport.GetDocumentResponse;
 
 @Service
 public class ByggrIntegratorService {

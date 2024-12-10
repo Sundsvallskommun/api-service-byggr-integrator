@@ -1,7 +1,6 @@
 package se.sundsvall.byggrintegrator.service.util;
 
 import java.util.List;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 

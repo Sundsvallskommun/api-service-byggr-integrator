@@ -2,9 +2,6 @@ package se.sundsvall.byggrintegrator.integration.byggr;
 
 import static se.sundsvall.byggrintegrator.integration.byggr.ByggrConfiguration.CLIENT_ID;
 
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-
 import generated.se.sundsvall.arendeexport.GetArende;
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetDocument;
@@ -13,6 +10,8 @@ import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRol
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.GetRoller;
 import generated.se.sundsvall.arendeexport.GetRollerResponse;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @FeignClient(name = CLIENT_ID, url = "${integration.byggr.url}", configuration = ByggrConfiguration.class)
 public interface ByggrClient {

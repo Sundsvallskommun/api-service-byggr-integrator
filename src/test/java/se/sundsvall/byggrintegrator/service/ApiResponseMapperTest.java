@@ -5,7 +5,6 @@ import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeRespo
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateByggrErrandDtos;
 
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 class ApiResponseMapperTest {

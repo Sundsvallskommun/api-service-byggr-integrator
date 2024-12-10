@@ -1,7 +1,6 @@
 package se.sundsvall.byggrintegrator.api.model;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

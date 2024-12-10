@@ -1,7 +1,6 @@
 package se.sundsvall.byggrintegrator.service;
 
 import java.util.Arrays;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

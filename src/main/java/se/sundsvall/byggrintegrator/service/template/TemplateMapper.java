@@ -5,11 +5,9 @@ import static java.util.Optional.ofNullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-
 import org.springframework.stereotype.Component;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
-
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.FileTemplateDto;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
