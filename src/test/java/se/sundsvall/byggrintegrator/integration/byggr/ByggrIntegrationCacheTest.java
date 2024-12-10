@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -37,10 +37,10 @@ class ByggrIntegrationCacheTest {
 	@Autowired
 	private ByggrIntegration byggrIntegration;
 
-	@MockBean
+	@MockitoBean
 	private ByggrClient mockByggrClient;
 
-	@MockBean
+	@MockitoBean
 	private ByggrIntegrationMapper mockByggrIntegrationMapper;
 
 	@Test

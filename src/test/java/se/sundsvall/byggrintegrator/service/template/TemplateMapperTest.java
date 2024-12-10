@@ -14,7 +14,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import se.sundsvall.byggrintegrator.Application;
@@ -25,7 +25,7 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 class TemplateMapperTest {
 
-	@MockBean
+	@MockitoBean
 	private TemplateProperties mockProperties;
 
 	@Autowired
