@@ -2,11 +2,10 @@ package se.sundsvall.byggrintegrator.api.interceptor;
 
 import static se.sundsvall.byggrintegrator.api.ResponseEnhancer.addInfoQueryResponseHeader;
 
-import org.jetbrains.annotations.NotNull;
-import org.springframework.web.servlet.HandlerInterceptor;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 public class OpeneHtmlInterceptor implements HandlerInterceptor {
 

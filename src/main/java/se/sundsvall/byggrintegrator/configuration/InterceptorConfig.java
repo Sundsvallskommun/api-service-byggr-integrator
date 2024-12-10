@@ -3,7 +3,6 @@ package se.sundsvall.byggrintegrator.configuration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
 import se.sundsvall.byggrintegrator.api.interceptor.OpeneHtmlInterceptor;
 
 @Configuration

@@ -3,24 +3,21 @@ package se.sundsvall.byggrintegrator.service.util;
 import static java.time.LocalDate.now;
 import static java.util.Optional.ofNullable;
 
+import generated.se.sundsvall.arendeexport.HandelseHandling;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.ApplicantProperties;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.DocumentProperties;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.NotificationProperties;
-
-import generated.se.sundsvall.arendeexport.HandelseHandling;
 
 /**
  * The filter utility has three configurable settings:
