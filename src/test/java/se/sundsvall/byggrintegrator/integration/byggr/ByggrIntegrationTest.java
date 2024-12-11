@@ -75,7 +75,7 @@ class ByggrIntegrationTest {
 		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrClient);
 
 		assertThat(getRelateradeArendenByPersOrgNrAndRoleCaptor.getValue().getPersOrgNr()).isEqualTo(identifier);
-		assertThat(getRelateradeArendenByPersOrgNrAndRoleCaptor.getValue().getArendeIntressentRoller()).satisfiesAnyOf(list -> {
+		assertThat(getRelateradeArendenByPersOrgNrAndRoleCaptor.getValue().getHandelseIntressentRoller()).satisfiesAnyOf(list -> {
 			assertThat(role).isNull();
 			assertThat(list).isNull();
 		}, list -> {

@@ -7,12 +7,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import generated.se.sundsvall.arendeexport.ArrayOfRoll;
-import generated.se.sundsvall.arendeexport.GetArende;
-import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetDocument;
 import generated.se.sundsvall.arendeexport.GetDocumentResponse;
-import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
-import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.GetRoller;
 import generated.se.sundsvall.arendeexport.GetRollerResponse;
 import generated.se.sundsvall.arendeexport.Roll;
@@ -27,7 +23,7 @@ import se.sundsvall.byggrintegrator.Application;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
 	"spring.cache.type=SIMPLE",
-	"spring.cache.cache-names=getErrandsCache, getRolesCache, getErrandCache, getDocumentCache"
+	"spring.cache.cache-names=getRolesCache, getDocumentCache"
 })
 @ActiveProfiles("junit")
 class ByggrIntegrationCacheTest {
@@ -40,29 +36,6 @@ class ByggrIntegrationCacheTest {
 
 	@MockitoBean
 	private ByggrIntegrationMapper mockByggrIntegrationMapper;
-
-	@Test
-	void testGetErrandsCaching() {
-		final var identifier = "1234567890";
-		final var roles = List.of("ANM");
-		final var response = new GetRelateradeArendenByPersOrgNrAndRoleResponse();
-
-		when(mockByggrIntegrationMapper.mapToGetRelateradeArendenRequest(any())).thenReturn(new GetRelateradeArendenByPersOrgNrAndRole());
-		when(mockByggrClient.getRelateradeArendenByPersOrgNrAndRole(any())).thenReturn(response);
-
-		// First call - should hit the service
-		var result = byggrIntegration.getErrands(identifier, roles);
-		assertThat(result).isEqualTo(List.of(response)); // Cannot use isSameAs since the list is copied
-
-		// Second call - should hit the cache
-		result = byggrIntegration.getErrands(identifier, roles);
-		assertThat(result).isEqualTo(List.of(response)); // Cannot use isSameAs since the list is copied
-
-		// Mocks should only have been called once
-		verify(mockByggrIntegrationMapper).mapToGetRelateradeArendenRequest(identifier);
-		verify(mockByggrClient).getRelateradeArendenByPersOrgNrAndRole(any());
-		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrClient);
-	}
 
 	@Test
 	void testGetRolesCaching() {
@@ -83,28 +56,6 @@ class ByggrIntegrationCacheTest {
 		// Mocks should only have been called once
 		verify(mockByggrIntegrationMapper).createGetRolesRequest();
 		verify(mockByggrClient).getRoller(any());
-		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrClient);
-	}
-
-	@Test
-	void testGetErrandCaching() {
-		final var dnr = "1234567890";
-		final var response = new GetArendeResponse();
-
-		when(mockByggrIntegrationMapper.mapToGetArendeRequest(any())).thenReturn(new GetArende());
-		when(mockByggrClient.getArende(any())).thenReturn(response);
-
-		// First call - should hit the service
-		var result = byggrIntegration.getErrand(dnr);
-		assertThat(result).isSameAs(response);
-
-		// Second call - should hit the cache
-		result = byggrIntegration.getErrand(dnr);
-		assertThat(result).isSameAs(response);
-
-		// Mocks should only have been called once
-		verify(mockByggrIntegrationMapper).mapToGetArendeRequest(dnr);
-		verify(mockByggrClient).getArende(any());
 		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrClient);
 	}
 
@@ -131,18 +82,8 @@ class ByggrIntegrationCacheTest {
 	}
 
 	@Test
-	void testGetErrandsHasCorrectCacheAnnotation() throws NoSuchMethodException {
-		assertThat(ByggrIntegration.class.getMethod("getErrands", String.class, List.class).getAnnotation(Cacheable.class).value()).containsExactly("getErrandsCache");
-	}
-
-	@Test
 	void testGetRolesHasCorrectCacheAnnotation() throws NoSuchMethodException {
 		assertThat(ByggrIntegration.class.getMethod("getRoles").getAnnotation(Cacheable.class).value()).containsExactly("getRolesCache");
-	}
-
-	@Test
-	void testGetErrandHasCorrectCacheAnnotation() throws NoSuchMethodException {
-		assertThat(ByggrIntegration.class.getMethod("getErrand", String.class).getAnnotation(Cacheable.class).value()).containsExactly("getErrandCache");
 	}
 
 	@Test

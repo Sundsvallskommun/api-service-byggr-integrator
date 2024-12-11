@@ -29,9 +29,9 @@ spring:
     prefix: classpath:/templates/
     suffix: .html
   cache:
-    cache-names: getRolesCache, getErrandCache, getDocumentCache, getErrandsCache
+    cache-names: getRolesCache, getDocumentCache, findNeighborhoodNotificationsCache, findApplicantErrandsCache, getPropertyDesignationCache, getErrandTypeCache, listNeighborhoodNotificationFilesCache
     caffeine:
-      spec: maximumSize=500, expireAfterWrite=300s
+      spec: maximumSize=100, expireAfterWrite=300s
 neighborhood-notification-template: 
   byggr-files:
     sub-directory: /files/

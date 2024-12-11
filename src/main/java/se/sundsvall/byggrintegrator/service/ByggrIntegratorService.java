@@ -10,17 +10,20 @@ import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.addHyphen
 import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.prefixOrgnbr;
 import static se.sundsvall.byggrintegrator.service.util.MimeTypeUtility.detectMimeType;
 
-import generated.se.sundsvall.arendeexport.Dokument;
-import generated.se.sundsvall.arendeexport.GetDocumentResponse;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
+
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.zalando.problem.Problem;
 import org.zalando.problem.StatusType;
 import org.zalando.problem.ThrowableProblem;
+
+import generated.se.sundsvall.arendeexport.Dokument;
+import generated.se.sundsvall.arendeexport.GetDocumentResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
@@ -51,6 +54,7 @@ public class ByggrIntegratorService {
 		this.filterUtility = filterUtility;
 	}
 
+	@Cacheable(value = "findNeighborhoodNotificationsCache")
 	public List<KeyValue> findNeighborhoodNotifications(String identifier) {
 		final var roles = byggrIntegration.getRoles();
 		if (CollectionUtils.isEmpty(roles)) {
@@ -69,6 +73,7 @@ public class ByggrIntegratorService {
 		return apiResponseMapper.mapToNeighborhoodKeyValueResponseList(matches);
 	}
 
+	@Cacheable(value = "findApplicantErrandsCache")
 	public List<KeyValue> findApplicantErrands(String identifier) {
 		// Prefix identifier if it contains organisation legal id and add hyphen to identifier as ByggR integration formats
 		// legal id that way
@@ -82,31 +87,34 @@ public class ByggrIntegratorService {
 		return apiResponseMapper.mapToKeyValueResponseList(matches);
 	}
 
+	@Cacheable(value = "getPropertyDesignationCache")
 	public String getPropertyDesignation(final String caseNumber) {
-		var errand = byggrIntegration.getErrand(caseNumber);
+		final var errand = byggrIntegration.getErrand(caseNumber);
 
-		var byggrErrand = byggrIntegrationMapper.mapToByggrErrandDto(errand);
+		final var byggrErrand = byggrIntegrationMapper.mapToByggrErrandDto(errand);
 
 		return templateMapper.getDescriptionAndPropertyDesignation(byggrErrand);
 	}
 
-	public Weight getErrandType(String dnr) {
-		final var errand = byggrIntegration.getErrand(dnr);
+	@Cacheable(value = "getErrandTypeCache")
+	public Weight getErrandType(String caseNumber) {
+		final var errand = byggrIntegration.getErrand(caseNumber);
 
 		return ofNullable(errand)
 			.map(apiResponseMapper::mapToWeight)
-			.orElseThrow(() -> createProblem(NOT_FOUND, ERROR_ERRAND_NOT_FOUND.formatted(dnr)));
+			.orElseThrow(() -> createProblem(NOT_FOUND, ERROR_ERRAND_NOT_FOUND.formatted(caseNumber)));
 	}
 
+	@Cacheable(value = "listNeighborhoodNotificationFilesCache")
 	public String listNeighborhoodNotificationFiles(String municipalityId, String caseNumber, int eventId) {
 		// Fetch answer from ByggR
 		final var result = byggrIntegration.getErrand(caseNumber);
 
 		// Filter on event that matches incoming id
-		final var matches = filterUtility.filterEvent(byggrIntegrationMapper.mapToByggrErrandDto(result), eventId);
+		final var match = filterUtility.filterEvent(byggrIntegrationMapper.mapToByggrErrandDto(result), eventId);
 
 		// Map to API response
-		return templateMapper.generateFileList(municipalityId, matches, eventId);
+		return templateMapper.generateFileList(municipalityId, match, eventId);
 	}
 
 	public void readFile(String fileId, HttpServletResponse response) {

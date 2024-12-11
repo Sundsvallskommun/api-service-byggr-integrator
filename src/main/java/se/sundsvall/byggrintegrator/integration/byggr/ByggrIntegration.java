@@ -33,7 +33,6 @@ public class ByggrIntegration {
 		this.byggrIntegrationMapper = byggrIntegrationMapper;
 	}
 
-	@Cacheable(value = "getErrandsCache")
 	public List<GetRelateradeArendenByPersOrgNrAndRoleResponse> getErrands(String identifier, List<String> roles) {
 
 		final var identifiers = new LinkedHashSet<String>();
@@ -47,7 +46,7 @@ public class ByggrIntegration {
 
 	private GetRelateradeArendenByPersOrgNrAndRoleResponse getErrandsInternal(String identifier, List<String> roles) {
 		final var request = byggrIntegrationMapper.mapToGetRelateradeArendenRequest(identifier)
-			.withArendeIntressentRoller(rolesToArrayOfString(roles));
+			.withHandelseIntressentRoller(rolesToArrayOfString(roles));
 
 		return byggrClient.getRelateradeArendenByPersOrgNrAndRole(request);
 	}
@@ -68,7 +67,6 @@ public class ByggrIntegration {
 			.orElse(List.of());
 	}
 
-	@Cacheable(value = "getErrandCache")
 	public GetArendeResponse getErrand(String dnr) {
 		try {
 			return byggrClient.getArende(byggrIntegrationMapper.mapToGetArendeRequest(dnr));
