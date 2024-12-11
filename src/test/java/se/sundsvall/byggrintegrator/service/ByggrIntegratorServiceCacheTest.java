@@ -7,19 +7,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import generated.se.sundsvall.arendeexport.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.test.context.ActiveProfiles;
-
-import generated.se.sundsvall.arendeexport.GetArendeResponse;
-import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.api.model.Weight;
@@ -39,19 +37,19 @@ class ByggrIntegratorServiceCacheTest {
 	@Autowired
 	private ByggrIntegratorService byggrIntegratorService;
 
-	@MockBean
+	@MockitoBean
 	private ByggrIntegration mockByggrIntegration;
 
-	@MockBean
+	@MockitoBean
 	private ByggrIntegrationMapper mockByggrIntegrationMapper;
 
-	@MockBean
+	@MockitoBean
 	private ApiResponseMapper mockApiResponseMapper;
 
-	@MockBean
+	@MockitoBean
 	private TemplateMapper mockTemplateMapper;
 
-	@MockBean
+	@MockitoBean
 	private ByggrFilterUtility mockFilterUtility;
 
 	@Captor
