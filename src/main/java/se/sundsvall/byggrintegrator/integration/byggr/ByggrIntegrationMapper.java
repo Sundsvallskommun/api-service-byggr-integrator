@@ -3,19 +3,6 @@ package se.sundsvall.byggrintegrator.integration.byggr;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 
-import java.time.ZonedDateTime;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.stereotype.Component;
-
 import generated.se.sundsvall.arendeexport.Arende;
 import generated.se.sundsvall.arendeexport.ArendeFastighet;
 import generated.se.sundsvall.arendeexport.ArendeIntressent;
@@ -37,6 +24,16 @@ import generated.se.sundsvall.arendeexport.HandelseIntressent;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
 import generated.se.sundsvall.arendeexport.RollTyp;
 import generated.se.sundsvall.arendeexport.StatusFilter;
+import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import javax.xml.datatype.XMLGregorianCalendar;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Component;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;

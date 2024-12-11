@@ -1,0 +1,801 @@
+openapi: 3.0.1
+info:
+  title: api-service-byggr-integrator
+  contact: { }
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+  version: "1.1"
+servers:
+  - url: http://localhost:50175
+    description: Generated server url
+tags:
+  - name: Open-E
+    description: ByggR Integrator Open-E resources
+  - name: Neighborhood notifications
+    description: Neighborhood notification resources
+  - name: Files
+    description: File operations
+  - name: Applicant
+    description: Applicant resources
+paths:
+  /{municipalityId}/opene/neighborhood-notifications/{caseNumberAndEventId}/filenames:
+    get:
+      tags:
+        - Open-E
+      summary: Return html structure for all neighborhood-notification files belonging
+        to the event that matches the sent in case number and event id
+      operationId: findNeighborhoodNotificationFiles
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: caseNumberAndEventId
+          in: path
+          description: Case number from ByggR to match
+          required: true
+          schema:
+            type: string
+          example: "BYGG 2001-123456 [1234]"
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            text/html:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            text/html:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "200":
+          description: Successful Operation
+          content:
+            text/html:
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            text/html:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad Request
+          content:
+            text/html:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+  /{municipalityId}/opene/neighborhood-notifications/filenames:
+    get:
+      tags:
+        - Open-E
+      summary: Return html structure for all neighborhood-notification files belonging
+        to the event that matches the sent in case number and event id
+      operationId: findNeighborhoodNotificationFilesWithRequestParameter
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: caseNumberAndEventId
+          in: query
+          description: Case number from ByggR to match
+          required: true
+          schema:
+            type: string
+          example: "BYGG 2001-123456 [1234]"
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            text/html:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            text/html:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "200":
+          description: Successful Operation
+          content:
+            text/html:
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            text/html:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad Request
+          content:
+            text/html:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+  /{municipalityId}/opene/cases/{caseNumber}/type:
+    get:
+      tags:
+        - Open-E
+      summary: Return xml structure errand type for the errand matching sent in case
+        number
+      operationId: getErrandType
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: caseNumber
+          in: path
+          description: Case number from ByggR
+          required: true
+          schema:
+            type: string
+          example: BYGG 2001-123456
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/problem+xml:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/problem+xml:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "200":
+          description: Successful Operation
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Weight"
+            application/problem+xml:
+              schema:
+                $ref: "#/components/schemas/Weight"
+        "404":
+          description: Not Found
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/problem+xml:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad Request
+          content:
+            application/xml:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+            application/problem+xml:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+  /{municipalityId}/opene/cases/{caseNumber}/property-designation:
+    get:
+      tags:
+        - Open-E
+      summary: Return html structure with the property designations belonging to the
+        case number
+      operationId: findPropertyDesignation
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: caseNumber
+          in: path
+          description: Case number from ByggR to match
+          required: true
+          schema:
+            type: string
+          example: BYGG 2001-123456
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            text/html:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            text/html:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "200":
+          description: Successful Operation
+          content:
+            text/html:
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            text/html:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad Request
+          content:
+            text/html:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+  /{municipalityId}/opene/cases/type:
+    get:
+      tags:
+        - Open-E
+      summary: Return xml structure errand type for the errand matching sent in case
+        number
+      operationId: getErrandTypeWithRequestParameter
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: caseNumber
+          in: query
+          description: Case number from ByggR
+          required: true
+          schema:
+            type: string
+          example: BYGG 2001-123456
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/problem+xml:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/problem+xml:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "200":
+          description: Successful Operation
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Weight"
+            application/problem+xml:
+              schema:
+                $ref: "#/components/schemas/Weight"
+        "404":
+          description: Not Found
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/problem+xml:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad Request
+          content:
+            application/xml:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+            application/problem+xml:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+  /{municipalityId}/opene/cases/property-designation:
+    get:
+      tags:
+        - Open-E
+      summary: Return html structure with the property designations belonging to the
+        case number
+      operationId: findPropertyDesignationWithRequestParameter
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: caseNumber
+          in: query
+          description: Case number from ByggR to match
+          required: true
+          schema:
+            type: string
+          example: BYGG 2001-123456
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            text/html:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            text/html:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "200":
+          description: Successful Operation
+          content:
+            text/html:
+              schema:
+                type: string
+        "404":
+          description: Not Found
+          content:
+            text/html:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad Request
+          content:
+            text/html:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+  /{municipalityId}/neighborhood-notifications/{identifier}/errands:
+    get:
+      tags:
+        - Neighborhood notifications
+      summary: Lists all neighborhood notifications where the provided identifier
+        is a stakeholder
+      operationId: findNeighborhoodNotifications
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: identifier
+          in: path
+          description: Personal or organization number
+          required: true
+          schema:
+            type: string
+          example: 190102031234
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KeyValue"
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KeyValue"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+  /{municipalityId}/files/{fileId}:
+    get:
+      tags:
+        - Files
+      summary: Return file content for file matching the provided id
+      operationId: readFile
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: fileId
+          in: path
+          description: File id
+          required: true
+          schema:
+            type: string
+          example: 123456
+      responses:
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "404":
+          description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "200":
+          description: Successful operation
+      x-auth-type: None
+      x-throttling-tier: Unlimited
+      x-wso2-mutual-ssl: Optional
+  /{municipalityId}/applicants/{identifier}/errands:
+    get:
+      tags:
+        - Applicant
+      summary: Lists all errands where the provided identifier is applicant
+      operationId: findApplicantErrands
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: identifier
+          in: path
+          description: Personal or organization number
+          required: true
+          schema:
+            type: string
+          example: 190102031234
+      responses:
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KeyValue"
+            application/problem+json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KeyValue"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+  /api-docs:
+    get:
+      tags:
+        - API
+      summary: OpenAPI
+      operationId: getApiDocs
+      responses:
+        "200":
+          description: OK
+          content:
+            application/yaml:
+              schema:
+                type: string
+      x-auth-type: None
+      x-throttling-tier: Unlimited
+      x-wso2-mutual-ssl: Optional
+components:
+  schemas:
+    Problem:
+      type: object
+      properties:
+        instance:
+          type: string
+          format: uri
+        type:
+          type: string
+          format: uri
+        parameters:
+          type: object
+          additionalProperties:
+            type: object
+        title:
+          type: string
+        detail:
+          type: string
+        status:
+          $ref: "#/components/schemas/StatusType"
+    StatusType:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          format: int32
+        reasonPhrase:
+          type: string
+    ConstraintViolationProblem:
+      type: object
+      properties:
+        cause:
+          $ref: "#/components/schemas/ThrowableProblem"
+        stackTrace:
+          type: array
+          items:
+            type: object
+            properties:
+              classLoaderName:
+                type: string
+              moduleName:
+                type: string
+              moduleVersion:
+                type: string
+              methodName:
+                type: string
+              fileName:
+                type: string
+              lineNumber:
+                type: integer
+                format: int32
+              className:
+                type: string
+              nativeMethod:
+                type: boolean
+        type:
+          type: string
+          format: uri
+        status:
+          $ref: "#/components/schemas/StatusType"
+        violations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Violation"
+        title:
+          type: string
+        message:
+          type: string
+        instance:
+          type: string
+          format: uri
+        parameters:
+          type: object
+          additionalProperties:
+            type: object
+        detail:
+          type: string
+        suppressed:
+          type: array
+          items:
+            type: object
+            properties:
+              stackTrace:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    classLoaderName:
+                      type: string
+                    moduleName:
+                      type: string
+                    moduleVersion:
+                      type: string
+                    methodName:
+                      type: string
+                    fileName:
+                      type: string
+                    lineNumber:
+                      type: integer
+                      format: int32
+                    className:
+                      type: string
+                    nativeMethod:
+                      type: boolean
+              message:
+                type: string
+              localizedMessage:
+                type: string
+        localizedMessage:
+          type: string
+    ThrowableProblem:
+      type: object
+      properties:
+        cause:
+          $ref: "#/components/schemas/ThrowableProblem"
+        stackTrace:
+          type: array
+          items:
+            type: object
+            properties:
+              classLoaderName:
+                type: string
+              moduleName:
+                type: string
+              moduleVersion:
+                type: string
+              methodName:
+                type: string
+              fileName:
+                type: string
+              lineNumber:
+                type: integer
+                format: int32
+              className:
+                type: string
+              nativeMethod:
+                type: boolean
+        message:
+          type: string
+        instance:
+          type: string
+          format: uri
+        type:
+          type: string
+          format: uri
+        parameters:
+          type: object
+          additionalProperties:
+            type: object
+        title:
+          type: string
+        detail:
+          type: string
+        status:
+          $ref: "#/components/schemas/StatusType"
+        suppressed:
+          type: array
+          items:
+            type: object
+            properties:
+              stackTrace:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    classLoaderName:
+                      type: string
+                    moduleName:
+                      type: string
+                    moduleVersion:
+                      type: string
+                    methodName:
+                      type: string
+                    fileName:
+                      type: string
+                    lineNumber:
+                      type: integer
+                      format: int32
+                    className:
+                      type: string
+                    nativeMethod:
+                      type: boolean
+              message:
+                type: string
+              localizedMessage:
+                type: string
+        localizedMessage:
+          type: string
+    Violation:
+      type: object
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+    Weight:
+      type: object
+      properties:
+        value:
+          type: string
+    KeyValue:
+      type: object
+      properties:
+        key:
+          type: string
+          description: The key of the key-value pair
+        value:
+          type: string
+          description: The value of the key-value pair
+  securitySchemes: { }

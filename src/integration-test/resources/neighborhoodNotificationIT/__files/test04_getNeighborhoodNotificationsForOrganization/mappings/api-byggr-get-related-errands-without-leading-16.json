@@ -1,13 +1,25 @@
 {
 	"request": {
-		"headers": {"Content-Type": {"equalTo": "text/xml;charset=UTF-8"}},
+		"headers": {
+			"Content-Type": {
+				"equalTo": "text/xml;charset=UTF-8"
+			}
+		},
 		"method": "POST",
-		"bodyPatterns": [{"equalToXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body><GetRelateradeArendenByPersOrgNrAndRole xmlns=\"www.tekis.se/ServiceContract\"><persOrgNr>556677-1234<\/persOrgNr><handelseIntressentRoller><string>ANM<\/string><string>AANM<\/string><string>BETA<\/string><string>BH<\/string><string>BIR<\/string><string>BÄG<\/string><string>ENTR<\/string><string>FSÖK<\/string><string>FAG<\/string><string>FDFAG<\/string><string>FORV<\/string><string>FÖRVDRAK<\/string><string>GRAN<\/string><string>KPER<\/string><string>KOA<\/string><string>KAE<\/string><string>KAK<\/string><string>KAN<\/string><string>MSOK<\/string><string>ORDB<\/string><string>ORDF<\/string><string>ORDV<\/string><string>REMIN<\/string><string>SOK<\/string><string>TOMIN<\/string><\/handelseIntressentRoller><statusfilter>Aktiv<\/statusfilter><\/GetRelateradeArendenByPersOrgNrAndRole><\/SOAP-ENV:Body><\/SOAP-ENV:Envelope>"}],
+		"bodyPatterns": [
+			{
+				"equalToXml": "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\"><SOAP-ENV:Header/><SOAP-ENV:Body><GetRelateradeArendenByPersOrgNrAndRole xmlns=\"www.tekis.se/ServiceContract\"><persOrgNr>556677-1234</persOrgNr><handelseIntressentRoller><string>ANM</string><string>AANM</string><string>BETA</string><string>BH</string><string>BIR</string><string>BÄG</string><string>ENTR</string><string>FSÖK</string><string>FAG</string><string>FDFAG</string><string>FORV</string><string>FÖRVDRAK</string><string>GRAN</string><string>KPER</string><string>KOA</string><string>KAE</string><string>KAK</string><string>KAN</string><string>MSOK</string><string>ORDB</string><string>ORDF</string><string>ORDV</string><string>REMIN</string><string>SOK</string><string>TOMIN</string></handelseIntressentRoller><statusfilter>Aktiv</statusfilter></GetRelateradeArendenByPersOrgNrAndRole></SOAP-ENV:Body></SOAP-ENV:Envelope>"
+			}
+		],
 		"urlPath": "/api-byggr/endpoint"
 	},
 	"response": {
-		"headers": {"Content-Type": "application/xml"},
-		"transformers": ["response-template"],
+		"headers": {
+			"Content-Type": "application/xml"
+		},
+		"transformers": [
+			"response-template"
+		],
 		"bodyFileName": "test04_getNeighborhoodNotificationsForOrganization/responses/api-byggr-get-related-errands-without-leading-16-response.xml",
 		"status": 200
 	},

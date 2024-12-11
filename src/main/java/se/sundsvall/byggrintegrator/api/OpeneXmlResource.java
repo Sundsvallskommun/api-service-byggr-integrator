@@ -3,6 +3,13 @@ package se.sundsvall.byggrintegrator.api;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_XML_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,14 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.NotBlank;
 import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
@@ -28,7 +27,6 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 @Validated
 @Tag(name = "Open-E", description = "ByggR Integrator Open-E resources")
 @RequestMapping(path = "/{municipalityId}/opene")
-@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
 @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(oneOf = {
 	Problem.class, ConstraintViolationProblem.class
 })))
@@ -39,17 +37,20 @@ public class OpeneXmlResource {
 
 	private final ByggrIntegratorService byggrIntegratorService;
 
-	public OpeneXmlResource(ByggrIntegratorService byggrIntegratorService) {
+	public OpeneXmlResource(final ByggrIntegratorService byggrIntegratorService) {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
 	@GetMapping(path = "/cases/{caseNumber}/type", produces = {
 		APPLICATION_XML_VALUE, APPLICATION_PROBLEM_XML_VALUE
 	})
-	@Operation(summary = "Return xml structure errand type for the errand matching sent in case number")
+	@Operation(summary = "Return xml structure errand type for the errand matching sent in case number",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
+		})
 	public ResponseEntity<Weight> getErrandType(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "caseNumber", description = "Case number from ByggR", example = "BYGG 2001-123456") @NotBlank @PathVariable String caseNumber) {
+		@Parameter(name = "caseNumber", description = "Case number from ByggR", example = "BYGG 2001-123456") @NotBlank @PathVariable final String caseNumber) {
 
 		return ResponseEntity.ok(byggrIntegratorService.getErrandType(caseNumber));
 	}
@@ -57,10 +58,13 @@ public class OpeneXmlResource {
 	@GetMapping(path = "/cases/type", produces = {
 		APPLICATION_XML_VALUE, APPLICATION_PROBLEM_XML_VALUE
 	})
-	@Operation(summary = "Return xml structure errand type for the errand matching sent in case number")
+	@Operation(summary = "Return xml structure errand type for the errand matching sent in case number",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
+		})
 	public ResponseEntity<Weight> getErrandTypeWithRequestParameter(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "caseNumber", description = "Case number from ByggR", example = "BYGG 2001-123456") @NotBlank @RequestParam("caseNumber") String caseNumber) {
+		@Parameter(name = "caseNumber", description = "Case number from ByggR", example = "BYGG 2001-123456") @NotBlank @RequestParam("caseNumber") final String caseNumber) {
 
 		return ResponseEntity.ok(byggrIntegratorService.getErrandType(caseNumber));
 	}

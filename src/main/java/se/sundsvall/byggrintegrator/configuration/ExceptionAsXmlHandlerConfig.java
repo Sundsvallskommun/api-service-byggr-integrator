@@ -4,8 +4,8 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_XML;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
+import jakarta.validation.ValidationException;
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
@@ -16,10 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
-
 import se.sundsvall.byggrintegrator.api.OpeneXmlResource;
-
-import jakarta.validation.ValidationException;
 
 /**
  * Configuration needed to convert execption responses to correct response content types

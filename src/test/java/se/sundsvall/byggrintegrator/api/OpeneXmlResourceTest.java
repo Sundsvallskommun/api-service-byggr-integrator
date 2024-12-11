@@ -11,10 +11,9 @@ import static org.springframework.http.MediaType.APPLICATION_XML;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
-
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
@@ -23,7 +22,7 @@ import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class OpeneXmlResourceTest {
 
-	@MockBean
+	@MockitoBean
 	private ByggrIntegratorService mockByggrIntegratorService;
 
 	@Autowired

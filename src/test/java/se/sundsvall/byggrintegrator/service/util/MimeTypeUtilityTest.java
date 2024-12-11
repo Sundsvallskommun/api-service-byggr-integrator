@@ -5,7 +5,6 @@ import static org.springframework.util.StreamUtils.copyToByteArray;
 
 import java.io.IOException;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

@@ -9,10 +9,17 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeArendenResponse;
 
+import generated.se.sundsvall.arendeexport.GetArende;
+import generated.se.sundsvall.arendeexport.GetDocument;
+import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
+import generated.se.sundsvall.arendeexport.GetRoller;
+import generated.se.sundsvall.arendeexport.ObjectFactory;
+import jakarta.xml.soap.SOAPConstants;
+import jakarta.xml.soap.SOAPFactory;
+import jakarta.xml.ws.soap.SOAPFaultException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,15 +30,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import generated.se.sundsvall.arendeexport.GetArende;
-import generated.se.sundsvall.arendeexport.GetDocument;
-import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
-import generated.se.sundsvall.arendeexport.GetRoller;
-import generated.se.sundsvall.arendeexport.ObjectFactory;
-import jakarta.xml.soap.SOAPConstants;
-import jakarta.xml.soap.SOAPFactory;
-import jakarta.xml.ws.soap.SOAPFaultException;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrIntegrationTest {
