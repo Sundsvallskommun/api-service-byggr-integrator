@@ -28,7 +28,6 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 @Validated
 @Tag(name = "Neighborhood notifications", description = "Neighborhood notification resources")
 @RequestMapping(path = "/{municipalityId}")
-@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
 @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(oneOf = {
 	Problem.class, ConstraintViolationProblem.class
 })))
@@ -38,18 +37,20 @@ public class NeighborhoodNotificationResource {
 
 	private final ByggrIntegratorService byggrIntegratorService;
 
-	public NeighborhoodNotificationResource(ByggrIntegratorService byggrIntegratorService) {
+	public NeighborhoodNotificationResource(final ByggrIntegratorService byggrIntegratorService) {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
 	@GetMapping(path = "/neighborhood-notifications/{identifier}/errands", produces = {
 		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = Problem.class)))
-	@Operation(summary = "Lists all neighborhood notifications where the provided identifier is a stakeholder")
+	@Operation(summary = "Lists all neighborhood notifications where the provided identifier is a stakeholder", responses = {
+		@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(schema = @Schema(implementation = Problem.class)))
+	})
 	public ResponseEntity<List<KeyValue>> findNeighborhoodNotifications(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @ValidPersonalOrOrgNumber @PathVariable String identifier) {
+		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @ValidPersonalOrOrgNumber @PathVariable final String identifier) {
 
 		return ResponseEntity.ok(byggrIntegratorService.findNeighborhoodNotifications(identifier));
 	}

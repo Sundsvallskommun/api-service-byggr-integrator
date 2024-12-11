@@ -28,7 +28,6 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 @Validated
 @Tag(name = "Applicant", description = "Applicant resources")
 @RequestMapping(path = "/{municipalityId}")
-@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
 @ApiResponse(responseCode = "400", description = "Bad Request", content = @Content(schema = @Schema(oneOf = {
 	Problem.class, ConstraintViolationProblem.class
 })))
@@ -38,17 +37,19 @@ public class ApplicantResource {
 
 	private final ByggrIntegratorService byggrIntegratorService;
 
-	public ApplicantResource(ByggrIntegratorService byggrIntegratorService) {
+	public ApplicantResource(final ByggrIntegratorService byggrIntegratorService) {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
 	@GetMapping(path = "/applicants/{identifier}/errands", produces = {
 		APPLICATION_JSON_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Lists all errands where the provided identifier is applicant")
+	@Operation(summary = "Lists all errands where the provided identifier is applicant", responses = {
+		@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
+	})
 	public ResponseEntity<List<KeyValue>> findApplicantErrands(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @ValidPersonalOrOrgNumber @PathVariable String identifier) {
+		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @ValidPersonalOrOrgNumber @PathVariable final String identifier) {
 
 		return ResponseEntity.ok(byggrIntegratorService.findApplicantErrands(identifier));
 	}

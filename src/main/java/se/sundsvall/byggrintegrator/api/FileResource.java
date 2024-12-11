@@ -34,20 +34,21 @@ public class FileResource {
 
 	private final ByggrIntegratorService byggrIntegratorService;
 
-	public FileResource(ByggrIntegratorService byggrIntegratorService) {
+	public FileResource(final ByggrIntegratorService byggrIntegratorService) {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
 	@GetMapping(path = "/files/{fileId}", produces = {
 		APPLICATION_OCTET_STREAM_VALUE, APPLICATION_PROBLEM_JSON_VALUE
 	})
-	@Operation(summary = "Return file content for file matching the provided id")
-	@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true)
-	@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	@Operation(summary = "Return file content for file matching the provided id", responses = {
+		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
+		@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+	})
 	public ResponseEntity<Void> readFile(
-		HttpServletResponse response,
+		final HttpServletResponse response,
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "fileId", description = "File id", example = "123456") @PathVariable("fileId") String fileId) {
+		@Parameter(name = "fileId", description = "File id", example = "123456") @PathVariable("fileId") final String fileId) {
 
 		byggrIntegratorService.readFile(fileId, response);
 		return ok().build();
