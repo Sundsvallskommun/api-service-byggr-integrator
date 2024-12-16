@@ -6,6 +6,7 @@ integration:
     url: http://somehost.com
     connect-timeout-in-seconds: 1
     read-timeout-in-seconds: 2
+    cache-ttl: PT24H
 service:
   byggr:
     filter-util:

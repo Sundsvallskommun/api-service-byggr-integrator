@@ -179,7 +179,7 @@ class ByggrIntegratorServiceTest {
 		when(mockByggrIntegration.getErrand(BYGGR_ERRAND_NUMBER)).thenReturn(OBJECT_FACTORY.createGetArendeResponse());
 		when(mockByggrIntegrationMapper.mapToByggrErrandDto(any())).thenReturn(ByggrErrandDto.builder().build());
 		when(mockByggrFilterUtility.filterEvent(any(ByggrErrandDto.class), eq(EVENT_ID))).thenReturn(ByggrErrandDto.builder().build());
-		when(mockTemplateMapper.generateFileList(any(String.class), any(ByggrErrandDto.class), anyInt())).thenReturn("html");
+		when(mockTemplateMapper.generateFileList(any(String.class), any(ByggrErrandDto.class), any(), anyInt())).thenReturn("html");
 
 		final var html = service.listNeighborhoodNotificationFiles(MUNICIPALITY_ID, BYGGR_ERRAND_NUMBER, EVENT_ID);
 
@@ -187,7 +187,7 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegration).getErrand(BYGGR_ERRAND_NUMBER);
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(any(GetArendeResponse.class));
 		verify(mockByggrFilterUtility).filterEvent(any(ByggrErrandDto.class), eq(EVENT_ID));
-		verify(mockTemplateMapper).generateFileList(eq(MUNICIPALITY_ID), any(ByggrErrandDto.class), anyInt());
+		verify(mockTemplateMapper).generateFileList(eq(MUNICIPALITY_ID), any(ByggrErrandDto.class), any(), anyInt());
 		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrFilterUtility, mockApiResponseMapper, mockApiResponseMapper);
 		verifyNoInteractions(mockApiResponseMapper);
 	}

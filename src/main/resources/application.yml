@@ -5,11 +5,32 @@ integration:
   byggr:
     connect-timeout-in-seconds: 10
     read-timeout-in-seconds: 60
+
 service:
   byggr:
     filter-util:
       applicant:
         roles: SOK
+
+neighborhood-notification-template:
+  byggr-files:
+    sub-directory: /files/
+
+cache:
+  enabled: true
+  caches:
+    - name: getRolesCache
+      expire-after-write: PT24H
+    - name: getDocumentCache
+    - name: findNeighborhoodNotificationsCache
+    - name: findApplicantErrandsCache
+    - name: getPropertyDesignationCache
+    - name: getErrandTypeCache
+    - name: listNeighborhoodNotificationFilesCache
+    - name: getHandlingTyperCache
+      maximum-size: 250
+      expire-after-write: PT24H
+
 logging:
   level:
     root: INFO
@@ -22,16 +43,10 @@ openapi:
   name: ${spring.application.name}
   title: ${spring.application.name}
   version: '@project.version@'
+
 spring:
   application:
     name: api-service-byggr-integrator
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
-  cache:
-    cache-names: getRolesCache, getDocumentCache, findNeighborhoodNotificationsCache, findApplicantErrandsCache, getPropertyDesignationCache, getErrandTypeCache, listNeighborhoodNotificationFilesCache
-    caffeine:
-      spec: maximumSize=100, expireAfterWrite=300s
-neighborhood-notification-template: 
-  byggr-files:
-    sub-directory: /files/

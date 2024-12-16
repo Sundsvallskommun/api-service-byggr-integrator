@@ -33,7 +33,7 @@ class TemplateMapperTest {
 		when(mockProperties.domain()).thenReturn("https://somewhere.com/");
 		when(mockProperties.subDirectory()).thenReturn("/files/");
 
-		final var html = templateMapper.generateFileList(
+		var html = templateMapper.generateFileList(
 			"1234",
 			ByggrErrandDto.builder()
 				.withByggrCaseNumber("BYGG 2001-1234")
@@ -45,14 +45,15 @@ class TemplateMapperTest {
 					.withEventType("GRANHO")
 					.withEventSubtype("GRAUTS")
 					.withFiles(Map.of(
-						"file1", "file1.txt",
-						"file2", "file2.txt"))
+						"file1", new Event.DocumentNameAndType("file1.txt", "SKR"),
+						"file2", new Event.DocumentNameAndType("file2.txt", "PLAN")))
 					.build()))
 				.build(),
+			Map.of("SKR", "Skrivelse", "PLAN", "Planer"),
 			1);
 
 		assertThat(html).isEqualTo(
-			"<p>Bygglov för tillbyggnad av fritidshus (RUNSVIK 1:22)</p><p>Heading</p><ul><li><a href=\"https://somewhere.com/1234/files/file2\">file2.txt</a></li><li><a href=\"https://somewhere.com/1234/files/file1\">file1.txt</a></li></ul>");
+			"<p>Bygglov för tillbyggnad av fritidshus (RUNSVIK 1:22)</p><p>Heading</p><ul><li><a href=\"https://somewhere.com/1234/files/file2\">Planer (file2.txt)</a></li><li><a href=\"https://somewhere.com/1234/files/file1\">Skrivelse (file1.txt)</a></li></ul>");
 		verify(mockProperties, times(2)).domain();
 		verify(mockProperties, times(2)).subDirectory();
 		verifyNoMoreInteractions(mockProperties);
@@ -60,7 +61,7 @@ class TemplateMapperTest {
 
 	@Test
 	void getDescriptionAndPropertyDesignationInHtml() {
-		final var html = templateMapper.getDescriptionAndPropertyDesignation(
+		var html = templateMapper.getDescriptionAndPropertyDesignation(
 			ByggrErrandDto.builder()
 				.withByggrCaseNumber("BYGG 2001-1234")
 				.withDescription("Bygglov för tillbyggnad av fritidshus")
@@ -71,8 +72,8 @@ class TemplateMapperTest {
 					.withEventType("GRANHO")
 					.withEventSubtype("GRAUTS")
 					.withFiles(Map.of(
-						"file1", "file1.txt",
-						"file2", "file2.txt"))
+						"file1", new Event.DocumentNameAndType("file1.txt", "SKR"),
+						"file2", new Event.DocumentNameAndType("file2.txt", "PLAN")))
 					.build()))
 				.build());
 

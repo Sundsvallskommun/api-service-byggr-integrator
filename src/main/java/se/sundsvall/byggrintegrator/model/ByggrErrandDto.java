@@ -40,9 +40,22 @@ public class ByggrErrandDto {
 		private String eventType; // Maps to handelsetyp
 		private String eventSubtype; // Maps to handelseslag
 		private LocalDate eventDate; // Maps to startDatum
-		private Map<String, String> files; // Map<dokumentId, documentName>
+		private Map<String, DocumentNameAndType> files; // Map<dokumentId, documentName + Type>
 		private List<Stakeholder> stakeholders;
 		private String heading;     // Used as heading in the template
+
+		@Getter
+		@Setter
+		@Builder(setterPrefix = "with")
+		@NoArgsConstructor
+		@AllArgsConstructor
+		@ToString
+		@EqualsAndHashCode
+		public static class DocumentNameAndType {
+
+			private String documentName;
+			private String documentType;
+		}
 	}
 
 	@Getter

@@ -15,11 +15,11 @@ import generated.se.sundsvall.arendeexport.ArrayOfString2;
 import generated.se.sundsvall.arendeexport.GetArende;
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetDocument;
+import generated.se.sundsvall.arendeexport.GetHandlingTyper;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.GetRoller;
 import generated.se.sundsvall.arendeexport.Handelse;
-import generated.se.sundsvall.arendeexport.HandelseHandling;
 import generated.se.sundsvall.arendeexport.HandelseIntressent;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
 import generated.se.sundsvall.arendeexport.RollTyp;
@@ -57,24 +57,29 @@ public class ByggrIntegrationMapper {
 			.withStatusfilter(StatusFilter.AKTIV);
 	}
 
-	public GetRelateradeArendenByPersOrgNrAndRole mapToGetRelateradeArendenRequest(String id) {
+	public GetRelateradeArendenByPersOrgNrAndRole mapToGetRelateradeArendenRequest(final String id) {
 		return OBJECT_FACTORY.createGetRelateradeArendenByPersOrgNrAndRole()
 			.withStatusfilter(StatusFilter.AKTIV)
 			.withPersOrgNr(id);
 	}
 
-	public GetArende mapToGetArendeRequest(String dnr) {
+	public GetArende mapToGetArendeRequest(final String dnr) {
 		return OBJECT_FACTORY.createGetArende()
 			.withDnr(dnr);
 	}
 
-	public GetDocument mapToGetDocumentRequest(String documentId) {
+	public GetDocument mapToGetDocumentRequest(final String documentId) {
 		return new GetDocument()
 			.withDocumentId(documentId)
 			.withInkluderaFil(true);
 	}
 
-	public List<ByggrErrandDto> mapToByggrErrandDtos(List<GetRelateradeArendenByPersOrgNrAndRoleResponse> responses) {
+	public GetHandlingTyper createGetHandlingTyperRequest() {
+		return new GetHandlingTyper()
+			.withStatusfilter(StatusFilter.NONE);
+	}
+
+	public List<ByggrErrandDto> mapToByggrErrandDtos(final List<GetRelateradeArendenByPersOrgNrAndRoleResponse> responses) {
 		return ofNullable(responses).orElse(emptyList()).stream()
 			.map(this::extractErrands)
 			.flatMap(Collection::stream)
@@ -82,21 +87,21 @@ public class ByggrIntegrationMapper {
 			.toList();
 	}
 
-	public ByggrErrandDto mapToByggrErrandDto(GetArendeResponse response) {
+	public ByggrErrandDto mapToByggrErrandDto(final GetArendeResponse response) {
 		return ofNullable(response)
 			.map(GetArendeResponse::getGetArendeResult)
 			.map(this::toByggrErrandDto)
 			.orElse(null);
 	}
 
-	private List<Arende> extractErrands(GetRelateradeArendenByPersOrgNrAndRoleResponse response) {
+	private List<Arende> extractErrands(final GetRelateradeArendenByPersOrgNrAndRoleResponse response) {
 		return ofNullable(response.getGetRelateradeArendenByPersOrgNrAndRoleResult())
 			.flatMap(result -> ofNullable(result.getArende())).stream()
 			.flatMap(Collection::stream)
 			.toList();
 	}
 
-	private ByggrErrandDto toByggrErrandDto(Arende arende) {
+	private ByggrErrandDto toByggrErrandDto(final Arende arende) {
 		return ByggrErrandDto.builder()
 			.withByggrCaseNumber(arende.getDnr())
 			.withDescription(arende.getBeskrivning())
@@ -106,7 +111,7 @@ public class ByggrIntegrationMapper {
 			.build();
 	}
 
-	private String toPropertyDesignation(Arende arende) {
+	private String toPropertyDesignation(final Arende arende) {
 		return ofNullable(arende)
 			.map(Arende::getObjektLista)
 			.map(ArrayOfAbstractArendeObjekt2::getAbstractArendeObjekt)
@@ -119,7 +124,7 @@ public class ByggrIntegrationMapper {
 			.orElse(null);
 	}
 
-	private List<Event> toEvents(ArrayOfHandelse handelser) {
+	private List<Event> toEvents(final ArrayOfHandelse handelser) {
 		return ofNullable(handelser)
 			.map(wrapper -> ofNullable(wrapper.getHandelse()).orElse(emptyList()))
 			.stream()
@@ -128,7 +133,7 @@ public class ByggrIntegrationMapper {
 			.toList();
 	}
 
-	private Event toEvent(Handelse handelse) {
+	private Event toEvent(final Handelse handelse) {
 		return Event.builder()
 			.withId(handelse.getHandelseId())
 			.withEventType(handelse.getHandelsetyp())
@@ -144,21 +149,22 @@ public class ByggrIntegrationMapper {
 			.build();
 	}
 
-	private Map<String, String> toFiles(ArrayOfHandelseHandling handlingar) {
+	private Map<String, Event.DocumentNameAndType> toFiles(final ArrayOfHandelseHandling handlingar) {
 		return ofNullable(handlingar)
 			.map(wrapper -> ofNullable(wrapper.getHandling()).orElse(emptyList()))
 			.stream()
 			.flatMap(Collection::stream)
 			.filter(filterUtility::hasValidDocumentType) // Filter out unwanted document types
-			.map(HandelseHandling::getDokument)
-			.filter(Objects::nonNull)
-			.filter(document -> Objects.nonNull(document.getDokId()))
-			.filter(document -> Objects.nonNull(document.getNamn()))
-			.map(document -> Map.entry(document.getDokId(), document.getNamn()))
-			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a1, a2) -> a1)); // In case of duplicate dokIds within the event, just pick the first one of them
+			.map(handelseHandling -> new Triple(handelseHandling.getDokument().getDokId(), handelseHandling.getDokument().getNamn(), handelseHandling.getTyp()))
+			.filter(triple -> Objects.nonNull(triple.dokumentId()))
+			.filter(triple -> Objects.nonNull(triple.dokumentNamn()))
+			.map(triple -> Map.entry(triple.dokumentId, new Event.DocumentNameAndType(triple.dokumentNamn, triple.handlingTyp)))
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a1, a2) -> a1)); // In case of duplicate dokIds within the event, just pick the dokumentId one of them
 	}
 
-	private List<Stakeholder> toStakeholders(ArrayOfHandelseIntressent2 intressenter) {
+	private record Triple(String dokumentId, String dokumentNamn, String handlingTyp) {}
+
+	private List<Stakeholder> toStakeholders(final ArrayOfHandelseIntressent2 intressenter) {
 		return ofNullable(intressenter)
 			.map(wrapper -> ofNullable(wrapper.getIntressent()).orElse(emptyList()))
 			.stream()
@@ -167,14 +173,14 @@ public class ByggrIntegrationMapper {
 			.toList();
 	}
 
-	private Stakeholder toStakeholder(HandelseIntressent intressent) {
+	private Stakeholder toStakeholder(final HandelseIntressent intressent) {
 		return Stakeholder.builder()
 			.withLegalId(intressent.getPersOrgNr())
 			.withRoles(toRoles(intressent.getRollLista()))
 			.build();
 	}
 
-	private List<Stakeholder> toStakeholders(ArrayOfArendeIntressent2 intressenter) {
+	private List<Stakeholder> toStakeholders(final ArrayOfArendeIntressent2 intressenter) {
 		return ofNullable(intressenter)
 			.map(wrapper -> ofNullable(wrapper.getIntressent()).orElse(emptyList()))
 			.stream()
@@ -183,14 +189,14 @@ public class ByggrIntegrationMapper {
 			.toList();
 	}
 
-	private Stakeholder toStakeholder(ArendeIntressent intressent) {
+	private Stakeholder toStakeholder(final ArendeIntressent intressent) {
 		return Stakeholder.builder()
 			.withLegalId(intressent.getPersOrgNr())
 			.withRoles(toRoles(intressent.getRollLista()))
 			.build();
 	}
 
-	private List<String> toRoles(ArrayOfString2 roller) {
+	private List<String> toRoles(final ArrayOfString2 roller) {
 		return ofNullable(roller)
 			.map(ArrayOfString2::getRoll)
 			.orElse(emptyList());

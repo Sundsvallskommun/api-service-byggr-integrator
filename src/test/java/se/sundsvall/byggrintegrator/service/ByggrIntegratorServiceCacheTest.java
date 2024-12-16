@@ -29,7 +29,7 @@ import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
 	"spring.cache.type=SIMPLE",
-	"spring.cache.cache-names=findNeighborhoodNotificationsCache, findApplicantErrandsCache, getPropertyDesignationCache, getErrandTypeCache, listNeighborhoodNotificationFilesCache"
+	"spring.cache.cache-names=findNeighborhoodNotificationsCache, findApplicantErrandsCache, getPropertyDesignationCache, getErrandTypeCache, listNeighborhoodNotificationFilesCache, getHandlingTyperCache"
 })
 @ActiveProfiles("junit")
 class ByggrIntegratorServiceCacheTest {
@@ -203,7 +203,7 @@ class ByggrIntegratorServiceCacheTest {
 		when(mockByggrIntegration.getErrand(caseNumber)).thenReturn(errand);
 		when(mockByggrIntegrationMapper.mapToByggrErrandDto(errand)).thenCallRealMethod();
 		when(mockFilterUtility.filterEvent(any(), eq(eventId))).thenAnswer(invocation -> invocation.getArgument(0));
-		when(mockTemplateMapper.generateFileList(eq(municipalityId), any(), eq(eventId))).thenReturn(response);
+		when(mockTemplateMapper.generateFileList(eq(municipalityId), any(), any(), eq(eventId))).thenReturn(response);
 
 		// First call - should hit the service
 		var result = byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, caseNumber, eventId);
@@ -211,8 +211,9 @@ class ByggrIntegratorServiceCacheTest {
 		// Mocks should only be called first time
 		verify(mockByggrIntegration).getErrand(caseNumber);
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(errand);
+		verify(mockByggrIntegration).getHandlingTyper();
 		verify(mockFilterUtility).filterEvent(any(), eq(eventId));
-		verify(mockTemplateMapper).generateFileList(eq(municipalityId), any(), eq(eventId));
+		verify(mockTemplateMapper).generateFileList(eq(municipalityId), any(), any(), eq(eventId));
 
 		assertThat(result).isEqualTo(response);
 

@@ -1,0 +1,24 @@
+{
+	"request": {
+		"headers": {
+			"Content-Type": {
+				"equalTo": "text/xml;charset=UTF-8"
+			}
+		},
+		"method": "POST",
+		"bodyPatterns": [
+			{
+				"equalToXml": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ser=\"www.tekis.se/ServiceContract\"><soapenv:Header/><soapenv:Body><ser:GetHandlingTyper><ser:statusfilter>None</ser:statusfilter></ser:GetHandlingTyper></soapenv:Body></soapenv:Envelope>"
+			}
+		],
+		"urlPath": "/api-byggr/endpoint"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/xml"
+		},
+		"bodyFileName": "common/responses/api-byggr-get-handlingtyper-response.xml",
+		"status": 200
+	},
+	"name": "api-byggr-read-errand"
+}
