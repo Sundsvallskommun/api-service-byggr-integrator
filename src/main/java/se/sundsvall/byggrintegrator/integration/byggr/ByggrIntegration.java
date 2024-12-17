@@ -1,5 +1,8 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
+
 import generated.se.sundsvall.arendeexport.ArrayOfString;
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetDocumentResponse;
@@ -15,14 +18,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 @Component
-@EnableConfigurationProperties(ByggrProperties.class)
 public class ByggrIntegration {
+
+	private static final Logger LOG = LoggerFactory.getLogger(ByggrIntegration.class);
 
 	private static final String SOAP_FAULT_PREFIX_ERRAND_NOT_FOUND = "Arende not found for dnr";
 	private static final String SOAP_FAULT_PREFIX_ERROR_GETTING_DOCUMENT = "Error getting GemDmsdoclink";
@@ -75,7 +79,10 @@ public class ByggrIntegration {
 		try {
 			return byggrClient.getArende(byggrIntegrationMapper.mapToGetArendeRequest(dnr));
 		} catch (final SOAPFaultException e) {
-			if (StringUtils.startsWithIgnoreCase(extractFaultString(e), SOAP_FAULT_PREFIX_ERRAND_NOT_FOUND)) {
+			var faultString = extractFaultString(e);
+			if (startsWithIgnoreCase(faultString, SOAP_FAULT_PREFIX_ERRAND_NOT_FOUND)) {
+				LOG.warn(faultString);
+
 				return null;
 			}
 
@@ -89,8 +96,10 @@ public class ByggrIntegration {
 			return byggrClient.getDocument(byggrIntegrationMapper.mapToGetDocumentRequest(documentId));
 		} catch (SOAPFaultException e) {
 			var faultString = extractFaultString(e);
-			if (StringUtils.startsWithIgnoreCase(faultString, SOAP_FAULT_PREFIX_ERROR_GETTING_DOCUMENT) ||
-				StringUtils.containsIgnoreCase(faultString, SOAP_FAULT_PREFIX_DOCUMENT_ID_NOT_VALID)) {
+			if (startsWithIgnoreCase(faultString, SOAP_FAULT_PREFIX_ERROR_GETTING_DOCUMENT) ||
+				containsIgnoreCase(faultString, SOAP_FAULT_PREFIX_DOCUMENT_ID_NOT_VALID)) {
+				LOG.warn(faultString);
+
 				return null;
 			}
 
@@ -100,20 +109,10 @@ public class ByggrIntegration {
 
 	@Cacheable("getHandlingTyperCache")
 	public Map<String, String> getHandlingTyper() {
-		try {
-			var response = byggrClient.getHandlingTyper(byggrIntegrationMapper.createGetHandlingTyperRequest());
+		var response = byggrClient.getHandlingTyper(byggrIntegrationMapper.createGetHandlingTyperRequest());
 
-			return response.getGetHandlingTyperResult().getHandlingTyp().stream()
-				.collect(Collectors.toMap(HandlingTyp::getTyp, HandlingTyp::getBeskrivning));
-		} catch (SOAPFaultException e) {
-			var faultString = extractFaultString(e);
-			if (StringUtils.startsWithIgnoreCase(faultString, SOAP_FAULT_PREFIX_ERROR_GETTING_DOCUMENT) ||
-				StringUtils.containsIgnoreCase(faultString, SOAP_FAULT_PREFIX_DOCUMENT_ID_NOT_VALID)) {
-				return null;
-			}
-
-			throw e;
-		}
+		return response.getGetHandlingTyperResult().getHandlingTyp().stream()
+			.collect(Collectors.toMap(HandlingTyp::getTyp, HandlingTyp::getBeskrivning));
 	}
 
 	private String extractFaultString(final SOAPFaultException e) {

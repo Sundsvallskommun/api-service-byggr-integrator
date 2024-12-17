@@ -20,13 +20,26 @@ cache:
   enabled: true
   caches:
     - name: getRolesCache
+      maximum-size: 100
       expire-after-write: PT24H
     - name: getDocumentCache
+      maximum-size: 100
+      expire-after-write: PT5M
     - name: findNeighborhoodNotificationsCache
+      maximum-size: 100
+      expire-after-write: PT5M
     - name: findApplicantErrandsCache
+      maximum-size: 100
+      expire-after-write: PT5M
     - name: getPropertyDesignationCache
+      maximum-size: 100
+      expire-after-write: PT5M
     - name: getErrandTypeCache
+      maximum-size: 100
+      expire-after-write: PT5M
     - name: listNeighborhoodNotificationFilesCache
+      maximum-size: 100
+      expire-after-write: PT5M
     - name: getHandlingTyperCache
       maximum-size: 250
       expire-after-write: PT24H
