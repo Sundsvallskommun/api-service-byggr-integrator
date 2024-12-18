@@ -5,5 +5,4 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 @ConfigurationProperties("integration.byggr")
-public record ByggrProperties(int connectTimeoutInSeconds, int readTimeoutInSeconds) {
-}
+public record ByggrProperties(int connectTimeoutInSeconds, int readTimeoutInSeconds) {}

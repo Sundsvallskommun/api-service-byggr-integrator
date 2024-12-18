@@ -103,7 +103,7 @@ class ByggrErrandDtoTest {
 		final var date = LocalDate.now();
 		final var subtype = "subtype";
 		final var type = "type";
-		final var files = Map.of("file1", "file1.txt");
+		final var files = Map.of("file1", new Event.DocumentNameAndType("file1.txt", "ABC"));
 		final var id = 123;
 		final var stakeholders = List.of(Stakeholder.builder().build());
 		final var heading = "heading";

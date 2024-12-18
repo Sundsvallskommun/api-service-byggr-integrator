@@ -6,6 +6,8 @@ import generated.se.sundsvall.arendeexport.GetArende;
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetDocument;
 import generated.se.sundsvall.arendeexport.GetDocumentResponse;
+import generated.se.sundsvall.arendeexport.GetHandlingTyper;
+import generated.se.sundsvall.arendeexport.GetHandlingTyperResponse;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.GetRoller;
@@ -39,4 +41,9 @@ public interface ByggrClient {
 		"SOAPAction=www.tekis.se/ServiceContract/V8/IExportArenden/GetDocument"
 	})
 	GetDocumentResponse getDocument(GetDocument request);
+
+	@PostMapping(consumes = TEXT_XML_UTF8, produces = TEXT_XML_UTF8, headers = {
+		"SOAPAction=www.tekis.se/ServiceContract/V8/IExportArenden/GetHandlingTyper"
+	})
+	GetHandlingTyperResponse getHandlingTyper(GetHandlingTyper request);
 }

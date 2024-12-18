@@ -1,23 +1,32 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
+
 import generated.se.sundsvall.arendeexport.ArrayOfString;
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetDocumentResponse;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
+import generated.se.sundsvall.arendeexport.HandlingTyp;
 import generated.se.sundsvall.arendeexport.Roll;
 import jakarta.xml.soap.SOAPFault;
 import jakarta.xml.ws.soap.SOAPFaultException;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ByggrIntegration {
+
+	private static final Logger LOG = LoggerFactory.getLogger(ByggrIntegration.class);
 
 	private static final String SOAP_FAULT_PREFIX_ERRAND_NOT_FOUND = "Arende not found for dnr";
 	private static final String SOAP_FAULT_PREFIX_ERROR_GETTING_DOCUMENT = "Error getting GemDmsdoclink";
@@ -33,9 +42,8 @@ public class ByggrIntegration {
 		this.byggrIntegrationMapper = byggrIntegrationMapper;
 	}
 
-	public List<GetRelateradeArendenByPersOrgNrAndRoleResponse> getErrands(String identifier, List<String> roles) {
-
-		final var identifiers = new LinkedHashSet<String>();
+	public List<GetRelateradeArendenByPersOrgNrAndRoleResponse> getErrands(final String identifier, final List<String> roles) {
+		var identifiers = new LinkedHashSet<String>();
 		identifiers.add(identifier);
 		Stream.of(identifier).filter(id -> id.startsWith("16")).map(id -> id.substring(2)).findAny().ifPresent(identifiers::add);
 
@@ -44,20 +52,20 @@ public class ByggrIntegration {
 			.toList();
 	}
 
-	private GetRelateradeArendenByPersOrgNrAndRoleResponse getErrandsInternal(String identifier, List<String> roles) {
-		final var request = byggrIntegrationMapper.mapToGetRelateradeArendenRequest(identifier)
+	private GetRelateradeArendenByPersOrgNrAndRoleResponse getErrandsInternal(final String identifier, final List<String> roles) {
+		var request = byggrIntegrationMapper.mapToGetRelateradeArendenRequest(identifier)
 			.withHandelseIntressentRoller(rolesToArrayOfString(roles));
 
 		return byggrClient.getRelateradeArendenByPersOrgNrAndRole(request);
 	}
 
-	private ArrayOfString rolesToArrayOfString(List<String> roles) {
+	private ArrayOfString rolesToArrayOfString(final List<String> roles) {
 		return Objects.isNull(roles) ? null : new ArrayOfString().withString(roles);
 	}
 
-	@Cacheable(value = "getRolesCache")
+	@Cacheable("getRolesCache")
 	public List<String> getRoles() {
-		final var roller = byggrClient.getRoller(byggrIntegrationMapper.createGetRolesRequest());
+		var roller = byggrClient.getRoller(byggrIntegrationMapper.createGetRolesRequest());
 
 		return Optional.ofNullable(roller.getGetRollerResult())
 			.map(result -> result.getRoll().stream()
@@ -67,11 +75,14 @@ public class ByggrIntegration {
 			.orElse(List.of());
 	}
 
-	public GetArendeResponse getErrand(String dnr) {
+	public GetArendeResponse getErrand(final String dnr) {
 		try {
 			return byggrClient.getArende(byggrIntegrationMapper.mapToGetArendeRequest(dnr));
 		} catch (final SOAPFaultException e) {
-			if (StringUtils.startsWithIgnoreCase(extractFaultString(e), SOAP_FAULT_PREFIX_ERRAND_NOT_FOUND)) {
+			var faultString = extractFaultString(e);
+			if (startsWithIgnoreCase(faultString, SOAP_FAULT_PREFIX_ERRAND_NOT_FOUND)) {
+				LOG.warn(faultString);
+
 				return null;
 			}
 
@@ -79,19 +90,29 @@ public class ByggrIntegration {
 		}
 	}
 
-	@Cacheable(value = "getDocumentCache")
-	public GetDocumentResponse getDocument(String documentId) {
+	@Cacheable("getDocumentCache")
+	public GetDocumentResponse getDocument(final String documentId) {
 		try {
 			return byggrClient.getDocument(byggrIntegrationMapper.mapToGetDocumentRequest(documentId));
-		} catch (final SOAPFaultException e) {
-			final var faultString = extractFaultString(e);
-			if (StringUtils.startsWithIgnoreCase(faultString, SOAP_FAULT_PREFIX_ERROR_GETTING_DOCUMENT) ||
-				StringUtils.containsIgnoreCase(faultString, SOAP_FAULT_PREFIX_DOCUMENT_ID_NOT_VALID)) {
+		} catch (SOAPFaultException e) {
+			var faultString = extractFaultString(e);
+			if (startsWithIgnoreCase(faultString, SOAP_FAULT_PREFIX_ERROR_GETTING_DOCUMENT) ||
+				containsIgnoreCase(faultString, SOAP_FAULT_PREFIX_DOCUMENT_ID_NOT_VALID)) {
+				LOG.warn(faultString);
+
 				return null;
 			}
 
 			throw e;
 		}
+	}
+
+	@Cacheable("getHandlingTyperCache")
+	public Map<String, String> getHandlingTyper() {
+		var response = byggrClient.getHandlingTyper(byggrIntegrationMapper.createGetHandlingTyperRequest());
+
+		return response.getGetHandlingTyperResult().getHandlingTyp().stream()
+			.collect(Collectors.toMap(HandlingTyp::getTyp, HandlingTyp::getBeskrivning));
 	}
 
 	private String extractFaultString(final SOAPFaultException e) {

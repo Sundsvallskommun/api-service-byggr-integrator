@@ -10,9 +10,10 @@ neighborhood-notification-template:
   byggr-files:
     domain: http://localhost/
     sub-directory: /files/
-spring:
-  cache:
-    type: none
+
+cache:
+  enabled: false
+
 service:
   byggr:
     filter-util:

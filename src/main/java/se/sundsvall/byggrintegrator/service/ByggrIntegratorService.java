@@ -52,67 +52,70 @@ public class ByggrIntegratorService {
 		this.filterUtility = filterUtility;
 	}
 
-	@Cacheable(value = "findNeighborhoodNotificationsCache")
+	@Cacheable("findNeighborhoodNotificationsCache")
 	public List<KeyValue> findNeighborhoodNotifications(String identifier) {
-		final var roles = byggrIntegration.getRoles();
+		var roles = byggrIntegration.getRoles();
 		if (CollectionUtils.isEmpty(roles)) {
 			throw createProblem(NOT_FOUND, ERROR_ROLES_NOT_FOUND);
 		}
 
 		// Prefix identifier if it contains organisation legal id and add hyphen to identifier as ByggR integration formats
 		// legal id that way
-		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
+		var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
 		// Fetch answer from ByggR
-		final var result = byggrIntegration.getErrands(processedIdentifier, roles);
+		var result = byggrIntegration.getErrands(processedIdentifier, roles);
 		// Filter on neighborhood notifications where identifier matches stakeholder
-		final var matches = filterUtility.filterNeighborhoodNotifications(byggrIntegrationMapper.mapToByggrErrandDtos(result), processedIdentifier);
+		var matches = filterUtility.filterNeighborhoodNotifications(byggrIntegrationMapper.mapToByggrErrandDtos(result), processedIdentifier);
 
 		// Map to API response
 		return apiResponseMapper.mapToNeighborhoodKeyValueResponseList(matches);
 	}
 
-	@Cacheable(value = "findApplicantErrandsCache")
+	@Cacheable("findApplicantErrandsCache")
 	public List<KeyValue> findApplicantErrands(String identifier) {
 		// Prefix identifier if it contains organisation legal id and add hyphen to identifier as ByggR integration formats
 		// legal id that way
-		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
+		var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
 		// Fetch answer from ByggR
-		final var result = byggrIntegration.getErrands(processedIdentifier, null);
+		var result = byggrIntegration.getErrands(processedIdentifier, null);
 		// Filter on errands where applicant matches identifier
-		final var matches = filterUtility.filterCasesForApplicant(byggrIntegrationMapper.mapToByggrErrandDtos(result), processedIdentifier);
+		var matches = filterUtility.filterCasesForApplicant(byggrIntegrationMapper.mapToByggrErrandDtos(result), processedIdentifier);
 
 		// Map to API response
 		return apiResponseMapper.mapToKeyValueResponseList(matches);
 	}
 
-	@Cacheable(value = "getPropertyDesignationCache")
+	@Cacheable("getPropertyDesignationCache")
 	public String getPropertyDesignation(final String caseNumber) {
-		final var errand = byggrIntegration.getErrand(caseNumber);
+		var errand = byggrIntegration.getErrand(caseNumber);
 
-		final var byggrErrand = byggrIntegrationMapper.mapToByggrErrandDto(errand);
+		var byggrErrand = byggrIntegrationMapper.mapToByggrErrandDto(errand);
 
 		return templateMapper.getDescriptionAndPropertyDesignation(byggrErrand);
 	}
 
-	@Cacheable(value = "getErrandTypeCache")
+	@Cacheable("getErrandTypeCache")
 	public Weight getErrandType(String caseNumber) {
-		final var errand = byggrIntegration.getErrand(caseNumber);
+		var errand = byggrIntegration.getErrand(caseNumber);
 
 		return ofNullable(errand)
 			.map(apiResponseMapper::mapToWeight)
 			.orElseThrow(() -> createProblem(NOT_FOUND, ERROR_ERRAND_NOT_FOUND.formatted(caseNumber)));
 	}
 
-	@Cacheable(value = "listNeighborhoodNotificationFilesCache")
+	@Cacheable("listNeighborhoodNotificationFilesCache")
 	public String listNeighborhoodNotificationFiles(String municipalityId, String caseNumber, int eventId) {
-		// Fetch answer from ByggR
-		final var result = byggrIntegration.getErrand(caseNumber);
+		// Fetch errand from ByggR
+		var getArendeResponse = byggrIntegration.getErrand(caseNumber);
 
 		// Filter on event that matches incoming id
-		final var match = filterUtility.filterEvent(byggrIntegrationMapper.mapToByggrErrandDto(result), eventId);
+		var match = filterUtility.filterEvent(byggrIntegrationMapper.mapToByggrErrandDto(getArendeResponse), eventId);
+
+		// Fetch "handlingtyper" from ByggR
+		var handlingtyper = byggrIntegration.getHandlingTyper();
 
 		// Map to API response
-		return templateMapper.generateFileList(municipalityId, match, eventId);
+		return templateMapper.generateFileList(municipalityId, match, handlingtyper, eventId);
 	}
 
 	public void readFile(String fileId, HttpServletResponse response) {
@@ -143,5 +146,4 @@ public class ByggrIntegratorService {
 			.withDetail(detail)
 			.build();
 	}
-
 }

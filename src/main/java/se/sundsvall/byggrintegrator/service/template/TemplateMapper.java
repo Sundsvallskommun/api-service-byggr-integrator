@@ -5,6 +5,7 @@ import static java.util.Optional.ofNullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
@@ -33,12 +34,12 @@ public class TemplateMapper {
 	 * @param  byggrErrandDto The errand to generate the file list for
 	 * @return                The HTML as a string
 	 */
-	public String generateFileList(String municipalityId, ByggrErrandDto byggrErrandDto, int eventId) {
-		final var fileTemplateDtoList = ofNullable(byggrErrandDto)
-			.map(errandDto -> mapByggrFilesToList(municipalityId, errandDto))
+	public String generateFileList(final String municipalityId, final ByggrErrandDto byggrErrandDto, final Map<String, String> handlingtyper, final int eventId) {
+		var fileTemplateDtoList = ofNullable(byggrErrandDto)
+			.map(errandDto -> mapByggrFilesToList(municipalityId, errandDto, handlingtyper))
 			.orElse(List.of());
 
-		final var context = new Context(Locale.of("sv", "SE"));
+		var context = new Context(Locale.of("sv", "SE"));
 		// Add the list of files to the context (as "fileList") so Thymeleaf can use it
 		context.setVariable("fileList", fileTemplateDtoList);
 		context.setVariable("heading", getHeading(byggrErrandDto, eventId));
@@ -47,8 +48,8 @@ public class TemplateMapper {
 		return templateEngine.process(TEMPLATE_FILE, context);
 	}
 
-	public String getDescriptionAndPropertyDesignation(ByggrErrandDto byggrErrandDto) {
-		final var context = new Context(Locale.of("sv", "SE"));
+	public String getDescriptionAndPropertyDesignation(final ByggrErrandDto byggrErrandDto) {
+		var context = new Context(Locale.of("sv", "SE"));
 		context.setVariable("descriptionAndPropertyDesignation", createSupplementaryHeader(byggrErrandDto));
 
 		return templateEngine.process(DESCRIPTION_PROPERTY_DESIGNATION_TEMPLATE_FILE, context);
@@ -61,7 +62,7 @@ public class TemplateMapper {
 	 * @param  eventId        The id of the event to get the heading from
 	 * @return                The heading of the event
 	 */
-	private String getHeading(ByggrErrandDto byggrErrandDto, int eventId) {
+	private String getHeading(final ByggrErrandDto byggrErrandDto, final int eventId) {
 		return ofNullable(byggrErrandDto)
 			.map(ByggrErrandDto::getEvents)
 			.flatMap(events -> events.stream()
@@ -78,19 +79,19 @@ public class TemplateMapper {
 	 * @param  byggrErrandDto The errand
 	 * @return
 	 */
-	private String createSupplementaryHeader(ByggrErrandDto byggrErrandDto) {
+	private String createSupplementaryHeader(final ByggrErrandDto byggrErrandDto) {
 		return ofNullable(byggrErrandDto)
 			.map(header -> byggrErrandDto.getDescription() + " (" + byggrErrandDto.getPropertyDesignation() + ")")
 			.orElse("");
 	}
 
 	// Create a list that we iterate over with Thymeleaf
-	private List<FileTemplateDto> mapByggrFilesToList(String municipalityId, ByggrErrandDto byggrErrandDto) {
+	private List<FileTemplateDto> mapByggrFilesToList(final String municipalityId, final ByggrErrandDto byggrErrandDto, final Map<String, String> handlingtyper) {
 		return ofNullable(byggrErrandDto.getEvents()).orElse(Collections.emptyList()).stream()
 			.filter(ByggrFilterUtility::hasValidEvent)
 			.map(event -> ofNullable(event.getFiles()).orElse(Collections.emptyMap()))
 			.map(file -> file.entrySet().stream()
-				.map(entry -> mapToUrl(municipalityId, entry.getKey(), entry.getValue()))
+				.map(entry -> mapToUrl(municipalityId, entry.getKey(), entry.getValue(), handlingtyper))
 				.toList())
 			.flatMap(List::stream)
 			.sorted((o1, o2) -> o2.getFileUrl().compareTo(o1.getFileUrl()))
@@ -98,14 +99,14 @@ public class TemplateMapper {
 	}
 
 	// Create a FileTemplateDto containing the URL to the file and the file name as the display name
-	private FileTemplateDto mapToUrl(String municipalityId, String fileId, String fileName) {
+	private FileTemplateDto mapToUrl(final String municipalityId, final String fileId, final ByggrErrandDto.Event.DocumentNameAndType documentNameAndType, final Map<String, String> handlingtyper) {
 		return FileTemplateDto.builder()
 			.withFileUrl(String.format("%s%s%s%s", // [domain] [municipalityid] [subdirectory] [file identificator]
 				templateProperties.domain(),
 				municipalityId,
 				templateProperties.subDirectory(),
 				fileId))
-			.withFileName(fileName)
+			.withFileName(String.format("%s (%s)", handlingtyper.get(documentNameAndType.getDocumentType()), documentNameAndType.getDocumentName()))
 			.build();
 	}
 }

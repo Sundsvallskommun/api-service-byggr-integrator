@@ -11,6 +11,7 @@ import static se.sundsvall.byggrintegrator.TestObjectFactory.HANDELSETYP_GRANHO;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.WANTED_DOCUMENT_ID;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.WANTED_DOCUMENT_NAME;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.WANTED_DOKUMENT_TYPE;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeResponse;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeArendenResponse;
 
@@ -37,7 +38,7 @@ class ByggrIntegrationMapperTest {
 	@Test
 	void testCreateGetRolesRequest() {
 		// Act
-		final var request = mapper.createGetRolesRequest();
+		var request = mapper.createGetRolesRequest();
 
 		// Assert
 		assertThat(request.getRollTyp()).isEqualTo(RollTyp.INTRESSENT);
@@ -47,10 +48,10 @@ class ByggrIntegrationMapperTest {
 	@Test
 	void testMapToGetRelateradeArendenRequest() {
 		// Arrange
-		final var id = "1234567890";
+		var id = "1234567890";
 
 		// Act
-		final var request = mapper.mapToGetRelateradeArendenRequest(id);
+		var request = mapper.mapToGetRelateradeArendenRequest(id);
 
 		// Assert
 		assertThat(request.getStatusfilter()).isEqualByComparingTo(StatusFilter.AKTIV);
@@ -60,10 +61,10 @@ class ByggrIntegrationMapperTest {
 	@Test
 	void testMapToByggrErrandDtos() throws Exception {
 		// Arrange
-		final var response = List.of(generateRelateradeArendenResponse());
+		var response = List.of(generateRelateradeArendenResponse());
 
 		// Act
-		final var byggErrandDtos = mapper.mapToByggrErrandDtos(response);
+		var byggErrandDtos = mapper.mapToByggrErrandDtos(response);
 
 		// Assert
 		assertThat(byggErrandDtos).hasSize(2).satisfiesExactlyInAnyOrder(errand -> {
@@ -74,7 +75,7 @@ class ByggrIntegrationMapperTest {
 				assertThat(event.getEventType()).isEqualTo(HANDELSETYP_GRANHO);
 				assertThat(event.getEventSubtype()).isEqualTo(HANDELSESLAG_GRAUTS);
 				assertThat(event.getEventDate()).isEqualTo(LocalDate.now());
-				assertThat(event.getFiles()).isNotEmpty().containsExactlyInAnyOrderEntriesOf(Map.of("wantedDocumentId", "wantedDocumentName"));
+				assertThat(event.getFiles()).isNotEmpty().containsExactlyInAnyOrderEntriesOf(Map.of("wantedDocumentId", new Event.DocumentNameAndType("wantedDocumentName", "WANTED")));
 				assertEventStakeholders(event);
 			}, event -> {
 				assertThat(event.getId()).isEqualTo(2);
@@ -92,7 +93,7 @@ class ByggrIntegrationMapperTest {
 				assertThat(event.getEventType()).isEqualTo(HANDELSETYP_GRANHO);
 				assertThat(event.getEventSubtype()).isEqualTo(HANDELSESLAG_GRASVA);
 				assertThat(event.getEventDate()).isEqualTo(LocalDate.now());
-				assertThat(event.getFiles()).isNotEmpty().containsExactlyInAnyOrderEntriesOf(Map.of("wantedDocumentId", "wantedDocumentName"));
+				assertThat(event.getFiles()).isNotEmpty().containsExactlyInAnyOrderEntriesOf(Map.of("wantedDocumentId", new Event.DocumentNameAndType("wantedDocumentName", "WANTED")));
 				assertEventStakeholders(event);
 			}, event -> {
 				assertThat(event.getId()).isEqualTo(2);
@@ -122,11 +123,11 @@ class ByggrIntegrationMapperTest {
 	@Test
 	void testMapToByggrErrandDto() throws Exception {
 		// Arrange
-		final var dnr = "ByggrDiaryNumber";
-		final var response = generateArendeResponse(dnr);
+		var dnr = "ByggrDiaryNumber";
+		var response = generateArendeResponse(dnr);
 
 		// Act
-		final var byggErrandDto = mapper.mapToByggrErrandDto(response);
+		var byggErrandDto = mapper.mapToByggrErrandDto(response);
 
 		// Assert
 		assertThat(byggErrandDto).isNotNull().satisfies(errand -> {
@@ -150,16 +151,16 @@ class ByggrIntegrationMapperTest {
 
 	@Test
 	void testMapToGetArendeRequest() {
-		final var dnr = "dnr";
-		final var request = mapper.mapToGetArendeRequest(dnr);
+		var dnr = "dnr";
+		var request = mapper.mapToGetArendeRequest(dnr);
 
 		assertThat(request.getDnr()).isEqualTo(dnr);
 	}
 
 	@Test
 	void testMapToGetDocumentRequest() {
-		final var fileId = "111222";
-		final var request = mapper.mapToGetDocumentRequest(fileId);
+		var fileId = "111222";
+		var request = mapper.mapToGetDocumentRequest(fileId);
 
 		assertThat(request.getDocumentId()).isEqualTo(fileId);
 		assertThat(request.isInkluderaFil()).isTrue();
@@ -167,18 +168,20 @@ class ByggrIntegrationMapperTest {
 
 	@Test
 	void testMapToErrandDto_shouldOmitUnwantedDocumentTypes() throws Exception {
-		final var dnr = "ByggrDiaryNumber";
-		final var response = generateArendeResponse(dnr);
+		var dnr = "ByggrDiaryNumber";
+		var response = generateArendeResponse(dnr);
 
-		final var byggrErrandDto = mapper.mapToByggrErrandDto(response);
+		var byggrErrandDto = mapper.mapToByggrErrandDto(response);
 
 		// Get the files
-		final var fileList = byggrErrandDto.getEvents().stream()
+		var fileList = byggrErrandDto.getEvents().stream()
 			.flatMap(event -> event.getFiles().entrySet().stream())
 			.toList();
 
+		var wantedDocumentNameAndType = new Event.DocumentNameAndType(WANTED_DOCUMENT_NAME, WANTED_DOKUMENT_TYPE);
+
 		// Assert that all files are of the wanted type
 		assertThat(fileList.stream().map(Map.Entry::getKey)).allMatch(WANTED_DOCUMENT_ID::equals);
-		assertThat(fileList.stream().map(Map.Entry::getValue)).allMatch(WANTED_DOCUMENT_NAME::equals);
+		assertThat(fileList.stream().map(Map.Entry::getValue)).allMatch(wantedDocumentNameAndType::equals);
 	}
 }
