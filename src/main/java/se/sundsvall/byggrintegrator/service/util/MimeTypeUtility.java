@@ -17,7 +17,7 @@ public class MimeTypeUtility {
 		try (InputStream stream = new ByteArrayInputStream(byteArray)) {
 			return DETECTOR.detectMimeType(fileName, stream);
 		} catch (Exception e) {
-			LOGGER.error(String.format("Exception when detecting mime type of file with filename '%s'", fileName), e);
+			LOGGER.error("Exception when detecting mime type of file with filename '{}'", fileName, e);
 			return MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE; // Return mime type for arbitrary binary files
 		}
 	}

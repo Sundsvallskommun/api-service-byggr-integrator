@@ -4,6 +4,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,7 +42,7 @@ public class ApiResponseMapper {
 
 		return errands.stream()
 			.filter(Objects::nonNull)
-			.sorted((o1, o2) -> o1.getByggrCaseNumber().compareTo(o2.getByggrCaseNumber()))
+			.sorted(Comparator.comparing(ByggrErrandDto::getByggrCaseNumber))
 			.map(errand -> mapToKeyValue(position.getAndIncrement(), errand.getByggrCaseNumber()))
 			.toList();
 	}

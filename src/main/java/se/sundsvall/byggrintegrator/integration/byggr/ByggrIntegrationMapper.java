@@ -155,6 +155,7 @@ public class ByggrIntegrationMapper {
 			.stream()
 			.flatMap(Collection::stream)
 			.filter(filterUtility::hasValidDocumentType) // Filter out unwanted document types
+			.filter(handelseHandling -> Objects.nonNull(handelseHandling.getDokument()))
 			.map(handelseHandling -> new Triple(handelseHandling.getDokument().getDokId(), handelseHandling.getDokument().getNamn(), handelseHandling.getTyp()))
 			.filter(triple -> Objects.nonNull(triple.dokumentId()))
 			.filter(triple -> Objects.nonNull(triple.dokumentNamn()))
