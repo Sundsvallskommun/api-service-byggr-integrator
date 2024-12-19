@@ -198,7 +198,7 @@ public class ByggrFilterUtility {
 	 */
 	public ByggrErrandDto filterEvent(ByggrErrandDto errand, int eventId) {
 		if (Objects.isNull(errand)) {
-			return errand;
+			return null;
 		}
 
 		final var filteredEvents = errand.getEvents().stream()

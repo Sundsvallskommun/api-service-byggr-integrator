@@ -41,7 +41,10 @@ public class ParameterUtility {
 	}
 
 	private static String fetchGroup(Matcher matcher, int groupNbr) {
-		matcher.find();
-		return matcher.group(groupNbr);
+		if (matcher.find()) {
+			return matcher.group(groupNbr);
+		}
+
+		return null;
 	}
 }
