@@ -38,9 +38,7 @@ public class FileResource {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
-	@GetMapping(path = "/files/{fileId}", produces = {
-		APPLICATION_OCTET_STREAM_VALUE, APPLICATION_PROBLEM_JSON_VALUE
-	})
+	@GetMapping(path = "/files/{fileId}", produces = APPLICATION_OCTET_STREAM_VALUE)
 	@Operation(summary = "Return file content for file matching the provided id", responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
 		@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
