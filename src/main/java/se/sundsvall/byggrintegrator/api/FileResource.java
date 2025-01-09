@@ -30,6 +30,7 @@ import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 	Problem.class, ConstraintViolationProblem.class
 })))
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+@ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 public class FileResource {
 
 	private final ByggrIntegratorService byggrIntegratorService;
