@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "1.1"
 servers:
-  - url: http://localhost:63698
+  - url: http://localhost:60822
     description: Generated server url
 tags:
   - name: Open-E
@@ -45,7 +45,7 @@ paths:
         "500":
           description: Internal Server Error
           content:
-            text/html:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
         "200":
@@ -57,21 +57,21 @@ paths:
         "400":
           description: Bad Request
           content:
-            text/html:
+            application/problem+json:
               schema:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
-          content:
-            text/html:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "404":
           description: Not Found
           content:
-            text/html:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
   /{municipalityId}/opene/neighborhood-notifications/filenames:
@@ -100,7 +100,7 @@ paths:
         "500":
           description: Internal Server Error
           content:
-            text/html:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
         "200":
@@ -112,21 +112,21 @@ paths:
         "400":
           description: Bad Request
           content:
-            text/html:
+            application/problem+json:
               schema:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
-          content:
-            text/html:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "404":
           description: Not Found
           content:
-            text/html:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
   /{municipalityId}/opene/cases/{caseNumber}/type:
@@ -158,30 +158,30 @@ paths:
             application/xml:
               schema:
                 $ref: "#/components/schemas/Weight"
-        "500":
-          description: Internal Server Error
-          content:
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad Request
           content:
-            application/xml:
+            application/problem+json:
               schema:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
-          content:
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "404":
           description: Not Found
           content:
-            application/xml:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
   /{municipalityId}/opene/cases/{caseNumber}/property-designation:
@@ -210,7 +210,7 @@ paths:
         "500":
           description: Internal Server Error
           content:
-            text/html:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
         "200":
@@ -222,21 +222,21 @@ paths:
         "400":
           description: Bad Request
           content:
-            text/html:
+            application/problem+json:
               schema:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
-          content:
-            text/html:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "404":
           description: Not Found
           content:
-            text/html:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
   /{municipalityId}/opene/cases/type:
@@ -268,30 +268,30 @@ paths:
             application/xml:
               schema:
                 $ref: "#/components/schemas/Weight"
-        "500":
-          description: Internal Server Error
-          content:
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad Request
           content:
-            application/xml:
+            application/problem+json:
               schema:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
-          content:
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "404":
           description: Not Found
           content:
-            application/xml:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
   /{municipalityId}/opene/cases/property-designation:
@@ -320,7 +320,7 @@ paths:
         "500":
           description: Internal Server Error
           content:
-            text/html:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
         "200":
@@ -332,21 +332,21 @@ paths:
         "400":
           description: Bad Request
           content:
-            text/html:
+            application/problem+json:
               schema:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "502":
-          description: Bad Gateway
-          content:
-            text/html:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "404":
           description: Not Found
           content:
-            text/html:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
   /{municipalityId}/neighborhood-notifications/{identifier}/errands:
@@ -383,27 +383,27 @@ paths:
         "404":
           description: Not Found
           content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Problem"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
         "400":
           description: Bad Request
           content:
-            application/json:
+            application/problem+json:
               schema:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "502":
           description: Bad Gateway
           content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
   /{municipalityId}/files/{fileId}:
@@ -432,6 +432,12 @@ paths:
           description: Successful operation
         "404":
           description: Not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
           content:
             application/problem+json:
               schema:
@@ -483,24 +489,24 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/KeyValue"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad Request
           content:
-            application/json:
+            application/problem+json:
               schema:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "502":
           description: Bad Gateway
           content:
-            application/json:
+            application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
   /api-docs:
@@ -534,12 +540,12 @@ components:
           type: object
           additionalProperties:
             type: object
-        status:
-          $ref: "#/components/schemas/StatusType"
         title:
           type: string
         detail:
           type: string
+        status:
+          $ref: "#/components/schemas/StatusType"
     StatusType:
       type: object
       properties:
@@ -669,12 +675,12 @@ components:
           type: object
           additionalProperties:
             type: object
-        status:
-          $ref: "#/components/schemas/StatusType"
         title:
           type: string
         detail:
           type: string
+        status:
+          $ref: "#/components/schemas/StatusType"
         suppressed:
           type: array
           items:
