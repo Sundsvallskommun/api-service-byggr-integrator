@@ -17,6 +17,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.APPLICANT_ROLE;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.CASE_APPLICANT;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.DOCUMENT_CONTENT;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeResponse;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateDocumentResponse;
@@ -42,7 +43,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
-import se.sundsvall.byggrintegrator.TestObjectFactory;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
@@ -298,7 +298,35 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegration).getDocument(fileId);
 		verify(mockHttpServletResponse).addHeader(CONTENT_TYPE, "text/plain");
 		verify(mockHttpServletResponse).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"random.txt\"");
-		verify(mockHttpServletResponse).setContentLength(TestObjectFactory.DOCUMENT_CONTENT.length);
+		verify(mockHttpServletResponse).setContentLength(DOCUMENT_CONTENT.length);
+		verify(mockHttpServletResponse).getOutputStream();
+		verifyNoMoreInterations();
+	}
+
+	/**
+	 * Test scenario where the file name have no extension. The extension in "filAndelse" should be concatenated as the file
+	 * extension
+	 */
+	@Test
+	void testReadFile_2() throws IOException {
+		final var fileId = "fileId";
+
+		final var dokument = OBJECT_FACTORY.createDokument()
+			.withDokId(fileId)
+			.withNamn("random-name")
+			.withFil(OBJECT_FACTORY.createDokumentFil()
+				.withFilAndelse("pdf")
+				.withFilBuffer(DOCUMENT_CONTENT));
+
+		when(mockByggrIntegration.getDocument(fileId)).thenReturn(OBJECT_FACTORY.createGetDocumentResponse().withGetDocumentResult(dokument));
+		when(mockHttpServletResponse.getOutputStream()).thenReturn(mockServletOutputStream);
+
+		service.readFile(fileId, mockHttpServletResponse);
+
+		verify(mockByggrIntegration).getDocument(fileId);
+		verify(mockHttpServletResponse).addHeader(CONTENT_TYPE, "application/pdf");
+		verify(mockHttpServletResponse).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"random-name.pdf\"");
+		verify(mockHttpServletResponse).setContentLength(DOCUMENT_CONTENT.length);
 		verify(mockHttpServletResponse).getOutputStream();
 		verifyNoMoreInterations();
 	}
@@ -339,7 +367,7 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegration).getDocument(fileId);
 		verify(mockHttpServletResponse).addHeader(CONTENT_TYPE, "text/plain");
 		verify(mockHttpServletResponse).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"random.txt\"");
-		verify(mockHttpServletResponse).setContentLength(TestObjectFactory.DOCUMENT_CONTENT.length);
+		verify(mockHttpServletResponse).setContentLength(DOCUMENT_CONTENT.length);
 		verify(mockHttpServletResponse).getOutputStream();
 		verifyNoMoreInterations();
 	}

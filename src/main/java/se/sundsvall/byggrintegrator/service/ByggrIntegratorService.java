@@ -129,6 +129,8 @@ public class ByggrIntegratorService {
 
 	private void addToResponse(String documentId, HttpServletResponse response, final Dokument byggRFile) {
 		try {
+			byggRFile.setNamn(decorateNameWithExtension(byggRFile.getNamn(), byggRFile.getFil().getFilAndelse()));
+
 			response.addHeader(CONTENT_TYPE, detectMimeType(byggRFile.getNamn(), byggRFile.getFil().getFilBuffer()));
 			response.addHeader(CONTENT_DISPOSITION, TEMPLATE_CONTENT_DISPOSITION_HEADER_VALUE.formatted(byggRFile.getNamn()));
 			response.setContentLength(byggRFile.getFil().getFilBuffer().length);
@@ -139,7 +141,22 @@ public class ByggrIntegratorService {
 		}
 	}
 
-	private ThrowableProblem createProblem(StatusType status, String detail) {
+	private String decorateNameWithExtension(final String name, final String extension) {
+		if (extension == null) {
+			return name;
+		}
+
+		var dotIndex = name.lastIndexOf(".");
+		if (dotIndex != -1) {
+			var fileExtension = name.substring(dotIndex + 1);
+			if (fileExtension.equalsIgnoreCase(extension)) {
+				return name;
+			}
+		}
+		return name + "." + extension.toLowerCase();
+	}
+
+	private ThrowableProblem createProblem(final StatusType status, final String detail) {
 		return Problem.builder()
 			.withStatus(status)
 			.withTitle(status.getReasonPhrase())
