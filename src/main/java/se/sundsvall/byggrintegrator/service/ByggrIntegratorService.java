@@ -64,6 +64,7 @@ public class ByggrIntegratorService {
 		var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
 		// Fetch answer from ByggR
 		var result = byggrIntegration.getErrands(processedIdentifier, roles);
+
 		// Filter on neighborhood notifications where identifier matches stakeholder
 		var matches = filterUtility.filterNeighborhoodNotifications(byggrIntegrationMapper.mapToByggrErrandDtos(result), processedIdentifier);
 

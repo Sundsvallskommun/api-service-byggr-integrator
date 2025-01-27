@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import feign.soap.SOAPDecoder;
 import feign.soap.SOAPEncoder;
 import feign.soap.SOAPErrorDecoder;
 import org.junit.jupiter.api.Test;
@@ -16,6 +15,7 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cloud.openfeign.FeignBuilderCustomizer;
+import se.sundsvall.byggrintegrator.integration.byggr.decoder.SOAPJAXBDecoder;
 import se.sundsvall.dept44.configuration.feign.FeignMultiCustomizer;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,7 +46,7 @@ class ByggrConfigurationTest {
 			var customizer = byggrConfiguration.feignBuilderCustomizer(mockProperties);
 
 			var soapEncoderArgumentCaptor = ArgumentCaptor.forClass(SOAPEncoder.class);
-			var soapDecoderArgumentCaptor = ArgumentCaptor.forClass(SOAPDecoder.class);
+			var soapDecoderArgumentCaptor = ArgumentCaptor.forClass(SOAPJAXBDecoder.class);
 			var soapErrorDecoderArgumentCaptor = ArgumentCaptor.forClass(SOAPErrorDecoder.class);
 
 			verify(spyFeignMultiCustomizer).withEncoder(soapEncoderArgumentCaptor.capture());
