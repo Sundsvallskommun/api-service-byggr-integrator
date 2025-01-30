@@ -11,14 +11,14 @@ class CaseTypeEnumTest {
 	void testApiNumberValues() {
 		assertThat(Stream.of(CaseTypeEnum.values())
 			.map(CaseTypeEnum::getApiNumber)
-			.toList()).containsExactlyInAnyOrder(11, 12, 13, 14, 15, 16, 21);
+			.toList()).containsExactlyInAnyOrder(11, 12, 13, 14, 15, 16, 17, 21);
 	}
 
 	@Test
 	void testByggRTypeValues() {
 		assertThat(Stream.of(CaseTypeEnum.values())
 			.map(CaseTypeEnum::getByggrType)
-			.toList()).containsExactlyInAnyOrder("BL", "RL", "MARK", "FÖRF", "ATTANM", "ANM", "DI");
+			.toList()).containsExactlyInAnyOrder("BL", "RL", "MARK", "FÖRF", "ATTANM", "ANM", "TIDS", "DI");
 	}
 
 	@Test
@@ -29,6 +29,7 @@ class CaseTypeEnumTest {
 		assertThat(CaseTypeEnum.translate("FÖRF")).isEqualTo("14");
 		assertThat(CaseTypeEnum.translate("ATTANM")).isEqualTo("15");
 		assertThat(CaseTypeEnum.translate("ANM")).isEqualTo("16");
+		assertThat(CaseTypeEnum.translate("TIDS")).isEqualTo("17");
 		assertThat(CaseTypeEnum.translate("DI")).isEqualTo("21");
 		assertThat(CaseTypeEnum.translate("UNKNOWN")).isEqualTo("999");
 	}
