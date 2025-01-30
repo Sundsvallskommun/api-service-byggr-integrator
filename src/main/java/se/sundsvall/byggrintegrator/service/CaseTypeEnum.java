@@ -13,6 +13,7 @@ public enum CaseTypeEnum {
 	FORHANDSBESKED("FÖRF", 14),
 	ANMALAN_ATTEFALL("ATTANM", 15),
 	ANMALAN("ANM", 16),
+	TIDSBEGRANSAT_BYGGLOV("TIDS", 17),
 	STRANDSKYDD("DI", 21);
 
 	private final String byggrType;
