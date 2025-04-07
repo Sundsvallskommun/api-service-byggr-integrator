@@ -6,10 +6,8 @@ import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
-
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.dept44.test.AbstractAppTest;
 import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
@@ -57,6 +55,17 @@ class NeighborhoodNotificationIT extends AbstractAppTest {
 	void test04_getNeighborhoodNotificationsForOrganization() {
 		setupCall()
 			.withServicePath("/2281/neighborhood-notifications/5566771234/errands")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_JSON_VALUE))
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
+
+	@Test
+	void test05_getNeighborhoodNotificationFacilities() {
+		setupCall()
+			.withServicePath("/2281/neighborhood-notifications/5566771234/BYGG 2024-000019/properties")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_JSON_VALUE))

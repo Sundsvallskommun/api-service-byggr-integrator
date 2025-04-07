@@ -15,7 +15,6 @@
 	<properties>
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
 		<generated-sources-java-path>src/main/java</generated-sources-java-path>
-
 		<overviewproject.mimetypes.version>2.0.0</overviewproject.mimetypes.version>
 		<jaxb2-fluent-api.version>3.0</jaxb2-fluent-api.version>
 		<jaxb2-maven-plugin.version>3.3.0</jaxb2-maven-plugin.version>
@@ -35,7 +34,6 @@
 			<groupId>se.sundsvall.dept44</groupId>
 			<artifactId>dept44-common-validators</artifactId>
 		</dependency>
-
 		<!-- Other -->
 		<dependency>
 			<groupId>com.github.ben-manes.caffeine</groupId>
@@ -59,7 +57,6 @@
 			<artifactId>mime-types</artifactId>
 			<version>${overviewproject.mimetypes.version}</version>
 		</dependency>
-
 		<!-- Test -->
 		<dependency>
 			<groupId>se.sundsvall.dept44</groupId>
@@ -67,7 +64,6 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>

@@ -5,7 +5,9 @@ import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeRespo
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateByggrErrandDtos;
 
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
+import se.sundsvall.byggrintegrator.api.model.KeyValue;
 
 class ApiResponseMapperTest {
 
@@ -44,5 +46,50 @@ class ApiResponseMapperTest {
 		final var response = apiResponseMapper.mapToWeight(generateArendeResponse("dnr"));
 
 		assertThat(response.getValue()).isEqualTo("11"); // BL translated to integer value according to the CaseTypeEnum
+	}
+
+	@Test
+	void testMapToNeighborhoodKeyValueResponseList() {
+		// Arrange
+		final var errands = generateByggrErrandDtos();
+
+		// Act
+		final var keyValues = apiResponseMapper.mapToNeighborhoodKeyValueResponseList(errands);
+
+		// Assert
+		assertThat(keyValues).hasSize(4).satisfiesExactlyInAnyOrder(keyVal -> {
+			assertThat(keyVal.key()).isEqualTo("1");
+			assertThat(keyVal.value()).isEqualTo("dnr123 [123]");
+		}, keyVal -> {
+			assertThat(keyVal.key()).isEqualTo("2");
+			assertThat(keyVal.value()).isEqualTo("dnr123 [234]");
+		}, keyVal -> {
+			assertThat(keyVal.key()).isEqualTo("3");
+			assertThat(keyVal.value()).isEqualTo("dnr456 [345]");
+		}, keyVal -> {
+			assertThat(keyVal.key()).isEqualTo("4");
+			assertThat(keyVal.value()).isEqualTo("dnr456 [456]");
+		});
+	}
+
+	@Test
+	void testMapToNeighborhoodKeyValueResponseListEmpty() {
+		// Act
+		final var keyValues = apiResponseMapper.mapToNeighborhoodKeyValueResponseList(List.of());
+
+		// Assert
+		assertThat(keyValues).isNotNull().isEmpty();
+
+	}
+
+	@Test
+	void mapStringIntegerMapToKeyValue() {
+		Map<String, Integer> myMap = Map.of("key1", 1, "key2", 2);
+
+		List<KeyValue> keyValues = apiResponseMapper.mapToKeyValue(myMap);
+
+		assertThat(keyValues).hasSize(2).satisfiesExactlyInAnyOrder(
+			keyVal -> assertThat(keyVal.value()).isEqualTo("key1 [1]"),
+			keyVal -> assertThat(keyVal.value()).isEqualTo("key2 [2]"));
 	}
 }

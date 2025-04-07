@@ -10,6 +10,8 @@ import generated.se.sundsvall.arendeexport.GetHandlingTyper;
 import generated.se.sundsvall.arendeexport.GetHandlingTyperResponse;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
+import generated.se.sundsvall.arendeexport.GetRemisserByPersOrgNr;
+import generated.se.sundsvall.arendeexport.GetRemisserByPersOrgNrResponse;
 import generated.se.sundsvall.arendeexport.GetRoller;
 import generated.se.sundsvall.arendeexport.GetRollerResponse;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -46,4 +48,10 @@ public interface ByggrClient {
 		"SOAPAction=www.tekis.se/ServiceContract/V8/IExportArenden/GetHandlingTyper"
 	})
 	GetHandlingTyperResponse getHandlingTyper(GetHandlingTyper request);
+
+	@PostMapping(consumes = TEXT_XML_UTF8, headers = {
+		"SOAPAction=www.tekis.se/ServiceContract/V4/IExportArenden/GetRemisserByPersOrgNr"
+	})
+	GetRemisserByPersOrgNrResponse getRemisserByPersOrgNr(GetRemisserByPersOrgNr getRemisserByPersOrgNr);
+
 }

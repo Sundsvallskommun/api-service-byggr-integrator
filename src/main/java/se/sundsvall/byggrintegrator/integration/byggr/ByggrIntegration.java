@@ -7,7 +7,10 @@ import generated.se.sundsvall.arendeexport.ArrayOfString;
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.GetDocumentResponse;
 import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
+import generated.se.sundsvall.arendeexport.GetRemisserByPersOrgNr;
+import generated.se.sundsvall.arendeexport.GetRemisserByPersOrgNrResponse;
 import generated.se.sundsvall.arendeexport.HandlingTyp;
+import generated.se.sundsvall.arendeexport.RemissStatusFilter;
 import generated.se.sundsvall.arendeexport.Roll;
 import jakarta.xml.soap.SOAPFault;
 import jakarta.xml.ws.soap.SOAPFaultException;
@@ -113,6 +116,12 @@ public class ByggrIntegration {
 
 		return response.getGetHandlingTyperResult().getHandlingTyp().stream()
 			.collect(Collectors.toMap(HandlingTyp::getTyp, HandlingTyp::getBeskrivning));
+	}
+
+	public GetRemisserByPersOrgNrResponse getRemisserByPersOrgNr(final String identifier) {
+		return byggrClient.getRemisserByPersOrgNr(new GetRemisserByPersOrgNr()
+			.withPersOrgNr(identifier)
+			.withStatusFilter(RemissStatusFilter.NONE));
 	}
 
 	private String extractFaultString(final SOAPFaultException e) {

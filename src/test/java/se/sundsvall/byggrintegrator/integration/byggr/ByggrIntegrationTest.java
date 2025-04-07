@@ -1,4 +1,3 @@
-
 package se.sundsvall.byggrintegrator.integration.byggr;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -262,4 +261,5 @@ class ByggrIntegrationTest {
 		assertThat(exception).isInstanceOf(SOAPFaultException.class);
 		assertThat(exception.getFault().getFaultReasonText(Locale.ENGLISH)).isEqualTo(reasonText);
 	}
+
 }

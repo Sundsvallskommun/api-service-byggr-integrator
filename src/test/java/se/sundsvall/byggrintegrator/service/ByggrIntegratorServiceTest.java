@@ -23,8 +23,11 @@ import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeRespo
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateDocumentResponse;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeArendenResponse;
 
+import generated.se.sundsvall.arendeexport.ArrayOfRemiss;
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.GetRemisserByPersOrgNrResponse;
 import generated.se.sundsvall.arendeexport.ObjectFactory;
+import generated.se.sundsvall.arendeexport.Remiss;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -191,7 +194,7 @@ class ByggrIntegratorServiceTest {
 
 	@ParameterizedTest
 	@MethodSource("identifierProvider")
-	void testFindApplicantErrands(String indentifier, String processedIdentifier) throws Exception {
+	void testFindApplicantErrands(String identifier, String processedIdentifier) throws Exception {
 		// Prepare list of unwanted handelseslag
 		setField(mockByggrFilterUtility, "applicantRoles", List.of(APPLICANT_ROLE));
 		setField(mockByggrIntegrationMapper, "filterUtility", mockByggrFilterUtility);
@@ -206,7 +209,7 @@ class ByggrIntegratorServiceTest {
 		when(mockApiResponseMapper.mapToKeyValueResponseList(anyList())).thenCallRealMethod();
 
 		// Act
-		final var applicantErrands = service.findApplicantErrands(indentifier);
+		final var applicantErrands = service.findApplicantErrands(identifier);
 
 		// Assert
 		assertThat(applicantErrands).hasSize(2).satisfiesExactlyInAnyOrder(notification -> {
@@ -367,6 +370,30 @@ class ByggrIntegratorServiceTest {
 		verify(mockHttpServletResponse).setContentLength(DOCUMENT_CONTENT.length);
 		verify(mockHttpServletResponse).getOutputStream();
 		verifyNoMoreInterations();
+	}
+
+	@ParameterizedTest
+	@MethodSource("identifierProvider")
+	void getNeighborhoodNotificationFacilities(String identifier, String processedIdentifier) {
+		var caseNumber = "caseNumber";
+
+		when(mockByggrIntegration.getRemisserByPersOrgNr(processedIdentifier)).thenReturn(new GetRemisserByPersOrgNrResponse()
+			.withGetRemisserByPersOrgNrResult(new ArrayOfRemiss()
+				.withRemiss(new Remiss()
+					.withDnr(caseNumber)
+					.withFastighetsbeteckning("propertyDesignation")
+					.withRemissId(123))));
+		when(mockApiResponseMapper.mapToKeyValue(any())).thenCallRealMethod();
+
+		var result = service.getNeighborhoodNotificationFacilities(identifier, caseNumber);
+
+		verify(mockByggrIntegration).getRemisserByPersOrgNr(processedIdentifier);
+		verify(mockApiResponseMapper).mapToKeyValue(any());
+
+		assertThat(result).isNotNull().hasSize(1).allSatisfy(keyValue -> {
+			assertThat(keyValue.key()).isEqualTo("1");
+			assertThat(keyValue.value()).isEqualTo("propertyDesignation [123]");
+		});
 	}
 
 	private static Stream<Arguments> identifierProvider() {

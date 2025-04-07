@@ -12,10 +12,12 @@ import static se.sundsvall.byggrintegrator.service.util.MimeTypeUtility.detectMi
 
 import generated.se.sundsvall.arendeexport.Dokument;
 import generated.se.sundsvall.arendeexport.GetDocumentResponse;
+import generated.se.sundsvall.arendeexport.Remiss;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -128,7 +130,21 @@ public class ByggrIntegratorService {
 			});
 	}
 
-	private void addToResponse(String documentId, HttpServletResponse response, final Dokument byggRFile) {
+	public List<KeyValue> getNeighborhoodNotificationFacilities(final String identifier, final String caseNumber) {
+		var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
+
+		var remisser = byggrIntegration.getRemisserByPersOrgNr(processedIdentifier);
+
+		var propertyDesignationAndRemissIdMap = remisser.getGetRemisserByPersOrgNrResult().getRemiss().stream()
+			// Filter to only include remisser with the given case number
+			.filter(remiss -> caseNumber.equals(remiss.getDnr()))
+			// Creates a map where the propertyDesignation is the key and the remissId is the value
+			.collect(Collectors.toMap(Remiss::getFastighetsbeteckning, Remiss::getRemissId));
+
+		return apiResponseMapper.mapToKeyValue(propertyDesignationAndRemissIdMap);
+	}
+
+	private void addToResponse(final String documentId, final HttpServletResponse response, final Dokument byggRFile) {
 		try {
 			byggRFile.setNamn(decorateNameWithExtension(byggRFile.getNamn(), byggRFile.getFil().getFilAndelse()));
 

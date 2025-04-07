@@ -1,8 +1,8 @@
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
-	<s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<GetRelateradeArendenByPersOrgNrAndRoleResponse xmlns="www.tekis.se/ServiceContract">
 			<GetRelateradeArendenByPersOrgNrAndRoleResult>
-				<arende arendeId="233648" dnr="BYGG 2023-000255" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
+				<Arende arendeId="233648" dnr="BYGG 2023-000255" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
 					<status xmlns="www.tekis.se/arende">Pågående</status>
 					<beskrivning xmlns="www.tekis.se/arende">Bygglov för ombyggnad av</beskrivning>
 					<ankomstDatum xmlns="www.tekis.se/arende">2023-09-06</ankomstDatum>
@@ -61,7 +61,7 @@
 							<riktning>In</riktning>
 							<rubrik>Bygglov</rubrik>
 							<startDatum>2023-09-06T10:18:00+02:00</startDatum>
-							<anteckning/>
+							<anteckning />
 							<handelseslag>Bygglov</handelseslag>
 							<handelsetyp>ANSÖKAN</handelsetyp>
 							<sekretess>false</sekretess>
@@ -102,9 +102,9 @@
 									</dokument>
 								</handling>
 							</handlingLista>
-							<intressentLista/>
+							<intressentLista />
 							<arbetsmaterial>false</arbetsmaterial>
-							<handlaggare signatur="SYSTEM"/>
+							<handlaggare signatur="SYSTEM" />
 						</handelse>
 						<handelse handelseId="1465800" checksum="62">
 							<riktning>In</riktning>
@@ -129,9 +129,9 @@
 									</dokument>
 								</handling>
 							</handlingLista>
-							<intressentLista/>
+							<intressentLista />
 							<arbetsmaterial>false</arbetsmaterial>
-							<handlaggare signatur="SYSTEM"/>
+							<handlaggare signatur="SYSTEM" />
 						</handelse>
 						<handelse handelseId="1465809" checksum="45">
 							<riktning>Ut</riktning>
@@ -214,7 +214,7 @@
 								</intressent>
 							</intressentLista>
 							<arbetsmaterial>false</arbetsmaterial>
-							<handlaggare signatur="SYSTEM"/>
+							<handlaggare signatur="SYSTEM" />
 						</handelse>
 						<handelse checksum="36" handelseId="1465848">
 							<riktning>In</riktning>
@@ -259,7 +259,7 @@
 								</intressent>
 							</intressentLista>
 							<arbetsmaterial>false</arbetsmaterial>
-							<handlaggare signatur="SYSTEM"/>
+							<handlaggare signatur="SYSTEM" />
 						</handelse>
 						<handelse handelseId="1465815" checksum="45">
 							<riktning>Ut</riktning>
@@ -305,11 +305,11 @@
 								</intressent>
 							</intressentLista>
 							<arbetsmaterial>false</arbetsmaterial>
-							<handlaggare signatur="SYSTEM"/>
+							<handlaggare signatur="SYSTEM" />
 						</handelse>
 					</handelseLista>
 					<projektnr xmlns="www.tekis.se/arende">760208</projektnr>
-					<bevakningLista xmlns="www.tekis.se/arende"/>
+					<bevakningLista xmlns="www.tekis.se/arende" />
 					<objektLista xmlns="www.tekis.se/arende">
 						<abstractArendeObjekt xsi:type="arendeFastighet" arendeObjektId="246140" arHuvudObjekt="true" checksum="1|">
 							<fastighet checksum="1482424270|" fnr="22044332">
@@ -318,8 +318,8 @@
 							</fastighet>
 						</abstractArendeObjekt>
 					</objektLista>
-				</arende>
-				<arende arendeId="233649" dnr="BYGG 2023-000256" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
+				</Arende>
+				<Arende arendeId="233649" dnr="BYGG 2023-000256" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
 					<status xmlns="www.tekis.se/arende">Pågående</status>
 					<beskrivning xmlns="www.tekis.se/arende">Bygglov för ombyggnad av</beskrivning>
 					<ankomstDatum xmlns="www.tekis.se/arende">2023-09-06</ankomstDatum>
@@ -418,11 +418,11 @@
 								</intressent>
 							</intressentLista>
 							<arbetsmaterial>false</arbetsmaterial>
-							<handlaggare signatur="SYSTEM"/>
+							<handlaggare signatur="SYSTEM" />
 						</handelse>
 					</handelseLista>
 					<projektnr xmlns="www.tekis.se/arende">760208</projektnr>
-					<bevakningLista xmlns="www.tekis.se/arende"/>
+					<bevakningLista xmlns="www.tekis.se/arende" />
 					<objektLista xmlns="www.tekis.se/arende">
 						<abstractArendeObjekt xsi:type="arendeFastighet" arendeObjektId="256140" arHuvudObjekt="true" checksum="1|">
 							<fastighet checksum="1482424270|" fnr="22044332">
@@ -431,8 +431,8 @@
 							</fastighet>
 						</abstractArendeObjekt>
 					</objektLista>
-				</arende>
-				<arende arendeId="233650" dnr="BYGG 2023-000257" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
+				</Arende>
+				<Arende arendeId="233650" dnr="BYGG 2023-000257" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
 					<status xmlns="www.tekis.se/arende">Pågående</status>
 					<beskrivning xmlns="www.tekis.se/arende">Bygglov för ombyggnad av</beskrivning>
 					<ankomstDatum xmlns="www.tekis.se/arende">2023-09-06</ankomstDatum>
@@ -526,11 +526,11 @@
 								</intressent>
 							</intressentLista>
 							<arbetsmaterial>false</arbetsmaterial>
-							<handlaggare signatur="SYSTEM"/>
+							<handlaggare signatur="SYSTEM" />
 						</handelse>
 					</handelseLista>
 					<projektnr xmlns="www.tekis.se/arende">760208</projektnr>
-					<bevakningLista xmlns="www.tekis.se/arende"/>
+					<bevakningLista xmlns="www.tekis.se/arende" />
 					<objektLista xmlns="www.tekis.se/arende">
 						<abstractArendeObjekt xsi:type="arendeFastighet" arendeObjektId="256140" arHuvudObjekt="true" checksum="1|">
 							<fastighet checksum="1482424270|" fnr="22044332">
@@ -539,7 +539,7 @@
 							</fastighet>
 						</abstractArendeObjekt>
 					</objektLista>
-				</arende>
+				</Arende>
 			</GetRelateradeArendenByPersOrgNrAndRoleResult>
 		</GetRelateradeArendenByPersOrgNrAndRoleResponse>
 	</s:Body>
