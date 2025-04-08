@@ -1,8 +1,5 @@
 package se.sundsvall.byggrintegrator.service;
 
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-
 import generated.se.sundsvall.arendeexport.GetArendeResponse;
 import java.util.Comparator;
 import java.util.List;
@@ -15,27 +12,6 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 
 @Component
 public class ApiResponseMapper {
-
-	private static final String KEY_TEMPLATE = "%s [%s]";
-
-	public List<KeyValue> mapToNeighborhoodKeyValueResponseList(List<ByggrErrandDto> errands) {
-		final var position = new AtomicInteger(1);
-
-		return errands.stream()
-			.filter(Objects::nonNull)
-			.map(this::decorateWithEventIds)
-			.flatMap(List::stream)
-			.sorted()
-			.map(value -> mapToKeyValue(position.getAndIncrement(), value))
-			.toList();
-	}
-
-	private List<String> decorateWithEventIds(ByggrErrandDto dto) {
-		return ofNullable(dto.getEvents()).orElse(emptyList())
-			.stream()
-			.map(event -> KEY_TEMPLATE.formatted(dto.getByggrCaseNumber(), event.getId()))
-			.toList();
-	}
 
 	public List<KeyValue> mapToKeyValueResponseList(List<ByggrErrandDto> errands) {
 		final var position = new AtomicInteger(1);

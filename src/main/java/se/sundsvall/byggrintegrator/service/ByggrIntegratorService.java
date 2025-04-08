@@ -54,33 +54,33 @@ public class ByggrIntegratorService {
 
 	@Cacheable("findNeighborhoodNotificationsCache")
 	public List<KeyValue> findNeighborhoodNotifications(String identifier) {
-		var roles = byggrIntegration.getRoles();
+		final var roles = byggrIntegration.getRoles();
 		if (CollectionUtils.isEmpty(roles)) {
 			throw createProblem(NOT_FOUND, ERROR_ROLES_NOT_FOUND);
 		}
 
 		// Prefix identifier if it contains organisation legal id and add hyphen to identifier as ByggR integration formats
 		// legal id that way
-		var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
+		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
 		// Fetch answer from ByggR
-		var result = byggrIntegration.getErrands(processedIdentifier, roles);
+		final var result = byggrIntegration.getErrands(processedIdentifier, roles);
 
 		// Filter on neighborhood notifications where identifier matches stakeholder
-		var matches = filterUtility.filterNeighborhoodNotifications(byggrIntegrationMapper.mapToByggrErrandDtos(result), processedIdentifier);
+		final var matches = filterUtility.filterNeighborhoodNotifications(byggrIntegrationMapper.mapToByggrErrandDtos(result), processedIdentifier);
 
 		// Map to API response
-		return apiResponseMapper.mapToNeighborhoodKeyValueResponseList(matches);
+		return apiResponseMapper.mapToKeyValueResponseList(matches);
 	}
 
 	@Cacheable("findApplicantErrandsCache")
 	public List<KeyValue> findApplicantErrands(String identifier) {
 		// Prefix identifier if it contains organisation legal id and add hyphen to identifier as ByggR integration formats
 		// legal id that way
-		var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
+		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
 		// Fetch answer from ByggR
-		var result = byggrIntegration.getErrands(processedIdentifier, null);
+		final var result = byggrIntegration.getErrands(processedIdentifier, null);
 		// Filter on errands where applicant matches identifier
-		var matches = filterUtility.filterCasesForApplicant(byggrIntegrationMapper.mapToByggrErrandDtos(result), processedIdentifier);
+		final var matches = filterUtility.filterCasesForApplicant(byggrIntegrationMapper.mapToByggrErrandDtos(result), processedIdentifier);
 
 		// Map to API response
 		return apiResponseMapper.mapToKeyValueResponseList(matches);
@@ -88,16 +88,16 @@ public class ByggrIntegratorService {
 
 	@Cacheable("getPropertyDesignationCache")
 	public String getPropertyDesignation(final String caseNumber) {
-		var errand = byggrIntegration.getErrand(caseNumber);
+		final var errand = byggrIntegration.getErrand(caseNumber);
 
-		var byggrErrand = byggrIntegrationMapper.mapToByggrErrandDto(errand);
+		final var byggrErrand = byggrIntegrationMapper.mapToByggrErrandDto(errand);
 
 		return templateMapper.getDescriptionAndPropertyDesignation(byggrErrand);
 	}
 
 	@Cacheable("getErrandTypeCache")
 	public Weight getErrandType(String caseNumber) {
-		var errand = byggrIntegration.getErrand(caseNumber);
+		final var errand = byggrIntegration.getErrand(caseNumber);
 
 		return ofNullable(errand)
 			.map(apiResponseMapper::mapToWeight)
@@ -107,13 +107,13 @@ public class ByggrIntegratorService {
 	@Cacheable("listNeighborhoodNotificationFilesCache")
 	public String listNeighborhoodNotificationFiles(String municipalityId, String caseNumber, int eventId) {
 		// Fetch errand from ByggR
-		var getArendeResponse = byggrIntegration.getErrand(caseNumber);
+		final var getArendeResponse = byggrIntegration.getErrand(caseNumber);
 
 		// Filter on event that matches incoming id
-		var match = filterUtility.filterEvent(byggrIntegrationMapper.mapToByggrErrandDto(getArendeResponse), eventId);
+		final var match = filterUtility.filterEvent(byggrIntegrationMapper.mapToByggrErrandDto(getArendeResponse), eventId);
 
 		// Fetch "handlingtyper" from ByggR
-		var handlingtyper = byggrIntegration.getHandlingTyper();
+		final var handlingtyper = byggrIntegration.getHandlingTyper();
 
 		// Map to API response
 		return templateMapper.generateFileList(municipalityId, match, handlingtyper, eventId);
@@ -147,9 +147,9 @@ public class ByggrIntegratorService {
 			return name;
 		}
 
-		var dotIndex = name.lastIndexOf(".");
+		final var dotIndex = name.lastIndexOf(".");
 		if (dotIndex != -1) {
-			var fileExtension = name.substring(dotIndex + 1);
+			final var fileExtension = name.substring(dotIndex + 1);
 			if (fileExtension.equalsIgnoreCase(extension)) {
 				return name;
 			}

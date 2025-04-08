@@ -102,28 +102,25 @@ class ByggrIntegratorServiceTest {
 		when(mockByggrIntegrationMapper.mapToByggrErrandDtos(response)).thenCallRealMethod();
 		when(mockByggrFilterUtility.hasValidDocumentType(any())).thenCallRealMethod();
 		when(mockByggrFilterUtility.filterNeighborhoodNotifications(anyList(), eq(processedIdentifier))).thenCallRealMethod();
-		when(mockApiResponseMapper.mapToNeighborhoodKeyValueResponseList(any())).thenCallRealMethod();
+		when(mockApiResponseMapper.mapToKeyValueResponseList(any())).thenCallRealMethod();
 
 		// Act
 		final var neighborNotifications = service.findNeighborhoodNotifications(identifier);
 
 		// Assert
-		assertThat(neighborNotifications).hasSize(3).satisfiesExactlyInAnyOrder(notification -> {
+		assertThat(neighborNotifications).hasSize(2).satisfiesExactlyInAnyOrder(notification -> {
 			assertThat(notification.key()).isEqualTo("1");
-			assertThat(notification.value()).isEqualTo("BYGG 2024-000123 [1]");
+			assertThat(notification.value()).isEqualTo("BYGG 2024-000123");
 		}, notification -> {
 			assertThat(notification.key()).isEqualTo("2");
-			assertThat(notification.value()).isEqualTo("BYGG 2024-000123 [2]");
-		}, notification -> {
-			assertThat(notification.key()).isEqualTo("3");
-			assertThat(notification.value()).isEqualTo("BYGG 2024-000234 [2]");
+			assertThat(notification.value()).isEqualTo("BYGG 2024-000234");
 		});
 		verify(mockByggrIntegration).getRoles();
 		verify(mockByggrIntegration).getErrands(processedIdentifier, ROLES);
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDtos(response);
 		verify(mockByggrFilterUtility).filterNeighborhoodNotifications(anyList(), eq(processedIdentifier));
 		verify(mockByggrFilterUtility, times(8)).hasValidDocumentType(any());
-		verify(mockApiResponseMapper).mapToNeighborhoodKeyValueResponseList(anyList());
+		verify(mockApiResponseMapper).mapToKeyValueResponseList(anyList());
 		verifyNoMoreInterations();
 	}
 
@@ -137,7 +134,7 @@ class ByggrIntegratorServiceTest {
 		when(mockByggrIntegration.getErrands(processedIdentifier, ROLES)).thenReturn(response);
 		when(mockByggrIntegrationMapper.mapToByggrErrandDtos(response)).thenCallRealMethod();
 		when(mockByggrFilterUtility.filterNeighborhoodNotifications(anyList(), eq(processedIdentifier))).thenCallRealMethod();
-		when(mockApiResponseMapper.mapToNeighborhoodKeyValueResponseList(anyList())).thenCallRealMethod();
+		when(mockApiResponseMapper.mapToKeyValueResponseList(anyList())).thenCallRealMethod();
 
 		// Act
 		final var neighborNotifications = service.findNeighborhoodNotifications(identifier);
@@ -148,7 +145,7 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegration).getErrands(processedIdentifier, ROLES);
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDtos(response);
 		verify(mockByggrFilterUtility).filterNeighborhoodNotifications(anyList(), eq(processedIdentifier));
-		verify(mockApiResponseMapper).mapToNeighborhoodKeyValueResponseList(emptyList());
+		verify(mockApiResponseMapper).mapToKeyValueResponseList(emptyList());
 		verifyNoMoreInterations();
 	}
 
