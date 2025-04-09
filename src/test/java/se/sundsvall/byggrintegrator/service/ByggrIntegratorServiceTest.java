@@ -23,11 +23,11 @@ import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeRespo
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateDocumentResponse;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeArendenResponse;
 
-import generated.se.sundsvall.arendeexport.ArrayOfRemiss;
-import generated.se.sundsvall.arendeexport.GetArendeResponse;
-import generated.se.sundsvall.arendeexport.GetRemisserByPersOrgNrResponse;
-import generated.se.sundsvall.arendeexport.ObjectFactory;
-import generated.se.sundsvall.arendeexport.Remiss;
+import generated.se.sundsvall.arendeexport.v4.ArrayOfRemiss;
+import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
+import generated.se.sundsvall.arendeexport.v4.Remiss;
+import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.v8.ObjectFactory;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;

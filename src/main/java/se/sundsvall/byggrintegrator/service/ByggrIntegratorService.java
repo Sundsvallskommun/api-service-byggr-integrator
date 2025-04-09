@@ -10,9 +10,9 @@ import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.addHyphen
 import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.prefixOrgnbr;
 import static se.sundsvall.byggrintegrator.service.util.MimeTypeUtility.detectMimeType;
 
-import generated.se.sundsvall.arendeexport.Dokument;
-import generated.se.sundsvall.arendeexport.GetDocumentResponse;
-import generated.se.sundsvall.arendeexport.Remiss;
+import generated.se.sundsvall.arendeexport.v4.Remiss;
+import generated.se.sundsvall.arendeexport.v8.Dokument;
+import generated.se.sundsvall.arendeexport.v8.GetDocumentResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

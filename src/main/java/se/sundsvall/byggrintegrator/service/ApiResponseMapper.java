@@ -1,6 +1,6 @@
 package se.sundsvall.byggrintegrator.service;
 
-import generated.se.sundsvall.arendeexport.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +13,8 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 
 @Component
 public class ApiResponseMapper {
+
+	private static final String KEY_TEMPLATE = "%s [%s]";
 
 	public List<KeyValue> mapToKeyValueResponseList(List<ByggrErrandDto> errands) {
 		final var position = new AtomicInteger(1);

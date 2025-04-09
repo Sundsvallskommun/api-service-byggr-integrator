@@ -2,7 +2,7 @@
 	<s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<GetRelateradeArendenByPersOrgNrAndRoleResponse xmlns="www.tekis.se/ServiceContract">
 			<GetRelateradeArendenByPersOrgNrAndRoleResult>
-				<Arende arendeId="233648" dnr="BYGG 2023-000255" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
+				<arende arendeId="233648" dnr="BYGG 2023-000255" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
 					<status xmlns="www.tekis.se/arende">Pågående</status>
 					<beskrivning xmlns="www.tekis.se/arende">Bygglov för ombyggnad av</beskrivning>
 					<ankomstDatum xmlns="www.tekis.se/arende">2023-09-06</ankomstDatum>
@@ -312,8 +312,8 @@
 							</fastighet>
 						</abstractArendeObjekt>
 					</objektLista>
-				</Arende>
-				<Arende arendeId="233649" dnr="BYGG 2023-000256" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
+				</arende>
+				<arende arendeId="233649" dnr="BYGG 2023-000256" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
 					<status xmlns="www.tekis.se/arende">Pågående</status>
 					<beskrivning xmlns="www.tekis.se/arende">Bygglov för ombyggnad av</beskrivning>
 					<ankomstDatum xmlns="www.tekis.se/arende">2023-09-06</ankomstDatum>
@@ -423,8 +423,8 @@
 							</fastighet>
 						</abstractArendeObjekt>
 					</objektLista>
-				</Arende>
-				<Arende arendeId="233650" dnr="BYGG 2023-000257" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
+				</arende>
+				<arende arendeId="233650" dnr="BYGG 2023-000257" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
 					<status xmlns="www.tekis.se/arende">Pågående</status>
 					<beskrivning xmlns="www.tekis.se/arende">Bygglov för ombyggnad av</beskrivning>
 					<ankomstDatum xmlns="www.tekis.se/arende">2023-09-06</ankomstDatum>
@@ -531,7 +531,7 @@
 							</fastighet>
 						</abstractArendeObjekt>
 					</objektLista>
-				</Arende>
+				</arende>
 			</GetRelateradeArendenByPersOrgNrAndRoleResult>
 		</GetRelateradeArendenByPersOrgNrAndRoleResponse>
 	</s:Body>

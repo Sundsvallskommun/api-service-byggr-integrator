@@ -8,11 +8,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeArendenResponse;
 
-import generated.se.sundsvall.arendeexport.GetArende;
-import generated.se.sundsvall.arendeexport.GetDocument;
-import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
-import generated.se.sundsvall.arendeexport.GetRoller;
-import generated.se.sundsvall.arendeexport.ObjectFactory;
+import generated.se.sundsvall.arendeexport.v8.GetArende;
+import generated.se.sundsvall.arendeexport.v8.GetDocument;
+import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRole;
+import generated.se.sundsvall.arendeexport.v8.GetRoller;
+import generated.se.sundsvall.arendeexport.v8.ObjectFactory;
 import jakarta.xml.soap.SOAPConstants;
 import jakarta.xml.soap.SOAPFactory;
 import jakarta.xml.ws.soap.SOAPFaultException;

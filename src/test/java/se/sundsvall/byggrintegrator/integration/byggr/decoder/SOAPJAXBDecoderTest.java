@@ -6,7 +6,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import feign.Response;
-import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
+import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;

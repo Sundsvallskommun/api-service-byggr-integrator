@@ -3,7 +3,7 @@ package se.sundsvall.byggrintegrator.service.util;
 import static java.time.LocalDate.now;
 import static java.util.Optional.ofNullable;
 
-import generated.se.sundsvall.arendeexport.HandelseHandling;
+import generated.se.sundsvall.arendeexport.v8.HandelseHandling;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -23,36 +23,24 @@ import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.Notificat
  * The filter utility has three configurable settings:
  * <p>
  * <code>
- * service:
- *   byggr:
- *     filter-utility:
- *       applicant:
- *         roles:
- *           - Example
- *           - Example2
- *       notifications:
- *         unwanted-event-types:
- *           - Example
- *           - Example2
- *           - Example3
- *       document-types:
- *         unwanted-document-types:
- *           - Example
- *           - Example2
+ * service: byggr: filter-utility: applicant: roles: - Example - Example2 notifications: unwanted-event-types: - Example - Example2 - Example3 document-types: unwanted-document-types: - Example - Example2
  * </code>
  * <p>
  * The first setting (applicant roles) contains the list of the roles that will be matched against to establish if the
  * stakeholder is to be interpreted as applicant for the errand or not. If the stakeholder matches one of the values in
- * the list, it is interpreted as applicant for the errand.
+ * the list, it is
+ * interpreted as applicant for the errand.
  * <p>
  * The second setting (notification unwanted-event-types) is used to filter out errands when collecting neighborhood
  * notifications. If an errand contains an event with event type matching one of the defined value(s), the errand is
- * filtered out from the returned response. If property is not set, then no filtering is made. Observe that filtering is
- * always done regarding that the errand must have a GRANHO event with event type GRAUTS to be returned in the response.
+ * filtered out from the
+ * returned response. If property is not set, then no filtering is made. Observe that filtering is always done regarding
+ * that the errand must have a GRANHO event with event type GRAUTS to be returned in the response.
  * <p>
  * The third setting (document-types unwanted-document-types) is used to filter documents when fetching a
- * neighborhood-notification. There is some documents that should not be included in the response and this setting
- * is used to filter out those documents. If property is not set, then no filtering is made.
+ * neighborhood-notification. There is some documents that should not be included in the response and this setting is
+ * used to filter out those documents.
+ * If property is not set, then no filtering is made.
  */
 @Component
 public class ByggrFilterUtility {
@@ -189,8 +177,8 @@ public class ByggrFilterUtility {
 	}
 
 	/**
-	 * Filters the incoming list to a narrowed down list containing only the event matching the
-	 * event id (and it's parent case)
+	 * Filters the incoming list to a narrowed down list containing only the event matching the event id (and it's parent
+	 * case)
 	 *
 	 * @param  errand  The full response from Byggr
 	 * @param  eventId The id to filter on regarding which event that should be present in the response

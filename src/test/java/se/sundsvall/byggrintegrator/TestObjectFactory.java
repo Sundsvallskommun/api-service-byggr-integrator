@@ -1,16 +1,16 @@
 package se.sundsvall.byggrintegrator;
 
-import generated.se.sundsvall.arendeexport.AbstractArendeObjekt;
-import generated.se.sundsvall.arendeexport.Arende;
-import generated.se.sundsvall.arendeexport.ArrayOfAbstractArendeObjekt2;
-import generated.se.sundsvall.arendeexport.ArrayOfArende1;
-import generated.se.sundsvall.arendeexport.ArrayOfHandelse;
-import generated.se.sundsvall.arendeexport.ArrayOfHandelseHandling;
-import generated.se.sundsvall.arendeexport.Fastighet;
-import generated.se.sundsvall.arendeexport.GetArendeResponse;
-import generated.se.sundsvall.arendeexport.GetDocumentResponse;
-import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
-import generated.se.sundsvall.arendeexport.ObjectFactory;
+import generated.se.sundsvall.arendeexport.v8.AbstractArendeObjekt;
+import generated.se.sundsvall.arendeexport.v8.Arende;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfAbstractArendeObjekt2;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfArende1;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfHandelse;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfHandelseHandling;
+import generated.se.sundsvall.arendeexport.v8.Fastighet;
+import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.v8.GetDocumentResponse;
+import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRoleResponse;
+import generated.se.sundsvall.arendeexport.v8.ObjectFactory;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

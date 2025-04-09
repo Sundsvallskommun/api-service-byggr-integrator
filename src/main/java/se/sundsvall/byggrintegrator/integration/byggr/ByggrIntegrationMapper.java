@@ -3,27 +3,27 @@ package se.sundsvall.byggrintegrator.integration.byggr;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 
-import generated.se.sundsvall.arendeexport.Arende;
-import generated.se.sundsvall.arendeexport.ArendeFastighet;
-import generated.se.sundsvall.arendeexport.ArendeIntressent;
-import generated.se.sundsvall.arendeexport.ArrayOfAbstractArendeObjekt2;
-import generated.se.sundsvall.arendeexport.ArrayOfArendeIntressent2;
-import generated.se.sundsvall.arendeexport.ArrayOfHandelse;
-import generated.se.sundsvall.arendeexport.ArrayOfHandelseHandling;
-import generated.se.sundsvall.arendeexport.ArrayOfHandelseIntressent2;
-import generated.se.sundsvall.arendeexport.ArrayOfString2;
-import generated.se.sundsvall.arendeexport.GetArende;
-import generated.se.sundsvall.arendeexport.GetArendeResponse;
-import generated.se.sundsvall.arendeexport.GetDocument;
-import generated.se.sundsvall.arendeexport.GetHandlingTyper;
-import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
-import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
-import generated.se.sundsvall.arendeexport.GetRoller;
-import generated.se.sundsvall.arendeexport.Handelse;
-import generated.se.sundsvall.arendeexport.HandelseIntressent;
-import generated.se.sundsvall.arendeexport.ObjectFactory;
-import generated.se.sundsvall.arendeexport.RollTyp;
-import generated.se.sundsvall.arendeexport.StatusFilter;
+import generated.se.sundsvall.arendeexport.v8.Arende;
+import generated.se.sundsvall.arendeexport.v8.ArendeFastighet;
+import generated.se.sundsvall.arendeexport.v8.ArendeIntressent;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfAbstractArendeObjekt2;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfArendeIntressent2;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfHandelse;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfHandelseHandling;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfHandelseIntressent2;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfString2;
+import generated.se.sundsvall.arendeexport.v8.GetArende;
+import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.v8.GetDocument;
+import generated.se.sundsvall.arendeexport.v8.GetHandlingTyper;
+import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRole;
+import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRoleResponse;
+import generated.se.sundsvall.arendeexport.v8.GetRoller;
+import generated.se.sundsvall.arendeexport.v8.Handelse;
+import generated.se.sundsvall.arendeexport.v8.HandelseIntressent;
+import generated.se.sundsvall.arendeexport.v8.ObjectFactory;
+import generated.se.sundsvall.arendeexport.v8.RollTyp;
+import generated.se.sundsvall.arendeexport.v8.StatusFilter;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -163,7 +163,8 @@ public class ByggrIntegrationMapper {
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a1, a2) -> a1)); // In case of duplicate dokIds within the event, just pick the dokumentId one of them
 	}
 
-	private record Triple(String dokumentId, String dokumentNamn, String handlingTyp) {}
+	private record Triple(String dokumentId, String dokumentNamn, String handlingTyp) {
+	}
 
 	private List<Stakeholder> toStakeholders(final ArrayOfHandelseIntressent2 intressenter) {
 		return ofNullable(intressenter)

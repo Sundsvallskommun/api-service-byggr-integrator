@@ -2,7 +2,7 @@
 	<s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<GetRelateradeArendenByPersOrgNrAndRoleResponse xmlns="www.tekis.se/ServiceContract">
 			<GetRelateradeArendenByPersOrgNrAndRoleResult>
-				<Arende arendeId="12346" dnr="BYGG 2024-000777" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="STRA" arendetyp="DI" arendeslag="NYB" arendeklass="GA" namndkod="SBN" kalla="1" checksum="27">
+				<arende arendeId="12346" dnr="BYGG 2024-000777" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="STRA" arendetyp="DI" arendeslag="NYB" arendeklass="GA" namndkod="SBN" kalla="1" checksum="27">
 					<status xmlns="www.tekis.se/arende">Pågående</status>
 					<beskrivning xmlns="www.tekis.se/arende">Dispens Nybyggnad bastu</beskrivning>
 					<ankomstDatum xmlns="www.tekis.se/arende">2024-09-01</ankomstDatum>
@@ -260,7 +260,7 @@
 						</abstractArendeObjekt>
 					</objektLista>
 					<externRef xmlns="www.tekis.se/arende">2024-09-03</externRef>
-				</Arende>
+				</arende>
 			</GetRelateradeArendenByPersOrgNrAndRoleResult>
 		</GetRelateradeArendenByPersOrgNrAndRoleResponse>
 	</s:Body>
