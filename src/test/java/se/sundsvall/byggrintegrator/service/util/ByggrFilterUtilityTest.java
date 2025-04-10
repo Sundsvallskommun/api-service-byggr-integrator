@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -109,27 +108,6 @@ class ByggrFilterUtilityTest {
 			Arguments.of(createErrand(List.of(Stakeholder.builder().withLegalId("OTHER_ID").withRoles(List.of("KPER")).build())), 0),
 			Arguments.of(createErrand(List.of(Stakeholder.builder().withLegalId(STAKEHOLDER_LEGAL_ID).withRoles(List.of("OTHER_ROLE")).build())), 0),
 			Arguments.of(createErrand(null), 0));
-	}
-
-	@ParameterizedTest
-	@MethodSource("filterEventArgumentProvider")
-	void filterEvent(ByggrErrandDto input, ByggrErrandDto result) {
-		final var eventId = 123;
-		assertThat(byggrFilterUtility.filterEvent(input, eventId)).isEqualTo(result);
-	}
-
-	private static Stream<Arguments> filterEventArgumentProvider() {
-		return Stream.of(
-			Arguments.of(null, null),
-			Arguments.of(
-				ByggrErrandDto.builder().withEvents(List.of(Event.builder().withId(123).build(), Event.builder().withId(234).build())).build(),
-				ByggrErrandDto.builder().withEvents(List.of(Event.builder().withId(123).build())).build()),
-			Arguments.of(
-				ByggrErrandDto.builder().withEvents(List.of(Event.builder().withId(234).build())).build(),
-				ByggrErrandDto.builder().withEvents(Collections.emptyList()).build()),
-			Arguments.of(
-				ByggrErrandDto.builder().withEvents(List.of(Event.builder().withId(123).build())).build(),
-				ByggrErrandDto.builder().withEvents(List.of(Event.builder().withId(123).build())).build()));
 	}
 
 	private static ByggrErrandDto createErrand(List<Stakeholder> stakeholders) {

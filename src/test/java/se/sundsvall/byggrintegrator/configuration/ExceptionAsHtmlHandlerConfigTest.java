@@ -50,7 +50,12 @@ class ExceptionAsHtmlHandlerConfigTest {
 		assertThat(result.getHeaders().getContentType()).isEqualTo(TEXT_HTML);
 		assertThat(result.getBody())
 			.isNotNull()
-			.isEqualTo("<ul><li><span >Something went wrong while fetching file locations: Some title.</span><br><span>Please refer to this requestId in any conversation:&nbsp</span><span>%s</span></li></ul>".formatted(UUID));
+			.isEqualToIgnoringWhitespace("""
+				<ul>
+					<li><span >Something went wrong while fetching file locations: Some title.</span>
+					<span>Please refer to this requestId in any conversation:</span><span>%s</span>
+					</li>
+				</ul>""".formatted(UUID));
 	}
 
 	@Test
@@ -64,7 +69,12 @@ class ExceptionAsHtmlHandlerConfigTest {
 		assertThat(result.getHeaders().getContentType()).isEqualTo(TEXT_HTML);
 		assertThat(result.getBody())
 			.isNotNull()
-			.isEqualTo("<ul><li><span >Validation error: test.</span><br><span>Please refer to this requestId in any conversation:&nbsp</span><span>%s</span></li></ul>".formatted(UUID));
+			.isEqualToIgnoringWhitespace("""
+				<ul>
+					<li><span >Validation error: test.</span>
+					<span>Please refer to this requestId in any conversation:</span><span>%s</span>
+					</li>
+				</ul>""".formatted(UUID));
 	}
 
 	@Test
@@ -78,6 +88,11 @@ class ExceptionAsHtmlHandlerConfigTest {
 		assertThat(result.getHeaders().getContentType()).isEqualTo(TEXT_HTML);
 		assertThat(result.getBody())
 			.isNotNull()
-			.isEqualTo("<ul><li><span >Something went wrong while fetching file locations: NPE test.</span><br><span>Please refer to this requestId in any conversation:&nbsp</span><span>%s</span></li></ul>".formatted(UUID));
+			.isEqualToIgnoringWhitespace("""
+				<ul>
+					<li><span >Something went wrong while fetching file locations: NPE test.</span>
+					<span>Please refer to this requestId in any conversation:</span><span>%s</span>
+					</li>
+				</ul>""".formatted(UUID));
 	}
 }
