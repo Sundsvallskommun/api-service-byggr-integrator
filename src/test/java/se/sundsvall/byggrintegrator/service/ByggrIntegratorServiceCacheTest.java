@@ -66,7 +66,7 @@ class ByggrIntegratorServiceCacheTest {
 		when(mockByggrIntegration.getErrands(identifier, roles)).thenReturn(errands);
 		when(mockByggrIntegrationMapper.mapToByggrErrandDtos(errands)).thenCallRealMethod();
 		when(mockFilterUtility.filterNeighborhoodNotifications(any(), any())).thenAnswer(invocation -> invocation.getArgument(0));
-		when(mockApiResponseMapper.mapToNeighborhoodKeyValueResponseList(any())).thenReturn(response);
+		when(mockApiResponseMapper.mapToKeyValueResponseList(any())).thenReturn(response);
 
 		// First call - should hit the service
 		var result = byggrIntegratorService.findNeighborhoodNotifications(identifier);
@@ -76,7 +76,7 @@ class ByggrIntegratorServiceCacheTest {
 		verify(mockByggrIntegration).getErrands(identifier, roles);
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDtos(errands);
 		verify(mockFilterUtility).filterNeighborhoodNotifications(byggrErrandDtosCaptor.capture(), eq(identifier));
-		verify(mockApiResponseMapper).mapToNeighborhoodKeyValueResponseList(byggrErrandDtosCaptor.getValue());
+		verify(mockApiResponseMapper).mapToKeyValueResponseList(byggrErrandDtosCaptor.getValue());
 
 		assertThat(result).isEqualTo(response);
 
