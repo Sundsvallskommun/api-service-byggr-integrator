@@ -3,9 +3,7 @@ package se.sundsvall.byggrintegrator.integration.byggr;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
 
-import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNr;
 import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
-import generated.se.sundsvall.arendeexport.v4.RemissStatusFilter;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfString;
 import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.v8.GetDocumentResponse;
@@ -119,9 +117,7 @@ public class ByggrIntegration {
 	}
 
 	public GetRemisserByPersOrgNrResponse getRemisserByPersOrgNr(final String identifier) {
-		return byggrClient.getRemisserByPersOrgNr(new GetRemisserByPersOrgNr()
-			.withPersOrgNr(identifier)
-			.withStatusFilter(RemissStatusFilter.NONE));
+		return byggrClient.getRemisserByPersOrgNr(byggrIntegrationMapper.toGetRemisserByPersOrgNrRequest(identifier));
 	}
 
 	private String extractFaultString(final SOAPFaultException e) {

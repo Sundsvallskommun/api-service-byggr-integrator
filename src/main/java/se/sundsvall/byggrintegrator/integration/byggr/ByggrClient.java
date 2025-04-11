@@ -51,6 +51,7 @@ public interface ByggrClient {
 	})
 	GetHandlingTyperResponse getHandlingTyper(GetHandlingTyper request);
 
+	// This resource is not present in newer versions of the Byggr API.
 	@PostMapping(consumes = TEXT_XML_UTF8, headers = {
 		VERSION_4 + "GetRemisserByPersOrgNr"
 	})
