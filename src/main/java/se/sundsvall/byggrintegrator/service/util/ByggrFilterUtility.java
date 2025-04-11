@@ -178,38 +178,4 @@ public class ByggrFilterUtility {
 			.map(Stakeholder::getRoles)
 			.anyMatch(roller -> roller.stream().anyMatch(applicantRoles::contains));
 	}
-
-	/**
-	 * Extra logic to evaluate if legalId matches, and also match without prefix 16 if evaluated legalId starts with 16
-	 *
-	 * @param  legalIdToMatch   The legal id to match against
-	 * @param  evaluatedLegalId The legal id to evaluate
-	 * @return                  true if sent in string matches exactly or if they match when leading 16 is removed from
-	 *                          evaluated string
-	 */
-	private boolean isEqual(String legalIdToMatch, String evaluatedLegalId) {
-		return StringUtils.equals(legalIdToMatch, evaluatedLegalId) ||
-			(evaluatedLegalId.startsWith("16") && StringUtils.equals(legalIdToMatch, evaluatedLegalId.substring(2)));
-	}
-
-	/**
-	 * Filters the incoming list to a narrowed down list containing only the event matching the event id (and it's parent
-	 * case)
-	 *
-	 * @param  errand  The full response from Byggr
-	 * @param  eventId The id to filter on regarding which event that should be present in the response
-	 * @return         An errand where only the event matching the provided event id is present
-	 */
-	public ByggrErrandDto filterEvent(ByggrErrandDto errand, int eventId) {
-		if (Objects.isNull(errand)) {
-			return null;
-		}
-
-		final var filteredEvents = errand.getEvents().stream()
-			.filter(event -> event.getId() == eventId)
-			.toList();
-
-		errand.setEvents(filteredEvents);
-		return errand;
-	}
 }
