@@ -30,9 +30,9 @@ class ByggrFilterUtilityTest {
 
 	@ParameterizedTest
 	@MethodSource("validEventArgumentProvider")
-	void hasValidEvent(Event event, boolean expectedResult) {
+	void isValidEvent(Event event, boolean expectedResult) {
 		// Act and assert
-		assertThat(ByggrFilterUtility.hasValidEvent(event)).isEqualTo(expectedResult);
+		assertThat(ByggrFilterUtility.isValidEvent(event)).isEqualTo(expectedResult);
 	}
 
 	private static Stream<Arguments> validEventArgumentProvider() {

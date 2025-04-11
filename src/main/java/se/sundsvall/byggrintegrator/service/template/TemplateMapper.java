@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 import se.sundsvall.byggrintegrator.model.FileTemplateDto;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 import se.sundsvall.byggrintegrator.service.util.LegalIdUtility;
@@ -76,18 +77,22 @@ public class TemplateMapper {
 	// Create a list that we iterate over with Thymeleaf
 	private List<FileTemplateDto> mapByggrFilesToList(final String municipalityId, final ByggrErrandDto byggrErrandDto, final Map<String, String> handlingtyper, String identifier) {
 		return ofNullable(byggrErrandDto.getEvents()).orElse(Collections.emptyList()).stream()
-			.filter(ByggrFilterUtility::hasValidEvent)
-			.filter(event -> ofNullable(event.getStakeholders()) // Only act on events that has a stakeholder with legal id matching sent in identifier
-				.orElse(Collections.emptyList())
-				.stream()
-				.anyMatch(stakeholder -> LegalIdUtility.isEqual(stakeholder.getLegalId(), identifier)))
+			.filter(ByggrFilterUtility::isValidEvent)
+			.filter(hasStakeholderWithIdentifier(identifier)) // Only act on events that has a stakeholder with legal id matching sent in identifier
 			.map(event -> ofNullable(event.getFiles()).orElse(Collections.emptyMap()))
 			.map(Map::entrySet)
 			.flatMap(Set::stream)
-			.map(entry -> mapToUrl(municipalityId, entry.getKey(), entry.getValue(), handlingtyper))
+			.map(entry -> mapToFileTemplateDto(municipalityId, entry.getKey(), entry.getValue(), handlingtyper))
 			.filter(distinctByKey(FileTemplateDto::getFileName)) // Remove duplicate file names if such exists
 			.sorted((o1, o2) -> o2.getFileUrl().compareTo(o1.getFileUrl()))
 			.toList();
+	}
+
+	private Predicate<? super Event> hasStakeholderWithIdentifier(String identifier) {
+		return event -> ofNullable(event.getStakeholders())
+			.orElse(Collections.emptyList())
+			.stream()
+			.anyMatch(stakeholder -> LegalIdUtility.isEqual(stakeholder.getLegalId(), identifier));
 	}
 
 	private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
@@ -96,21 +101,26 @@ public class TemplateMapper {
 	}
 
 	// Create a FileTemplateDto containing the URL to the file and the file name as the display name
-	private FileTemplateDto mapToUrl(final String municipalityId, final String fileId, final ByggrErrandDto.Event.DocumentNameAndType documentNameAndType, final Map<String, String> handlingtyper) {
+	private FileTemplateDto mapToFileTemplateDto(final String municipalityId, final String fileId, final ByggrErrandDto.Event.DocumentNameAndType documentNameAndType, final Map<String, String> handlingtyper) {
 		return FileTemplateDto.builder()
-			.withFileUrl(String.format("%s%s%s%s", // [domain] [municipalityid] [subdirectory] [file identificator]
-				templateProperties.domain(),
-				municipalityId,
-				templateProperties.subDirectory(),
-				fileId))
-			.withFileName(parseFilename(documentNameAndType, handlingtyper))
+			.withFileUrl(parseFileUrl(municipalityId, fileId))
+			.withFileName(parseFileName(documentNameAndType, handlingtyper))
 			.build();
 	}
 
-	private String parseFilename(final ByggrErrandDto.Event.DocumentNameAndType documentNameAndType, final Map<String, String> handlingtyper) {
+	private String parseFileUrl(final String municipalityId, final String fileId) {
+		// String content is divided into the following: [domain][municipalityid][subdirectory][file identificator]
+		return "%s%s%s%s".formatted(
+			templateProperties.domain(),
+			municipalityId,
+			templateProperties.subDirectory(),
+			fileId);
+	}
+
+	private String parseFileName(final ByggrErrandDto.Event.DocumentNameAndType documentNameAndType, final Map<String, String> handlingtyper) {
+		// String content is divided into the following: [documentType] ([documentName])
 		return "%s (%s)".formatted(
 			handlingtyper.get(documentNameAndType.getDocumentType()),
-			ofNullable(documentNameAndType.getDocumentName())
-				.orElse(null));
+			documentNameAndType.getDocumentName());
 	}
 }

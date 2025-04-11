@@ -81,7 +81,7 @@ public class ByggrFilterUtility {
 			.orElse(null);
 	}
 
-	public static boolean hasValidEvent(Event event) {
+	public static boolean isValidEvent(Event event) {
 		if (Objects.nonNull(event) && WANTED_TYPE.equalsIgnoreCase(event.getEventType()) && WANTED_SUBTYPE.equalsIgnoreCase(event.getEventSubtype())) {
 			LOG.info("Valid event with type {} and subtype {} having id {} found", WANTED_TYPE, WANTED_SUBTYPE, event.getId());
 			return true;
@@ -113,10 +113,10 @@ public class ByggrFilterUtility {
 		var hasInvalidEvent = false;
 
 		for (final Event event : events) {
-			if (hasValidEvent(event)) {
+			if (isValidEvent(event)) {
 				hasValidEvent = true;
 			}
-			if (hasInvalidEvent(event)) {
+			if (isInvalidEvent(event)) {
 				hasInvalidEvent = true;
 			}
 		}
@@ -124,7 +124,7 @@ public class ByggrFilterUtility {
 		return hasValidEvent && !hasInvalidEvent;
 	}
 
-	private boolean hasInvalidEvent(Event event) {
+	private boolean isInvalidEvent(Event event) {
 		final var unwantedEvent = Objects.nonNull(event) && ofNullable(unwantedSubtypes)
 			.map(list -> WANTED_TYPE.equalsIgnoreCase(event.getEventType()) && list.stream().anyMatch(event.getEventSubtype()::equalsIgnoreCase))
 			.orElse(false);
