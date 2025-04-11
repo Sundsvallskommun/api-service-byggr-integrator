@@ -15,8 +15,8 @@ import static se.sundsvall.byggrintegrator.TestObjectFactory.WANTED_DOKUMENT_TYP
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeResponse;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeArendenResponse;
 
-import generated.se.sundsvall.arendeexport.RollTyp;
-import generated.se.sundsvall.arendeexport.StatusFilter;
+import generated.se.sundsvall.arendeexport.v8.RollTyp;
+import generated.se.sundsvall.arendeexport.v8.StatusFilter;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;

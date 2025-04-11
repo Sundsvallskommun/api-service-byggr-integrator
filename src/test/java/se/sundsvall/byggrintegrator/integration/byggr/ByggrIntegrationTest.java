@@ -1,4 +1,3 @@
-
 package se.sundsvall.byggrintegrator.integration.byggr;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -9,11 +8,14 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeArendenResponse;
 
-import generated.se.sundsvall.arendeexport.GetArende;
-import generated.se.sundsvall.arendeexport.GetDocument;
-import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRole;
-import generated.se.sundsvall.arendeexport.GetRoller;
-import generated.se.sundsvall.arendeexport.ObjectFactory;
+import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNr;
+import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
+import generated.se.sundsvall.arendeexport.v4.RemissStatusFilter;
+import generated.se.sundsvall.arendeexport.v8.GetArende;
+import generated.se.sundsvall.arendeexport.v8.GetDocument;
+import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRole;
+import generated.se.sundsvall.arendeexport.v8.GetRoller;
+import generated.se.sundsvall.arendeexport.v8.ObjectFactory;
 import jakarta.xml.soap.SOAPConstants;
 import jakarta.xml.soap.SOAPFactory;
 import jakarta.xml.ws.soap.SOAPFaultException;
@@ -262,4 +264,21 @@ class ByggrIntegrationTest {
 		assertThat(exception).isInstanceOf(SOAPFaultException.class);
 		assertThat(exception.getFault().getFaultReasonText(Locale.ENGLISH)).isEqualTo(reasonText);
 	}
+
+	@Test
+	void getRemisserByPersOrgNr() {
+		var identifier = "1234567890";
+		var request = new GetRemisserByPersOrgNr().withPersOrgNr(identifier).withStatusFilter(RemissStatusFilter.NONE);
+		var response = new GetRemisserByPersOrgNrResponse();
+		when(mockByggrIntegrationMapper.toGetRemisserByPersOrgNrRequest(identifier)).thenReturn(request);
+		when(mockByggrClient.getRemisserByPersOrgNr(request)).thenReturn(response);
+
+		var result = integration.getRemisserByPersOrgNr(identifier);
+
+		verify(mockByggrIntegrationMapper).toGetRemisserByPersOrgNrRequest(identifier);
+		verify(mockByggrClient).getRemisserByPersOrgNr(request);
+
+		assertThat(result).isEqualTo(response);
+	}
+
 }

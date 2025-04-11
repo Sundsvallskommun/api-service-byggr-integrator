@@ -1,5 +1,5 @@
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
-	<s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<GetRelateradeArendenByPersOrgNrAndRoleResponse xmlns="www.tekis.se/ServiceContract">
 			<GetRelateradeArendenByPersOrgNrAndRoleResult>
 				<arende arendeId="12345" dnr="BYGG 2024-000666" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="STRA" arendetyp="DI" arendeslag="NYB" arendeklass="GA" namndkod="SBN" kalla="1" checksum="27">
@@ -40,7 +40,7 @@
 							<riktning>In</riktning>
 							<rubrik>Strandskyddsdispens</rubrik>
 							<startDatum>2024-09-03T00:00:00+02:00</startDatum>
-							<anteckning/>
+							<anteckning />
 							<handelseslag>Bygglov</handelseslag>
 							<handelsetyp>ANSÖKAN</handelsetyp>
 							<sekretess>false</sekretess>
@@ -134,24 +134,24 @@
 											<komtyp>Epost</komtyp>
 										</intressentKommunikation>
 									</intressentKommunikationLista>
-									<rollLista/>
+									<rollLista />
 								</intressent>
 							</intressentLista>
 							<arbetsmaterial>false</arbetsmaterial>
-							<handlaggare signatur="pro12kal"/>
+							<handlaggare signatur="pro12kal" />
 						</handelse>
 						<handelse handelseId="292453" checksum="61">
 							<riktning>Okänd</riktning>
 							<rubrik>Strandskyddsdispens, Beviljas</rubrik>
 							<startDatum>2024-09-02T14:51:00+02:00</startDatum>
-							<anteckning/>
+							<anteckning />
 							<handelseslag>GACC</handelseslag>
 							<handelsetyp>BESLUT</handelsetyp>
 							<handelseutfall>BEV</handelseutfall>
 							<sekretess>false</sekretess>
 							<makulerad>false</makulerad>
 							<beslut beslutNr="ST 2024-000002" arHuvudbeslut="true">
-								<beslutstext/>
+								<beslutstext />
 								<delegatHandlaggare signatur="HAD">
 									<fornamn>Kapten</fornamn>
 									<efternamn>Haddock</efternamn>
@@ -213,17 +213,17 @@
 											<komtyp>Epost</komtyp>
 										</intressentKommunikation>
 									</intressentKommunikationLista>
-									<rollLista/>
+									<rollLista />
 								</intressent>
 							</intressentLista>
 							<arbetsmaterial>false</arbetsmaterial>
-							<handlaggare signatur="HAD"/>
+							<handlaggare signatur="HAD" />
 						</handelse>
 						<handelse handelseId="292454" checksum="27">
 							<riktning>Okänd</riktning>
 							<rubrik>Tomtplatsbestämning</rubrik>
 							<startDatum>2024-09-03T14:53:00+02:00</startDatum>
-							<anteckning/>
+							<anteckning />
 							<handelsetyp>HANDLING</handelsetyp>
 							<sekretess>false</sekretess>
 							<makulerad>false</makulerad>
@@ -240,9 +240,9 @@
 									</dokument>
 								</handling>
 							</handlingLista>
-							<intressentLista/>
+							<intressentLista />
 							<arbetsmaterial>true</arbetsmaterial>
-							<handlaggare signatur="HAD"/>
+							<handlaggare signatur="HAD" />
 						</handelse>
 						<handelse handelseId="292460" checksum="44">
 							<riktning>Ut</riktning>
@@ -254,13 +254,13 @@
 							<handelseutfall>LST</handelseutfall>
 							<sekretess>false</sekretess>
 							<makulerad>false</makulerad>
-							<handlingLista/>
-							<intressentLista/>
+							<handlingLista />
+							<intressentLista />
 							<arbetsmaterial>true</arbetsmaterial>
-							<handlaggare signatur="HAD"/>
+							<handlaggare signatur="HAD" />
 						</handelse>
 					</handelseLista>
-					<bevakningLista xmlns="www.tekis.se/arende"/>
+					<bevakningLista xmlns="www.tekis.se/arende" />
 					<objektLista xmlns="www.tekis.se/arende">
 						<abstractArendeObjekt xsi:type="arendeFastighet" arendeObjektId="666666" arHuvudObjekt="true" checksum="1|">
 							<belAdressList>

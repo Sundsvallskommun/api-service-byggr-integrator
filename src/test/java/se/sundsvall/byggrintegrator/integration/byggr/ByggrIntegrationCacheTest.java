@@ -6,12 +6,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import generated.se.sundsvall.arendeexport.ArrayOfRoll;
-import generated.se.sundsvall.arendeexport.GetDocument;
-import generated.se.sundsvall.arendeexport.GetDocumentResponse;
-import generated.se.sundsvall.arendeexport.GetRoller;
-import generated.se.sundsvall.arendeexport.GetRollerResponse;
-import generated.se.sundsvall.arendeexport.Roll;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfRoll;
+import generated.se.sundsvall.arendeexport.v8.GetDocument;
+import generated.se.sundsvall.arendeexport.v8.GetDocumentResponse;
+import generated.se.sundsvall.arendeexport.v8.GetRoller;
+import generated.se.sundsvall.arendeexport.v8.GetRollerResponse;
+import generated.se.sundsvall.arendeexport.v8.Roll;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

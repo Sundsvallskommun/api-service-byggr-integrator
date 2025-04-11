@@ -5,7 +5,9 @@ import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeRespo
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateByggrErrandDtos;
 
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
+import se.sundsvall.byggrintegrator.api.model.KeyValue;
 
 class ApiResponseMapperTest {
 
@@ -44,5 +46,16 @@ class ApiResponseMapperTest {
 		final var response = apiResponseMapper.mapToWeight(generateArendeResponse("dnr"));
 
 		assertThat(response.getValue()).isEqualTo("11"); // BL translated to integer value according to the CaseTypeEnum
+	}
+
+	@Test
+	void mapStringIntegerMapToKeyValue() {
+		Map<String, Integer> myMap = Map.of("key1", 1, "key2", 2);
+
+		List<KeyValue> keyValues = apiResponseMapper.mapToKeyValue(myMap);
+
+		assertThat(keyValues).hasSize(2).satisfiesExactlyInAnyOrder(
+			keyVal -> assertThat(keyVal.value()).isEqualTo("key1 [1]"),
+			keyVal -> assertThat(keyVal.value()).isEqualTo("key2 [2]"));
 	}
 }

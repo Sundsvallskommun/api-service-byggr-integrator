@@ -1,5 +1,5 @@
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
-	<s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 		<GetRelateradeArendenByPersOrgNrAndRoleResponse xmlns="www.tekis.se/ServiceContract">
 			<GetRelateradeArendenByPersOrgNrAndRoleResult>
 				<arende arendeId="233649" dnr="BYGG 2023-000357" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="LOV" arendetyp="BL" arendeslag="D" arendeklass="" namndkod="SBN" kalla="3" checksum="0">
@@ -99,11 +99,11 @@
 								</intressent>
 							</intressentLista>
 							<arbetsmaterial>false</arbetsmaterial>
-							<handlaggare signatur="SYSTEM"/>
+							<handlaggare signatur="SYSTEM" />
 						</handelse>
 					</handelseLista>
 					<projektnr xmlns="www.tekis.se/arende">760208</projektnr>
-					<bevakningLista xmlns="www.tekis.se/arende"/>
+					<bevakningLista xmlns="www.tekis.se/arende" />
 					<objektLista xmlns="www.tekis.se/arende">
 						<abstractArendeObjekt xsi:type="arendeFastighet" arendeObjektId="256140" arHuvudObjekt="true" checksum="1|">
 							<fastighet checksum="1482424270|" fnr="22044332">

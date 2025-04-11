@@ -3,12 +3,13 @@ package se.sundsvall.byggrintegrator.integration.byggr;
 import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
 
-import generated.se.sundsvall.arendeexport.ArrayOfString;
-import generated.se.sundsvall.arendeexport.GetArendeResponse;
-import generated.se.sundsvall.arendeexport.GetDocumentResponse;
-import generated.se.sundsvall.arendeexport.GetRelateradeArendenByPersOrgNrAndRoleResponse;
-import generated.se.sundsvall.arendeexport.HandlingTyp;
-import generated.se.sundsvall.arendeexport.Roll;
+import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfString;
+import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
+import generated.se.sundsvall.arendeexport.v8.GetDocumentResponse;
+import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRoleResponse;
+import generated.se.sundsvall.arendeexport.v8.HandlingTyp;
+import generated.se.sundsvall.arendeexport.v8.Roll;
 import jakarta.xml.soap.SOAPFault;
 import jakarta.xml.ws.soap.SOAPFaultException;
 import java.util.LinkedHashSet;
@@ -113,6 +114,10 @@ public class ByggrIntegration {
 
 		return response.getGetHandlingTyperResult().getHandlingTyp().stream()
 			.collect(Collectors.toMap(HandlingTyp::getTyp, HandlingTyp::getBeskrivning));
+	}
+
+	public GetRemisserByPersOrgNrResponse getRemisserByPersOrgNr(final String identifier) {
+		return byggrClient.getRemisserByPersOrgNr(byggrIntegrationMapper.toGetRemisserByPersOrgNrRequest(identifier));
 	}
 
 	private String extractFaultString(final SOAPFaultException e) {
