@@ -3,6 +3,8 @@ package se.sundsvall.byggrintegrator.service.util;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.containsNone;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class LegalIdUtility {
 	private static final int LEGAL_ID_MINIMUM_LENGTH = 5;
 	private static final int LEGAL_ID_HYPHEN_POSITION_FROM_RIGHT = 4;
@@ -41,6 +43,19 @@ public class LegalIdUtility {
 			.filter(string -> containsNone(string, "-"))
 			.map(string -> new StringBuilder(string).insert(string.length() - LEGAL_ID_HYPHEN_POSITION_FROM_RIGHT, "-").toString())
 			.orElse(legalId);
+	}
+
+	/**
+	 * Extra logic to evaluate if legalId matches, and also match without prefix 16 if evaluated legalId starts with 16
+	 *
+	 * @param  legalIdToMatch   The legal id to match against
+	 * @param  evaluatedLegalId The legal id to evaluate
+	 * @return                  true if sent in string matches exactly or if they match when leading 16 is removed from
+	 *                          evaluated string
+	 */
+	public static boolean isEqual(String legalIdToMatch, String evaluatedLegalId) {
+		return StringUtils.equals(legalIdToMatch, evaluatedLegalId) ||
+			(evaluatedLegalId.startsWith("16") && StringUtils.equals(legalIdToMatch, evaluatedLegalId.substring(2)));
 	}
 
 }

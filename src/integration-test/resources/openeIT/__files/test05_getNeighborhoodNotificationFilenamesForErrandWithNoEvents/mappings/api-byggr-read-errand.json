@@ -17,7 +17,7 @@
 		"headers": {
 			"Content-Type": "application/xml"
 		},
-		"bodyFileName": "test05_getNeighborhoodNotificationFilenamesForNonExistingEventId/responses/api-byggr-read-errand-response.xml",
+		"bodyFileName": "test05_getNeighborhoodNotificationFilenamesForErrandWithNoEvents/responses/api-byggr-read-errand-response.xml",
 		"status": 200
 	},
 	"name": "api-byggr-read-errand"

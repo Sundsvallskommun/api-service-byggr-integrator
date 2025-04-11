@@ -150,7 +150,7 @@ public final class TestObjectFactory {
 				.withTyp(UNWANTED_DOCUMENT_TYPE_UNDUT)
 				.withDokument(OBJECT_FACTORY.createDokument()
 					.withDokId("documentId3")
-					.withNamn("documentName4")));
+					.withNamn("documentName3")));
 	}
 
 	private static ArrayOfAbstractArendeObjekt2 createObjektLista() {

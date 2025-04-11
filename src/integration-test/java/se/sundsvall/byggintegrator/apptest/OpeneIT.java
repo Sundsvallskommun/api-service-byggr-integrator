@@ -22,7 +22,8 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 class OpeneIT extends AbstractAppTest {
 
 	private static final String INFO_QUERY_RESPONSE_HEADER_NAME = "InfoQueryResponse";
-	private static final String RESPONSE_FILE = "response.xml";
+	private static final String RESPONSE_FILE_XML = "response.xml";
+	private static final String RESPONSE_FILE_HTML = "response.html";
 
 	@Test
 	void test01_getTypeForExistingErrand() {
@@ -31,7 +32,7 @@ class OpeneIT extends AbstractAppTest {
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_XML_VALUE))
-			.withExpectedResponse(RESPONSE_FILE)
+			.withExpectedResponse(RESPONSE_FILE_XML)
 			.sendRequestAndVerifyResponse();
 	}
 
@@ -42,43 +43,43 @@ class OpeneIT extends AbstractAppTest {
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(NOT_FOUND)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_PROBLEM_XML_VALUE))
-			.withExpectedResponse(RESPONSE_FILE)
+			.withExpectedResponse(RESPONSE_FILE_XML)
 			.sendRequestAndVerifyResponse();
 	}
 
 	@Test
-	void test03_getNeighborhoodNotificationFilenamesForErrandAndEvent() {
+	void test03_getNeighborhoodNotificationFilenamesForErrandWithEvents() {
 		setupCall()
-			.withServicePath("/2281/opene/neighborhood-notifications/BYGG 2024-000668 [1465852]/filenames")
+			.withServicePath("/2281/opene/neighborhood-notifications/5560001234/BYGG 2024-000668/filenames")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(TEXT_HTML_VALUE + ";" + "charset=UTF-8"))
 			.withExpectedResponseHeader(INFO_QUERY_RESPONSE_HEADER_NAME, List.of("true"))
-			.withExpectedResponse(RESPONSE_FILE)
+			.withExpectedResponse(RESPONSE_FILE_HTML)
 			.sendRequestAndVerifyResponse();
 	}
 
 	@Test
 	void test04_getNeighborhoodNotificationFilenamesForNonExistingErrand() {
 		setupCall()
-			.withServicePath("/2281/opene/neighborhood-notifications/BYGG 2024-000669 [1465852]/filenames")
+			.withServicePath("/2281/opene/neighborhood-notifications/5560001234/BYGG 2024-000669/filenames")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(TEXT_HTML_VALUE + ";" + "charset=UTF-8"))
 			.withExpectedResponseHeader(INFO_QUERY_RESPONSE_HEADER_NAME, List.of("true"))
-			.withExpectedResponse(RESPONSE_FILE)
+			.withExpectedResponse(RESPONSE_FILE_HTML)
 			.sendRequestAndVerifyResponse();
 	}
 
 	@Test
-	void test05_getNeighborhoodNotificationFilenamesForNonExistingEventId() {
+	void test05_getNeighborhoodNotificationFilenamesForErrandWithNoEvents() {
 		setupCall()
-			.withServicePath("/2281/opene/neighborhood-notifications/BYGG 2024-000670 [1465890]/filenames")
+			.withServicePath("/2281/opene/neighborhood-notifications/5560001234/BYGG 2024-000670/filenames")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(TEXT_HTML_VALUE + ";" + "charset=UTF-8"))
 			.withExpectedResponseHeader(INFO_QUERY_RESPONSE_HEADER_NAME, List.of("true"))
-			.withExpectedResponse(RESPONSE_FILE)
+			.withExpectedResponse(RESPONSE_FILE_HTML)
 			.sendRequestAndVerifyResponse();
 	}
 
@@ -89,19 +90,19 @@ class OpeneIT extends AbstractAppTest {
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_XML_VALUE))
-			.withExpectedResponse(RESPONSE_FILE)
+			.withExpectedResponse(RESPONSE_FILE_XML)
 			.sendRequestAndVerifyResponse();
 	}
 
 	@Test
-	void test07_getNeighborhoodNotificationFilenamesForErrandAndEventWithRequestParameter() {
+	void test07_getNeighborhoodNotificationFilenamesForErrandWithEventsByRequestParameter() {
 		setupCall()
-			.withServicePath("/2281/opene/neighborhood-notifications/filenames?caseNumberAndEventId=BYGG 2024-000668 [1465852]")
+			.withServicePath("/2281/opene/neighborhood-notifications/filenames?identifier=190304056789&caseNumber=BYGG 2024-000668")
 			.withHttpMethod(GET)
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(TEXT_HTML_VALUE + ";" + "charset=UTF-8"))
 			.withExpectedResponseHeader(INFO_QUERY_RESPONSE_HEADER_NAME, List.of("true"))
-			.withExpectedResponse(RESPONSE_FILE)
+			.withExpectedResponse(RESPONSE_FILE_HTML)
 			.sendRequestAndVerifyResponse();
 	}
 
@@ -113,7 +114,7 @@ class OpeneIT extends AbstractAppTest {
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(TEXT_HTML_VALUE + ";" + "charset=UTF-8"))
 			.withExpectedResponseHeader(INFO_QUERY_RESPONSE_HEADER_NAME, List.of("true"))
-			.withExpectedResponse(RESPONSE_FILE)
+			.withExpectedResponse(RESPONSE_FILE_HTML)
 			.sendRequestAndVerifyResponse();
 	}
 
@@ -125,10 +126,8 @@ class OpeneIT extends AbstractAppTest {
 			.withExpectedResponseStatus(OK)
 			.withExpectedResponseHeader(CONTENT_TYPE, List.of(TEXT_HTML_VALUE + ";" + "charset=UTF-8"))
 			.withExpectedResponseHeader(INFO_QUERY_RESPONSE_HEADER_NAME, List.of("true"))
-			.withExpectedResponse(RESPONSE_FILE)
+			.withExpectedResponse(RESPONSE_FILE_HTML)
 			.sendRequestAndVerifyResponse();
 	}
-
-
 
 }

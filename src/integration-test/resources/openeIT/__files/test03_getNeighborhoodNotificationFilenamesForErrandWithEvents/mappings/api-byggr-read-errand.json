@@ -17,7 +17,10 @@
 		"headers": {
 			"Content-Type": "application/xml"
 		},
-		"bodyFileName": "test07_getNeighborhoodNotificationFilenamesForErrandAndEventWithRequestParameter/responses/api-byggr-read-errand-response.xml",
+		"transformers": [
+			"response-template"
+		],
+		"bodyFileName": "test03_getNeighborhoodNotificationFilenamesForErrandWithEvents/responses/api-byggr-read-errand-response.xml",
 		"status": 200
 	},
 	"name": "api-byggr-read-errand"

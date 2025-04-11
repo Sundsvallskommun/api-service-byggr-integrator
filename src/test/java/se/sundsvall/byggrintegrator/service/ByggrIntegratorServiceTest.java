@@ -4,8 +4,8 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -87,7 +87,6 @@ class ByggrIntegratorServiceTest {
 	private static final String ORG_IDENTIFIER = "1234567890";
 	private static final String PRIVATE_IDENTIFIER = "123456789012";
 	private static final String BYGGR_ERRAND_NUMBER = "BYGG 2024-000123";
-	private static final int EVENT_ID = 123;
 	private static final String PROCESSED_ORG_IDENTIFIER = "16123456-7890";
 	private static final String PROCESSED_PRIVATE_IDENTIFIER = "12345678-9012";
 	private static final String MUNICIPALITY_ID = "2281";
@@ -105,6 +104,7 @@ class ByggrIntegratorServiceTest {
 		when(mockByggrIntegrationMapper.mapToByggrErrandDtos(response)).thenCallRealMethod();
 		when(mockByggrFilterUtility.hasValidDocumentType(any())).thenCallRealMethod();
 		when(mockByggrFilterUtility.filterNeighborhoodNotifications(anyList(), eq(processedIdentifier))).thenCallRealMethod();
+		when(mockByggrFilterUtility.filterEvents(eq(processedIdentifier), any())).thenCallRealMethod();
 		when(mockApiResponseMapper.mapToKeyValueResponseList(any())).thenCallRealMethod();
 
 		// Act
@@ -174,20 +174,21 @@ class ByggrIntegratorServiceTest {
 		verifyNoInteractions(mockByggrIntegrationMapper, mockByggrFilterUtility, mockApiResponseMapper, mockApiResponseMapper);
 	}
 
-	@Test
-	void testListNeighborhoodNotificationFiles() {
+	@ParameterizedTest
+	@MethodSource("identifierProvider")
+	void testListNeighborhoodNotificationFiles(String identifier, String processedIdentifier) {
 		when(mockByggrIntegration.getErrand(BYGGR_ERRAND_NUMBER)).thenReturn(OBJECT_FACTORY.createGetArendeResponse());
 		when(mockByggrIntegrationMapper.mapToByggrErrandDto(any())).thenReturn(ByggrErrandDto.builder().build());
-		when(mockByggrFilterUtility.filterEvent(any(ByggrErrandDto.class), eq(EVENT_ID))).thenReturn(ByggrErrandDto.builder().build());
-		when(mockTemplateMapper.generateFileList(any(String.class), any(ByggrErrandDto.class), any(), anyInt())).thenReturn("html");
+		when(mockByggrFilterUtility.filterEvents(eq(processedIdentifier), any(ByggrErrandDto.class))).thenReturn(ByggrErrandDto.builder().build());
+		when(mockTemplateMapper.generateFileList(anyString(), any(ByggrErrandDto.class), any(), eq(processedIdentifier))).thenReturn("html");
 
-		final var html = service.listNeighborhoodNotificationFiles(MUNICIPALITY_ID, BYGGR_ERRAND_NUMBER, EVENT_ID);
+		final var html = service.listNeighborhoodNotificationFiles(MUNICIPALITY_ID, identifier, BYGGR_ERRAND_NUMBER);
 
 		assertThat(html).isEqualTo("html");
 		verify(mockByggrIntegration).getErrand(BYGGR_ERRAND_NUMBER);
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(any(GetArendeResponse.class));
-		verify(mockByggrFilterUtility).filterEvent(any(ByggrErrandDto.class), eq(EVENT_ID));
-		verify(mockTemplateMapper).generateFileList(eq(MUNICIPALITY_ID), any(ByggrErrandDto.class), any(), anyInt());
+		verify(mockByggrFilterUtility).filterEvents(eq(processedIdentifier), any(ByggrErrandDto.class));
+		verify(mockTemplateMapper).generateFileList(eq(MUNICIPALITY_ID), any(ByggrErrandDto.class), any(), eq(processedIdentifier));
 		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrFilterUtility, mockApiResponseMapper, mockApiResponseMapper);
 		verifyNoInteractions(mockApiResponseMapper);
 	}

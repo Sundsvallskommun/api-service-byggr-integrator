@@ -66,7 +66,6 @@ public class ByggrIntegratorService {
 		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
 		// Fetch answer from ByggR
 		final var result = byggrIntegration.getErrands(processedIdentifier, roles);
-
 		// Filter on neighborhood notifications where identifier matches stakeholder
 		final var matches = filterUtility.filterNeighborhoodNotifications(byggrIntegrationMapper.mapToByggrErrandDtos(result), processedIdentifier);
 
@@ -107,18 +106,22 @@ public class ByggrIntegratorService {
 	}
 
 	@Cacheable("listNeighborhoodNotificationFilesCache")
-	public String listNeighborhoodNotificationFiles(String municipalityId, String caseNumber, int eventId) {
+	public String listNeighborhoodNotificationFiles(String municipalityId, String identifier, String caseNumber) {
 		// Fetch errand from ByggR
-		final var getArendeResponse = byggrIntegration.getErrand(caseNumber);
+		final var result = byggrIntegration.getErrand(caseNumber);
+
+		// Prefix identifier if it contains organisation legal id and add hyphen to identifier as ByggR integration formats
+		// legal id that way
+		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
 
 		// Filter on event that matches incoming id
-		final var match = filterUtility.filterEvent(byggrIntegrationMapper.mapToByggrErrandDto(getArendeResponse), eventId);
+		final var match = filterUtility.filterEvents(processedIdentifier, byggrIntegrationMapper.mapToByggrErrandDto(result));
 
 		// Fetch "handlingtyper" from ByggR
 		final var handlingtyper = byggrIntegration.getHandlingTyper();
 
 		// Map to API response
-		return templateMapper.generateFileList(municipalityId, match, handlingtyper, eventId);
+		return templateMapper.generateFileList(municipalityId, match, handlingtyper, processedIdentifier);
 	}
 
 	public void readFile(String fileId, HttpServletResponse response) {

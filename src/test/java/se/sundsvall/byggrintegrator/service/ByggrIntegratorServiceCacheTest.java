@@ -195,30 +195,30 @@ class ByggrIntegratorServiceCacheTest {
 	@Test
 	void testListNeighborhoodNotificationFilesCaching() {
 		final var municipalityId = "municipalityId";
+		final var identifier = "16123456-7890";
 		final var caseNumber = "caseNumber";
-		final var eventId = 123;
 		final var errand = new GetArendeResponse();
 		final var response = "response";
 
 		when(mockByggrIntegration.getErrand(caseNumber)).thenReturn(errand);
 		when(mockByggrIntegrationMapper.mapToByggrErrandDto(errand)).thenCallRealMethod();
-		when(mockFilterUtility.filterEvent(any(), eq(eventId))).thenAnswer(invocation -> invocation.getArgument(0));
-		when(mockTemplateMapper.generateFileList(eq(municipalityId), any(), any(), eq(eventId))).thenReturn(response);
+		when(mockFilterUtility.filterEvents(eq(identifier), any())).thenAnswer(invocation -> invocation.getArgument(1));
+		when(mockTemplateMapper.generateFileList(eq(municipalityId), any(), any(), eq(identifier))).thenReturn(response);
 
 		// First call - should hit the service
-		var result = byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, caseNumber, eventId);
+		var result = byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, identifier, caseNumber);
 
 		// Mocks should only be called first time
 		verify(mockByggrIntegration).getErrand(caseNumber);
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(errand);
 		verify(mockByggrIntegration).getHandlingTyper();
-		verify(mockFilterUtility).filterEvent(any(), eq(eventId));
-		verify(mockTemplateMapper).generateFileList(eq(municipalityId), any(), any(), eq(eventId));
+		verify(mockFilterUtility).filterEvents(eq(identifier), any());
+		verify(mockTemplateMapper).generateFileList(eq(municipalityId), any(), any(), eq(identifier));
 
 		assertThat(result).isEqualTo(response);
 
 		// Second call - should hit the cache
-		result = byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, caseNumber, eventId);
+		result = byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, identifier, caseNumber);
 
 		assertThat(result).isEqualTo(response);
 
@@ -227,7 +227,7 @@ class ByggrIntegratorServiceCacheTest {
 
 	@Test
 	void testListNeighborhoodNotificationFilesHasCorrectCacheAnnotation() throws NoSuchMethodException {
-		assertThat(ByggrIntegratorService.class.getMethod("listNeighborhoodNotificationFiles", String.class, String.class, int.class).getAnnotation(Cacheable.class).value()).containsExactly("listNeighborhoodNotificationFilesCache");
+		assertThat(ByggrIntegratorService.class.getMethod("listNeighborhoodNotificationFiles", String.class, String.class, String.class).getAnnotation(Cacheable.class).value()).containsExactly("listNeighborhoodNotificationFilesCache");
 	}
 
 }
