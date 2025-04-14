@@ -83,7 +83,7 @@
 					<handelse handelseId="1465833" checksum="14">
 						<riktning>In</riktning>
 						<rubrik>Bygglov</rubrik>
-						<startDatum>2024-08-27T10:38:00+02:00</startDatum>
+						<startDatum>{{now}}</startDatum>
 						<anteckning/>
 						<handelseslag>Bygglov</handelseslag>
 						<handelsetyp>ANSÖKAN</handelsetyp>
@@ -111,7 +111,7 @@
 					<handelse handelseId="1465834" checksum="35">
 						<riktning>Ut</riktning>
 						<rubrik>Grannehörande Utskick, omg. 1</rubrik>
-						<startDatum>2024-09-05T09:45:00+02:00</startDatum>
+						<startDatum>{{now}}</startDatum>
 						<anteckning>TEST</anteckning>
 						<handelseslag>GRAUTS</handelseslag>
 						<handelsetyp>GRANHO</handelsetyp>
@@ -161,7 +161,7 @@
 					<handelse handelseId="1465848" checksum="36">
 						<riktning>In</riktning>
 						<rubrik>Grannehörande Svar med erinran, BALDER 5, null</rubrik>
-						<startDatum>2024-09-09T13:57:00+02:00</startDatum>
+						<startDatum>{{now offset='-30 days'}}</startDatum>
 						<anteckning>Alles gut</anteckning>
 						<handelseslag>GRASVA</handelseslag>
 						<handelsetyp>GRANHO</handelsetyp>
@@ -223,7 +223,7 @@
 					<handelse handelseId="1465849" checksum="30">
 						<riktning>In</riktning>
 						<rubrik>Grannehörande Svar utan erinran, BALDER 5, null</rubrik>
-						<startDatum>2024-09-09T13:59:00+02:00</startDatum>
+						<startDatum>{{now}}</startDatum>
 						<anteckning/>
 						<handelseslag>GRASVA</handelseslag>
 						<handelsetyp>GRANHO</handelsetyp>
@@ -274,7 +274,7 @@
 						<rubrik>Grannehörande Svar med erinran, SUNDSVALL PLANKAN 11, Dupont and
 							Dupont
 						</rubrik>
-						<startDatum>2024-09-10T11:22:00+02:00</startDatum>
+						<startDatum>{{now}}</startDatum>
 						<anteckning>Blä!</anteckning>
 						<handelseslag>GRASVA</handelseslag>
 						<handelsetyp>GRANHO</handelsetyp>
@@ -360,7 +360,7 @@
 					<handelse handelseId="1465852" checksum="10">
 						<riktning>Ut</riktning>
 						<rubrik>Grannehörande Utskick - test till företag</rubrik>
-						<startDatum>2024-09-11T09:49:00+02:00</startDatum>
+						<startDatum>{{now}}</startDatum>
 						<anteckning>Test till företag</anteckning>
 						<handelseslag>GRAUTS</handelseslag>
 						<handelsetyp>GRANHO</handelsetyp>
@@ -438,10 +438,142 @@
 						<arbetsmaterial>false</arbetsmaterial>
 						<handlaggare signatur="SYSTEM"/>
 					</handelse>
+					<handelse handelseId="1465863" checksum="11">
+						<riktning>Ut</riktning>
+						<rubrik>Grannehörande Utskick - test till företag med dubletter av två filer</rubrik>
+						<startDatum>{{now offset='-29 days'}}</startDatum>
+						<anteckning>Test till företag</anteckning>
+						<handelseslag>GRAUTS</handelseslag>
+						<handelsetyp>GRANHO</handelsetyp>
+						<sekretess>false</sekretess>
+						<makulerad>false</makulerad>
+						<handlingLista>
+							<handling handlingId="1484447" checksum="8">
+								<typ>BIL</typ>
+								<status>Expedierad</status>
+								<handlingDatum>2024-09-11</handlingDatum>
+								<anteckning>ANSÖKAN B-LOV, NYBYGGNAD FRITIDSHUS, VIVSTA 5.26.pdf
+								</anteckning>
+								<uuid>4cce3b29-8aa4-4a30-a674-6e53e39f4c5d</uuid>
+								<makulerad>false</makulerad>
+								<dokument dokId="250324732"
+								          checksum="-1855850124|638616450570000000">
+									<namn>ANSÖKAN B-LOV, NYBYGGNAD FRITIDSHUS, VIVSTA 5.26.pdf
+									</namn>
+									<beskrivning>Bilaga</beskrivning>
+								</dokument>
+								<refTyp>Bifogad</refTyp>
+							</handling>
+							<handling handlingId="1484449" checksum="24">
+								<typ>ANS</typ>
+								<status>Expedierad</status>
+								<handlingDatum>2024-09-11</handlingDatum>
+								<anteckning>Testor 1_115.pdf</anteckning>
+								<uuid>b2ada294-1236-4a49-a499-54dd3e2ed54b</uuid>
+								<makulerad>false</makulerad>
+								<dokument dokId="250324733"
+								          checksum="1641286985|638616481710000000">
+									<namn>Testor 1_115.pdf</namn>
+									<beskrivning>Bilaga</beskrivning>
+								</dokument>
+								<refTyp>Bifogad</refTyp>
+							</handling>
+							<handling handlingId="1484449" checksum="24">
+								<typ>ANM</typ>
+								<status>Expedierad2</status>
+								<handlingDatum>2024-09-11</handlingDatum>
+								<anteckning>Testor 3_117.pdf</anteckning>
+								<uuid>b2ada294-1236-4a49-a499-54dd3e2ed54c</uuid>
+								<makulerad>false</makulerad>
+								<dokument dokId="250324124"
+								          checksum="1641286986|638616481710000001">
+									<namn>Testor 3_117.pdf</namn>
+									<beskrivning>Bilaga</beskrivning>
+								</dokument>
+								<refTyp>Bifogad</refTyp>
+							</handling>
+						</handlingLista>
+						<intressentLista>
+							<intressent intressentId="132360" persOrgNr="16556000-1234"
+							            arForetag="true" intressentVersionId="215809"
+							            kundnr="132360" arInternKund="false" arAktiv="true"
+							            checksum="-562864465|1337238894">
+								<namn>Testbolag 3</namn>
+								<adress>Testgatan 3</adress>
+								<postNr>88888</postNr>
+								<ort>SUNDSVALL</ort>
+								<intressentKommunikationLista>
+									<intressentKommunikation arAktiv="true" checksum="1451241427">
+										<beskrivning>070111233</beskrivning>
+										<komtyp>MOB</komtyp>
+										<attention attentionId="47203" checksum="520971691">
+											<attention>test</attention>
+										</attention>
+									</intressentKommunikation>
+								</intressentKommunikationLista>
+								<rollLista>
+									<roll>KPER</roll>
+								</rollLista>
+							</intressent>
+						</intressentLista>
+						<arbetsmaterial>false</arbetsmaterial>
+						<handlaggare signatur="SYSTEM"/>
+					</handelse>
+					<handelse handelseId="1465865" checksum="10">
+						<riktning>Ut</riktning>
+						<rubrik>Grannehörande Utskick - test till företag där posten är för gammal</rubrik>
+						<startDatum>{{now offset='-31 days'}}</startDatum>
+						<anteckning>Test till företag</anteckning>
+						<handelseslag>GRAUTS</handelseslag>
+						<handelsetyp>GRANHO</handelsetyp>
+						<sekretess>false</sekretess>
+						<makulerad>false</makulerad>
+						<handlingLista>
+							<handling handlingId="1484449" checksum="24">
+								<typ>ANM</typ>
+								<status>Expedierad2</status>
+								<handlingDatum>2024-09-11</handlingDatum>
+								<anteckning>Testor 1_118.pdf</anteckning>
+								<uuid>b2ada294-1236-4a49-a499-54dd3e2ed54c</uuid>
+								<makulerad>false</makulerad>
+								<dokument dokId="250324123"
+								          checksum="1641286986|638616481710000001">
+									<namn>Testor 1_118.pdf</namn>
+									<beskrivning>Bilaga</beskrivning>
+								</dokument>
+								<refTyp>Bifogad</refTyp>
+							</handling>
+						</handlingLista>
+						<intressentLista>
+							<intressent intressentId="132360" persOrgNr="16556000-1234"
+							            arForetag="true" intressentVersionId="215809"
+							            kundnr="132360" arInternKund="false" arAktiv="true"
+							            checksum="-562864465|1337238894">
+								<namn>Testbolag 3</namn>
+								<adress>Testgatan 3</adress>
+								<postNr>88888</postNr>
+								<ort>SUNDSVALL</ort>
+								<intressentKommunikationLista>
+									<intressentKommunikation arAktiv="true" checksum="1451241427">
+										<beskrivning>070111233</beskrivning>
+										<komtyp>MOB</komtyp>
+										<attention attentionId="47203" checksum="520971691">
+											<attention>test</attention>
+										</attention>
+									</intressentKommunikation>
+								</intressentKommunikationLista>
+								<rollLista>
+									<roll>KPER</roll>
+								</rollLista>
+							</intressent>
+						</intressentLista>
+						<arbetsmaterial>false</arbetsmaterial>
+						<handlaggare signatur="SYSTEM"/>
+					</handelse>
 					<handelse handelseId="1465853" checksum="24">
 						<riktning>Ut</riktning>
 						<rubrik>Grannehörande Utskick TEST Brf</rubrik>
-						<startDatum>2024-09-11T10:42:00+02:00</startDatum>
+						<startDatum>{{now}}</startDatum>
 						<anteckning>TEST Brf</anteckning>
 						<handelseslag>GRAUTS</handelseslag>
 						<handelsetyp>GRANHO</handelsetyp>

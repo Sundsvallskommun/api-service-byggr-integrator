@@ -2,8 +2,6 @@ package se.sundsvall.byggrintegrator.api;
 
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
-import static se.sundsvall.byggrintegrator.api.ParameterUtility.parseDiaryNumber;
-import static se.sundsvall.byggrintegrator.api.ParameterUtility.parseEventId;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -42,32 +40,34 @@ public class OpeneHtmlResource {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
-	@GetMapping(path = "/neighborhood-notifications/{caseNumberAndEventId}/filenames", produces = {
+	@GetMapping(path = "/neighborhood-notifications/{identifier}/{caseNumber}/filenames", produces = {
 		TEXT_HTML_VALUE
 	})
-	@Operation(summary = "Return html structure for all neighborhood-notification files belonging to the event that matches the sent in case number and event id",
+	@Operation(summary = "Return html structure for all neighborhood-notification files belonging to the case matching sent case number where event stakeholder matches sent in identifier",
 		responses = {
 			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
 		})
 	public ResponseEntity<String> findNeighborhoodNotificationFiles(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "caseNumberAndEventId", description = "Case number from ByggR to match", example = "BYGG 2001-123456 [1234]") @NotBlank @PathVariable final String caseNumberAndEventId) {
+		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @PathVariable final String identifier,
+		@Parameter(name = "caseNumber", description = "Case number from ByggR to match", example = "BYGG 2001-123456") @NotBlank @PathVariable final String caseNumber) {
 
-		return ResponseEntity.ok(byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, parseDiaryNumber(caseNumberAndEventId), parseEventId(caseNumberAndEventId)));
+		return ResponseEntity.ok(byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, identifier, caseNumber));
 	}
 
 	@GetMapping(path = "/neighborhood-notifications/filenames", produces = {
 		TEXT_HTML_VALUE
 	})
-	@Operation(summary = "Return html structure for all neighborhood-notification files belonging to the event that matches the sent in case number and event id",
+	@Operation(summary = "Return html structure for all neighborhood-notification files belonging to the case matching sent case number where event stakeholder matches sent in identifier",
 		responses = {
 			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
 		})
 	public ResponseEntity<String> findNeighborhoodNotificationFilesWithRequestParameter(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "caseNumberAndEventId", description = "Case number from ByggR to match", example = "BYGG 2001-123456 [1234]") @NotBlank @RequestParam("caseNumberAndEventId") final String caseNumberAndEventId) {
+		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @RequestParam("identifier") final String identifier,
+		@Parameter(name = "caseNumber", description = "Case number from ByggR to match", example = "BYGG 2001-123456") @NotBlank @RequestParam("caseNumber") final String caseNumber) {
 
-		return ResponseEntity.ok(byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, parseDiaryNumber(caseNumberAndEventId), parseEventId(caseNumberAndEventId)));
+		return ResponseEntity.ok(byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, identifier, caseNumber));
 	}
 
 	@GetMapping(path = "/cases/{caseNumber}/property-designation", produces = {

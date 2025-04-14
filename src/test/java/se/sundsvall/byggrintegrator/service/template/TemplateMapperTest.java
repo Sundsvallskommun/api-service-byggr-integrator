@@ -17,6 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
 
 @ActiveProfiles("junit")
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -30,54 +31,78 @@ class TemplateMapperTest {
 
 	@Test
 	void testGenerateHtmlFromTemplate() {
+		final var identifier = "190102034567";
+
 		when(mockProperties.domain()).thenReturn("https://somewhere.com/");
 		when(mockProperties.subDirectory()).thenReturn("/files/");
 
-		var html = templateMapper.generateFileList(
+		final var html = templateMapper.generateFileList(
 			"1234",
-			ByggrErrandDto.builder()
-				.withByggrCaseNumber("BYGG 2001-1234")
-				.withDescription("Bygglov för tillbyggnad av fritidshus")
-				.withPropertyDesignation("RUNSVIK 1:22")
-				.withEvents(List.of(Event.builder()
-					.withHeading("Heading")
-					.withId(1)
-					.withEventType("GRANHO")
-					.withEventSubtype("GRAUTS")
-					.withFiles(Map.of(
-						"file1", new Event.DocumentNameAndType("file1.txt", "SKR"),
-						"file2", new Event.DocumentNameAndType("file2.txt", "PLAN")))
-					.build()))
-				.build(),
-			Map.of("SKR", "Skrivelse", "PLAN", "Planer"),
-			1);
+			createByggrErrandDto(identifier),
+			Map.of("SKR", "Skrivelse", "PLAN", "Planer", "RIT", "Ritningar"),
+			identifier);
 
-		assertThat(html).isEqualTo(
-			"<p>Bygglov för tillbyggnad av fritidshus (RUNSVIK 1:22)</p><p>Heading</p><ul><li><a href=\"https://somewhere.com/1234/files/file2\">Planer (file2.txt)</a></li><li><a href=\"https://somewhere.com/1234/files/file1\">Skrivelse (file1.txt)</a></li></ul>");
-		verify(mockProperties, times(2)).domain();
-		verify(mockProperties, times(2)).subDirectory();
+		assertThat(html).containsIgnoringWhitespaces("""
+			<p>Bygglov för tillbyggnad av fritidshus (RUNSVIK 1:22)</p>
+			<ul>
+				<li><a href=\"https://somewhere.com/1234/files/file3\">Ritningar (file3.pdf)</a></li>
+				<li><a href=\"https://somewhere.com/1234/files/file2\">Planer (file2.txt)</a></li>
+				<li><a href=\"https://somewhere.com/1234/files/file1\">Skrivelse (file1.txt)</a></li>
+			</ul>""");
+		verify(mockProperties, times(4)).domain();
+		verify(mockProperties, times(4)).subDirectory();
 		verifyNoMoreInteractions(mockProperties);
 	}
 
 	@Test
 	void getDescriptionAndPropertyDesignationInHtml() {
-		var html = templateMapper.getDescriptionAndPropertyDesignation(
-			ByggrErrandDto.builder()
-				.withByggrCaseNumber("BYGG 2001-1234")
-				.withDescription("Bygglov för tillbyggnad av fritidshus")
-				.withPropertyDesignation("RUNSVIK 1:22")
-				.withEvents(List.of(Event.builder()
-					.withHeading("Heading")
-					.withId(1)
-					.withEventType("GRANHO")
-					.withEventSubtype("GRAUTS")
-					.withFiles(Map.of(
-						"file1", new Event.DocumentNameAndType("file1.txt", "SKR"),
-						"file2", new Event.DocumentNameAndType("file2.txt", "PLAN")))
-					.build()))
-				.build());
+		final var html = templateMapper.getDescriptionAndPropertyDesignation(createByggrErrandDto("190102034567"));
 
 		assertThat(html).isEqualTo("<p>Bygglov för tillbyggnad av fritidshus (RUNSVIK 1:22)</p>");
 		verifyNoInteractions(mockProperties);
+	}
+
+	private static ByggrErrandDto createByggrErrandDto(final String identifier) {
+		return ByggrErrandDto.builder()
+			.withByggrCaseNumber("BYGG 2001-1234")
+			.withDescription("Bygglov för tillbyggnad av fritidshus")
+			.withPropertyDesignation("RUNSVIK 1:22")
+			.withEvents(List.of(
+				Event.builder() // Event with matching stakeholder, having 2 files
+					.withId(1)
+					.withEventType("GRANHO")
+					.withEventSubtype("GRAUTS")
+					.withStakeholders(List.of(
+						Stakeholder.builder()
+							.withLegalId(identifier)
+							.build()))
+					.withFiles(Map.of(
+						"file1", new Event.DocumentNameAndType("file1.txt", "SKR"),
+						"file2", new Event.DocumentNameAndType("file2.txt", "PLAN")))
+					.build(),
+				Event.builder() // Event with matching stakeholder, having 2 files of which one is a duplicate (file1)
+					.withId(2)
+					.withEventType("GRANHO")
+					.withEventSubtype("GRAUTS")
+					.withStakeholders(List.of(
+						Stakeholder.builder()
+							.withLegalId(identifier)
+							.build()))
+					.withFiles(Map.of(
+						"file1", new Event.DocumentNameAndType("file1.txt", "SKR"),
+						"file3", new Event.DocumentNameAndType("file3.pdf", "RIT")))
+					.build(),
+				Event.builder()// Event with non matching stakeholder, having 1 file that should not be in result
+					.withId(3)
+					.withEventType("GRANHO")
+					.withEventSubtype("GRAUTS")
+					.withStakeholders(List.of(
+						Stakeholder.builder()
+							.withLegalId("no-match")
+							.build()))
+					.withFiles(Map.of(
+						"file4", new Event.DocumentNameAndType("file4.txt", "SKR")))
+					.build()))
+			.build();
 	}
 }

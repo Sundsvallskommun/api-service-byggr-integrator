@@ -11,9 +11,10 @@ public class InterceptorConfig implements WebMvcConfigurer {
 	/**
 	 * Intercept all html responses from following paths:
 	 *
-	 * "/{municipalityId}/opene/neighborhood-notifications/{wildcard}/filenames"
+	 * "/{municipalityId}/opene/neighborhood-notifications/{wildcard}/{wildcard}/filenames"
 	 * "/{municipalityId}/opene/neighborhood-notifications/filenames"
-	 *
+	 * "/{municipalityId}/opene/cases/{wildcard}/property-designation"
+	 * "/{municipalityId}/opene/cases/property-designation"
 	 * endpoint.
 	 *
 	 * @param registry the interceptor registry
@@ -22,7 +23,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new OpeneHtmlInterceptor())
 			.addPathPatterns(
-				"/{municipalityId}/opene/neighborhood-notifications/*/filenames",
+				"/{municipalityId}/opene/neighborhood-notifications/*/*/filenames",
 				"/{municipalityId}/opene/neighborhood-notifications/filenames",
 				"/{municipalityId}/opene/cases/*/property-designation",
 				"/{municipalityId}/opene/cases/property-designation");

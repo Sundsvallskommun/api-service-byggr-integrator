@@ -16,7 +16,7 @@ import se.sundsvall.byggrintegrator.api.interceptor.OpeneHtmlInterceptor;
 @ExtendWith(MockitoExtension.class)
 class InterceptorConfigTest {
 
-	private static final String PATH_PATTERN_1 = "/{municipalityId}/opene/neighborhood-notifications/*/filenames";
+	private static final String PATH_PATTERN_1 = "/{municipalityId}/opene/neighborhood-notifications/*/*/filenames";
 	private static final String PATH_PATTERN_2 = "/{municipalityId}/opene/neighborhood-notifications/filenames";
 	private static final String PATH_PATTERN_3 = "/{municipalityId}/opene/cases/*/property-designation";
 	private static final String PATH_PATTERN_4 = "/{municipalityId}/opene/cases/property-designation";
