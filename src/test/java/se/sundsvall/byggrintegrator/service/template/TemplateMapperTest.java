@@ -34,6 +34,7 @@ class TemplateMapperTest {
 		final var identifier = "190102034567";
 
 		when(mockProperties.domain()).thenReturn("https://somewhere.com/");
+		when(mockProperties.version()).thenReturn("1.0");
 		when(mockProperties.subDirectory()).thenReturn("/files/");
 
 		final var html = templateMapper.generateFileList(
@@ -45,11 +46,12 @@ class TemplateMapperTest {
 		assertThat(html).containsIgnoringWhitespaces("""
 			<p>Bygglov för tillbyggnad av fritidshus (RUNSVIK 1:22)</p>
 			<ul>
-				<li><a href=\"https://somewhere.com/1234/files/file3\">Ritningar (file3.pdf)</a></li>
-				<li><a href=\"https://somewhere.com/1234/files/file2\">Planer (file2.txt)</a></li>
-				<li><a href=\"https://somewhere.com/1234/files/file1\">Skrivelse (file1.txt)</a></li>
+				<li><a href=\"https://somewhere.com/1.0/1234/files/file3\">Ritningar (file3.pdf)</a></li>
+				<li><a href=\"https://somewhere.com/1.0/1234/files/file2\">Planer (file2.txt)</a></li>
+				<li><a href=\"https://somewhere.com/1.0/1234/files/file1\">Skrivelse (file1.txt)</a></li>
 			</ul>""");
 		verify(mockProperties, times(4)).domain();
+		verify(mockProperties, times(4)).version();
 		verify(mockProperties, times(4)).subDirectory();
 		verifyNoMoreInteractions(mockProperties);
 	}

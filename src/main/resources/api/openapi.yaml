@@ -5,7 +5,7 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "2.0"
+  version: '@project.version@'
 servers:
 - url: http://localhost:8080
   description: Generated server url
@@ -368,39 +368,49 @@ paths:
   /{municipalityId}/neighborhood-notifications/{identifier}/{caseNumber}/properties:
     get:
       tags:
-        - Neighborhood notifications
+      - Neighborhood notifications
+      summary: Lists all properties that are included in provided neighborhood notification
+        case where the provided identifier is a stakeholder
       operationId: findNeighborhoodNotificationFacilities
       parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality ID
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: identifier
-          in: path
-          description: Personal or organization number
-          required: true
-          schema:
-            type: string
-          example: 190102031234
-        - name: caseNumber
-          in: path
-          description: Case number
-          required: true
-          schema:
-            type: string
-          example: BYGG 2024-000559
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: identifier
+        in: path
+        description: Personal or organization number
+        required: true
+        schema:
+          type: string
+        example: 190102031234
+      - name: caseNumber
+        in: path
+        description: Case number
+        required: true
+        schema:
+          type: string
+        example: BYGG 2024-000559
       responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KeyValue"
         "400":
           description: Bad Request
           content:
             application/problem+json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/Problem"
-                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+                - $ref: "#/components/schemas/Problem"
+                - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -421,7 +431,7 @@ paths:
         is a stakeholder
       operationId: findNeighborhoodNotifications
       parameters:
-      - name: municipalityId 
+      - name: municipalityId
         in: path
         description: Municipality ID
         required: true
@@ -606,9 +616,9 @@ components:
             type: object
         status:
           $ref: "#/components/schemas/StatusType"
-        title:
-          type: string
         detail:
+          type: string
+        title:
           type: string
     StatusType:
       type: object
@@ -741,9 +751,9 @@ components:
             type: object
         status:
           $ref: "#/components/schemas/StatusType"
-        title:
-          type: string
         detail:
+          type: string
+        title:
           type: string
         suppressed:
           type: array

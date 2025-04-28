@@ -109,9 +109,10 @@ public class TemplateMapper {
 	}
 
 	private String parseFileUrl(final String municipalityId, final String fileId) {
-		// String content is divided into the following: [domain][municipalityid][subdirectory][file identificator]
-		return "%s%s%s%s".formatted(
+		// String content is divided into the following: [domain][version]/[municipalityid][subdirectory][file identificator]
+		return "%s%s/%s%s%s".formatted(
 			templateProperties.domain(),
+			templateProperties.version(),
 			municipalityId,
 			templateProperties.subDirectory(),
 			fileId);
