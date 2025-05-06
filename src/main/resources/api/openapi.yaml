@@ -1,54 +1,55 @@
 openapi: 3.0.1
 info:
   title: api-service-byggr-integrator
-  contact: {}
+  contact: { }
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: '@project.version@'
+  version: "2.0"
 servers:
-- url: http://localhost:8080
-  description: Generated server url
+  - url: http://localhost:57567
+    description: Generated server url
 tags:
-- name: Open-E
-  description: ByggR Integrator Open-E resources
-- name: Neighborhood notifications
-  description: Neighborhood notification resources
-- name: Files
-  description: File operations
-- name: Applicant
-  description: Applicant resources
+  - name: Open-E
+    description: ByggR Integrator Open-E resources
+  - name: Neighborhood notifications
+    description: Neighborhood notification resources
+  - name: Files
+    description: File operations
+  - name: Applicant
+    description: Applicant resources
 paths:
   /{municipalityId}/opene/neighborhood-notifications/{identifier}/{caseNumber}/filenames:
     get:
       tags:
-      - Open-E
+        - Open-E
       summary: Return html structure for all neighborhood-notification files belonging
         to the case matching sent case number where event stakeholder matches sent
         in identifier
       operationId: findNeighborhoodNotificationFiles
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: identifier
-        in: path
-        description: Personal or organization number
-        required: true
-        schema:
-          type: string
-        example: 190102031234
-      - name: caseNumber
-        in: path
-        description: Case number from ByggR to match
-        required: true
-        schema:
-          type: string
-        example: BYGG 2001-123456
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: identifier
+          in: path
+          description: Personal or organization number
+          required: true
+          schema:
+            type: string
+          example: 190102031234
+        - name: caseNumber
+          in: path
+          description: Case number from ByggR to match
+          required: true
+          schema:
+            minLength: 1
+            type: string
+          example: BYGG 2001-123456
       responses:
         "500":
           description: Internal Server Error
@@ -68,8 +69,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not Found
           content:
@@ -85,33 +86,34 @@ paths:
   /{municipalityId}/opene/neighborhood-notifications/filenames:
     get:
       tags:
-      - Open-E
+        - Open-E
       summary: Return html structure for all neighborhood-notification files belonging
         to the case matching sent case number where event stakeholder matches sent
         in identifier
       operationId: findNeighborhoodNotificationFilesWithRequestParameter
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: identifier
-        in: query
-        description: Personal or organization number
-        required: true
-        schema:
-          type: string
-        example: 190102031234
-      - name: caseNumber
-        in: query
-        description: Case number from ByggR to match
-        required: true
-        schema:
-          type: string
-        example: BYGG 2001-123456
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: identifier
+          in: query
+          description: Personal or organization number
+          required: true
+          schema:
+            type: string
+          example: 190102031234
+        - name: caseNumber
+          in: query
+          description: Case number from ByggR to match
+          required: true
+          schema:
+            minLength: 1
+            type: string
+          example: BYGG 2001-123456
       responses:
         "500":
           description: Internal Server Error
@@ -131,8 +133,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not Found
           content:
@@ -148,25 +150,26 @@ paths:
   /{municipalityId}/opene/cases/{caseNumber}/type:
     get:
       tags:
-      - Open-E
+        - Open-E
       summary: Return xml structure errand type for the errand matching sent in case
         number
       operationId: getErrandType
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: caseNumber
-        in: path
-        description: Case number from ByggR
-        required: true
-        schema:
-          type: string
-        example: BYGG 2001-123456
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: caseNumber
+          in: path
+          description: Case number from ByggR
+          required: true
+          schema:
+            minLength: 1
+            type: string
+          example: BYGG 2001-123456
       responses:
         "200":
           description: Successful Operation
@@ -180,8 +183,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not Found
           content:
@@ -203,25 +206,26 @@ paths:
   /{municipalityId}/opene/cases/{caseNumber}/property-designation:
     get:
       tags:
-      - Open-E
+        - Open-E
       summary: Return html structure with the property designations belonging to the
         case number
       operationId: findPropertyDesignation
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: caseNumber
-        in: path
-        description: Case number from ByggR to match
-        required: true
-        schema:
-          type: string
-        example: BYGG 2001-123456
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: caseNumber
+          in: path
+          description: Case number from ByggR to match
+          required: true
+          schema:
+            minLength: 1
+            type: string
+          example: BYGG 2001-123456
       responses:
         "500":
           description: Internal Server Error
@@ -241,8 +245,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not Found
           content:
@@ -258,25 +262,26 @@ paths:
   /{municipalityId}/opene/cases/type:
     get:
       tags:
-      - Open-E
+        - Open-E
       summary: Return xml structure errand type for the errand matching sent in case
         number
       operationId: getErrandTypeWithRequestParameter
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: caseNumber
-        in: query
-        description: Case number from ByggR
-        required: true
-        schema:
-          type: string
-        example: BYGG 2001-123456
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: caseNumber
+          in: query
+          description: Case number from ByggR
+          required: true
+          schema:
+            minLength: 1
+            type: string
+          example: BYGG 2001-123456
       responses:
         "200":
           description: Successful Operation
@@ -290,8 +295,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not Found
           content:
@@ -313,25 +318,26 @@ paths:
   /{municipalityId}/opene/cases/property-designation:
     get:
       tags:
-      - Open-E
+        - Open-E
       summary: Return html structure with the property designations belonging to the
         case number
       operationId: findPropertyDesignationWithRequestParameter
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: caseNumber
-        in: query
-        description: Case number from ByggR to match
-        required: true
-        schema:
-          type: string
-        example: BYGG 2001-123456
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: caseNumber
+          in: query
+          description: Case number from ByggR to match
+          required: true
+          schema:
+            minLength: 1
+            type: string
+          example: BYGG 2001-123456
       responses:
         "500":
           description: Internal Server Error
@@ -351,8 +357,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "404":
           description: Not Found
           content:
@@ -368,32 +374,34 @@ paths:
   /{municipalityId}/neighborhood-notifications/{identifier}/{caseNumber}/properties:
     get:
       tags:
-      - Neighborhood notifications
+        - Neighborhood notifications
       summary: Lists all properties that are included in provided neighborhood notification
         case where the provided identifier is a stakeholder
       operationId: findNeighborhoodNotificationFacilities
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: identifier
-        in: path
-        description: Personal or organization number
-        required: true
-        schema:
-          type: string
-        example: 190102031234
-      - name: caseNumber
-        in: path
-        description: Case number
-        required: true
-        schema:
-          type: string
-        example: BYGG 2024-000559
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: identifier
+          in: path
+          description: Personal or organization number
+          required: true
+          schema:
+            minLength: 1
+            type: string
+          example: 190102031234
+        - name: caseNumber
+          in: path
+          description: Case number
+          required: true
+          schema:
+            minLength: 1
+            type: string
+          example: BYGG 2024-000559
       responses:
         "200":
           description: Successful Operation
@@ -409,8 +417,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -426,25 +434,26 @@ paths:
   /{municipalityId}/neighborhood-notifications/{identifier}/errands:
     get:
       tags:
-      - Neighborhood notifications
+        - Neighborhood notifications
       summary: Lists all neighborhood notifications where the provided identifier
         is a stakeholder
       operationId: findNeighborhoodNotifications
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: identifier
-        in: path
-        description: Personal or organization number
-        required: true
-        schema:
-          type: string
-        example: 190102031234
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: identifier
+          in: path
+          description: Personal or organization number
+          required: true
+          schema:
+            minLength: 1
+            type: string
+          example: 190102031234
       responses:
         "200":
           description: Successful Operation
@@ -466,8 +475,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -483,24 +492,24 @@ paths:
   /{municipalityId}/files/{fileId}:
     get:
       tags:
-      - Files
+        - Files
       summary: Return file content for file matching the provided id
       operationId: readFile
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: fileId
-        in: path
-        description: File id
-        required: true
-        schema:
-          type: string
-        example: 123456
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: fileId
+          in: path
+          description: File id
+          required: true
+          schema:
+            type: string
+          example: 123456
       responses:
         "200":
           description: Successful operation
@@ -516,8 +525,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server error
           content:
@@ -536,24 +545,25 @@ paths:
   /{municipalityId}/applicants/{identifier}/errands:
     get:
       tags:
-      - Applicant
+        - Applicant
       summary: Lists all errands where the provided identifier is applicant
       operationId: findApplicantErrands
       parameters:
-      - name: municipalityId
-        in: path
-        description: Municipality ID
-        required: true
-        schema:
-          type: string
-        example: 2281
-      - name: identifier
-        in: path
-        description: Personal or organization number
-        required: true
-        schema:
-          type: string
-        example: 190102031234
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: identifier
+          in: path
+          description: Personal or organization number
+          required: true
+          schema:
+            minLength: 1
+            type: string
+          example: 190102031234
       responses:
         "200":
           description: Successful Operation
@@ -569,8 +579,8 @@ paths:
             application/problem+json:
               schema:
                 oneOf:
-                - $ref: "#/components/schemas/Problem"
-                - $ref: "#/components/schemas/ConstraintViolationProblem"
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
         "500":
           description: Internal Server Error
           content:
@@ -586,7 +596,7 @@ paths:
   /api-docs:
     get:
       tags:
-      - API
+        - API
       summary: OpenAPI
       operationId: getApiDocs
       responses:
@@ -616,18 +626,18 @@ components:
             type: object
         status:
           $ref: "#/components/schemas/StatusType"
-        detail:
-          type: string
         title:
+          type: string
+        detail:
           type: string
     StatusType:
       type: object
       properties:
+        reasonPhrase:
+          type: string
         statusCode:
           type: integer
           format: int32
-        reasonPhrase:
-          type: string
     ConstraintViolationProblem:
       type: object
       properties:
@@ -751,9 +761,9 @@ components:
             type: object
         status:
           $ref: "#/components/schemas/StatusType"
-        detail:
-          type: string
         title:
+          type: string
+        detail:
           type: string
         suppressed:
           type: array
@@ -809,4 +819,4 @@ components:
         value:
           type: string
           description: The value of the key-value pair
-  securitySchemes: {}
+  securitySchemes: { }
