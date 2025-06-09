@@ -2,6 +2,7 @@ package se.sundsvall.byggrintegrator.api;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 import org.zalando.problem.violations.ConstraintViolationProblem;
@@ -50,7 +52,7 @@ class NeighborhoodNotificationResource {
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @ValidPersonalOrOrgNumber @PathVariable final String identifier) {
 
-		return ResponseEntity.ok(byggrIntegratorService.findNeighborhoodNotifications(identifier));
+		return ok(byggrIntegratorService.findNeighborhoodNotifications(identifier));
 	}
 
 	@GetMapping(path = "/neighborhood-notifications/{identifier}/{caseNumber}/properties", produces = APPLICATION_JSON_VALUE)
@@ -62,7 +64,19 @@ class NeighborhoodNotificationResource {
 		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @ValidPersonalOrOrgNumber @PathVariable final String identifier,
 		@Parameter(name = "caseNumber", description = "Case number", example = "BYGG 2024-000559") @NotBlank @PathVariable final String caseNumber) {
 
-		return ResponseEntity.ok(byggrIntegratorService.getNeighborhoodNotificationFacilities(identifier, caseNumber));
+		return ok(byggrIntegratorService.getNeighborhoodNotificationFacilities(identifier, caseNumber));
+	}
+
+	@GetMapping(path = "/neighborhood-notifications/properties", produces = APPLICATION_JSON_VALUE)
+	@Operation(summary = "Lists all properties that are included in provided neighborhood notification case where the provided identifier is a stakeholder", responses = {
+		@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
+	})
+	ResponseEntity<List<KeyValue>> findNeighborhoodNotificationFacilitiesWithRequestParameters(
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @ValidPersonalOrOrgNumber @RequestParam final String identifier,
+		@Parameter(name = "caseNumber", description = "Case number", example = "BYGG 2024-000559") @NotBlank @RequestParam final String caseNumber) {
+
+		return ok(byggrIntegratorService.getNeighborhoodNotificationFacilities(identifier, caseNumber));
 	}
 
 }

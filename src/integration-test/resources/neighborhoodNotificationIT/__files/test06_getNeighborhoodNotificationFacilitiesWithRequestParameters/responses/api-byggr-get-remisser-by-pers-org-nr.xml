@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+	<SOAP-ENV:Header />
+	<SOAP-ENV:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<GetRemisserByPersOrgNrResponse xmlns="www.tekis.se/ServiceContract">
+			<GetRemisserByPersOrgNrResult>
+				<Remiss utskickId="305903" remissId="305903">
+					<dnr xmlns="www.tekis.se/arende">BYGG 2024-000019</dnr>
+					<mottagare intressentId="132360" persOrgNr="19010101-0159" arForetag="false"
+					  intressentVersionId="215809" kundnr="132360" arInternKund="false"
+					  arAktiv="true" checksum="-562864465|1337238894"
+					  docSplitToken="132360"
+					  xmlns="www.tekis.se/arende">
+						<namn>testbolag 3</namn>
+						<adress>gata testbolag 3</adress>
+						<postNr>88888</postNr>
+						<ort>ort testbolag 3</ort>
+						<intressentKommunikationLista>
+							<intressentKommunikation arAktiv="true" checksum="1451241427">
+								<beskrivning>070111233</beskrivning>
+								<komtyp>MOB</komtyp>
+								<attention attentionId="47203" checksum="520971691">
+									<attention>test</attention>
+								</attention>
+							</intressentKommunikation>
+							<intressentKommunikation arAktiv="true" checksum="39547468">
+								<beskrivning>0702223311</beskrivning>
+								<komtyp>MOB</komtyp>
+								<attention attentionId="47203" checksum="520971691">
+									<attention>test</attention>
+								</attention>
+							</intressentKommunikation>
+							<intressentKommunikation arAktiv="true" checksum="-1686876826">
+								<beskrivning>test@test.com</beskrivning>
+								<komtyp>Epost</komtyp>
+								<attention attentionId="47203" checksum="520971691">
+									<attention>test</attention>
+								</attention>
+							</intressentKommunikation>
+							<intressentKommunikation arAktiv="true" checksum="-741045657">
+								<beskrivning>test1000@test.com</beskrivning>
+								<komtyp>Epost</komtyp>
+								<attention attentionId="47203" checksum="520971691">
+									<attention>test</attention>
+								</attention>
+							</intressentKommunikation>
+							<intressentKommunikation arAktiv="true" checksum="2109569111">
+								<beskrivning>0708888888</beskrivning>
+								<komtyp>MOB</komtyp>
+								<attention attentionId="47210" checksum="1337238894">
+									<attention>att testbolag3</attention>
+								</attention>
+							</intressentKommunikation>
+							<intressentKommunikation arAktiv="true" checksum="1410311544">
+								<beskrivning>testbolag3@ss.se</beskrivning>
+								<komtyp>Epost</komtyp>
+								<attention attentionId="47210" checksum="1337238894">
+									<attention>att testbolag3</attention>
+								</attention>
+							</intressentKommunikation>
+						</intressentKommunikationLista>
+						<rollLista>
+							<roll>KPER</roll>
+						</rollLista>
+					</mottagare>
+					<fnr xsi:nil="true" xmlns="www.tekis.se/arende" />
+					<fastighetsbeteckning xmlns="www.tekis.se/arende">SKÖNSMON 1:1</fastighetsbeteckning>
+					<erfordras xmlns="www.tekis.se/arende">false</erfordras>
+					<utskicksHandlingar xmlns="www.tekis.se/arende">
+						<handling handlingId="1484447" checksum="8">
+							<typ>BIL</typ>
+							<status>Expedierad</status>
+							<handlingDatum>2024-09-11</handlingDatum>
+							<anteckning>ANSÖKAN B-LOV, NYBYGGNAD FRITIDSHUS, VIVSTA 5.26.pdf
+							</anteckning>
+							<uuid>4cce3b29-8aa4-4a30-a674-6e53e39f4c5d</uuid>
+							<makulerad>false</makulerad>
+							<dokument dokId="250324732" checksum="-1855850124|638616450570000000">
+								<namn>ANSÖKAN B-LOV, NYBYGGNAD FRITIDSHUS, VIVSTA 5.26.pdf</namn>
+								<beskrivning>Bilaga</beskrivning>
+								<skapadDatum>2024-09-11T09:50:56+02:00</skapadDatum>
+								<handlaggare handlaggareId="722" signatur="ulr07sod" />
+							</dokument>
+							<refTyp>Bifogad</refTyp>
+						</handling>
+					</utskicksHandlingar>
+					<senastSvarDatum xmlns="www.tekis.se/arende">2024-09-25</senastSvarDatum>
+					<svarDatum xmlns="www.tekis.se/arende">2024-09-30T15:17:23.817</svarDatum>
+				</Remiss>
+			</GetRemisserByPersOrgNrResult>
+		</GetRemisserByPersOrgNrResponse>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+
+

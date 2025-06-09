@@ -11,12 +11,14 @@ import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.MultiValueMap;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
@@ -45,6 +47,7 @@ class NeighborhoodNotificationResourceTest {
 
 	private static final String NEIGHBORHOOD_NOTIFICATION_URL = "/{municipalityId}/neighborhood-notifications/{identifier}/errands";
 	private static final String NEIGHBORHOOD_NOTIFICATION_FACILITIES_URL = "/{municipalityId}/neighborhood-notifications/{identifier}/{caseNumber}/properties";
+	private static final String NEIGHBORHOOD_NOTIFICATION_FACILITIES_REQUEST_PARAMETERS_URL = "/{municipalityId}/neighborhood-notifications/properties";
 
 	@Test
 	void testFindNeighborhoodNotifications() {
@@ -247,6 +250,124 @@ class NeighborhoodNotificationResourceTest {
 
 		final var responseBody = webTestClient.get()
 			.uri(NEIGHBORHOOD_NOTIFICATION_FACILITIES_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER, VALID_CASE_NUMBER)
+			.exchange()
+			.expectStatus().isNotFound()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ThrowableProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getStatus()).isEqualTo(Status.NOT_FOUND);
+		assertThat(responseBody.getMessage()).isEqualTo("404 Title: 404 Detail");
+		assertThat(responseBody.getTitle()).isEqualTo("404 Title");
+		assertThat(responseBody.getDetail()).isEqualTo("404 Detail");
+
+		verify(mockByggrIntegratorService).getNeighborhoodNotificationFacilities(VALID_IDENTIFIER, VALID_CASE_NUMBER);
+		verifyNoMoreInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void findNeighborhoodNotificationFacilitiesWithRequestParameters() {
+		when(mockByggrIntegratorService.getNeighborhoodNotificationFacilities(VALID_IDENTIFIER, VALID_CASE_NUMBER)).thenReturn(List.of(new KeyValue("key", "value")));
+
+		final var responseBody = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FACILITIES_REQUEST_PARAMETERS_URL)
+				.queryParams(MultiValueMap.fromSingleValue(Map.of("identifier", VALID_IDENTIFIER, "caseNumber", VALID_CASE_NUMBER)))
+				.build(VALID_MUNICIPALITY_ID))
+			.exchange()
+			.expectStatus().isOk()
+			.expectBodyList(KeyValue.class)
+			.hasSize(1)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getFirst().key()).isEqualTo("key");
+		assertThat(responseBody.getFirst().value()).isEqualTo("value");
+
+		verify(mockByggrIntegratorService).getNeighborhoodNotificationFacilities(VALID_IDENTIFIER, VALID_CASE_NUMBER);
+		verifyNoMoreInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void findNeighborhoodNotificationFacilitiesWithRequestParameters_faultyMunicipalityId_shouldThrowException() {
+		final var responseBody = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FACILITIES_REQUEST_PARAMETERS_URL)
+				.queryParams(MultiValueMap.fromSingleValue(Map.of("identifier", VALID_IDENTIFIER, "caseNumber", VALID_CASE_NUMBER)))
+				.build(INVALID_MUNICIPALITY_ID))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("findNeighborhoodNotificationFacilitiesWithRequestParameters.municipalityId", "not a valid municipality ID"));
+
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void findNeighborhoodNotificationFacilitiesWithRequestParameters_faultyIdentifier_shouldThrowException() {
+		final var responseBody = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FACILITIES_REQUEST_PARAMETERS_URL)
+				.queryParams(MultiValueMap.fromSingleValue(Map.of("identifier", INVALID_IDENTIFIER, "caseNumber", VALID_CASE_NUMBER)))
+				.build(VALID_MUNICIPALITY_ID))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("findNeighborhoodNotificationFacilitiesWithRequestParameters.identifier", "Invalid personal or organization number"));
+
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void findNeighborhoodNotificationFacilitiesWithRequestParameters_faultyCaseNumber_shouldThrowException() {
+		final var responseBody = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FACILITIES_REQUEST_PARAMETERS_URL)
+				.queryParams(MultiValueMap.fromSingleValue(Map.of("identifier", VALID_IDENTIFIER, "caseNumber", INVALID_CASE_NUMBER)))
+				.build(VALID_MUNICIPALITY_ID))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
+			.containsExactlyInAnyOrder(tuple("findNeighborhoodNotificationFacilitiesWithRequestParameters.caseNumber", "must not be blank"));
+
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void findNeighborhoodNotificationFacilitiesWithRequestParameters_serviceThrows404() {
+		when(mockByggrIntegratorService.getNeighborhoodNotificationFacilities(VALID_IDENTIFIER, VALID_CASE_NUMBER)).thenThrow(Problem.builder()
+			.withTitle("404 Title")
+			.withStatus(Status.NOT_FOUND)
+			.withDetail("404 Detail")
+			.build());
+
+		final var responseBody = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FACILITIES_REQUEST_PARAMETERS_URL)
+				.queryParams(MultiValueMap.fromSingleValue(Map.of("identifier", VALID_IDENTIFIER, "caseNumber", VALID_CASE_NUMBER)))
+				.build(VALID_MUNICIPALITY_ID))
 			.exchange()
 			.expectStatus().isNotFound()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
