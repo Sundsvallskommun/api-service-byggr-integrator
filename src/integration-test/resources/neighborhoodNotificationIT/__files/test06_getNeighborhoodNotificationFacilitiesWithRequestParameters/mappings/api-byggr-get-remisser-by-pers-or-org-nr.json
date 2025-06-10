@@ -1,0 +1,30 @@
+{
+	"request": {
+		"headers": {
+			"SOAPAction": {
+				"equalTo": "www.tekis.se/ServiceContract/V4/IExportArenden/GetRemisserByPersOrgNr"
+			},
+			"Content-Type": {
+				"equalTo": "text/xml;charset=UTF-8"
+			}
+		},
+		"method": "POST",
+		"bodyPatterns": [
+			{
+				"matchesXPath": "//*[local-name()='GetRemisserByPersOrgNr']"
+			}
+		],
+		"urlPath": "/api-byggr/endpoint"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/xml"
+		},
+		"transformers": [
+			"response-template"
+		],
+		"bodyFileName": "test06_getNeighborhoodNotificationFacilitiesWithRequestParameters/responses/api-byggr-get-remisser-by-pers-org-nr.xml",
+		"status": 200
+	},
+	"name": "api-byggr-get-remisser-by-pers-org-nr"
+}

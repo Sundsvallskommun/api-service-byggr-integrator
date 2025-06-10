@@ -72,4 +72,15 @@ class NeighborhoodNotificationIT extends AbstractAppTest {
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
 	}
+
+	@Test
+	void test06_getNeighborhoodNotificationFacilitiesWithRequestParameters() {
+		setupCall()
+			.withServicePath("/2281/neighborhood-notifications/properties?identifier=5566771234&caseNumber=BYGG 2024-000019")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_JSON_VALUE))
+			.withExpectedResponse(RESPONSE_FILE)
+			.sendRequestAndVerifyResponse();
+	}
 }
