@@ -1,5 +1,6 @@
 <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
-	<s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 		<GetRelateradeArendenByPersOrgNrAndRoleResponse xmlns="www.tekis.se/ServiceContract">
 			<GetRelateradeArendenByPersOrgNrAndRoleResult>
 				<arende arendeId="12345" dnr="BYGG 2024-000666" diarieprefix="BYGG" komkod="2281" enhetkod="SBK" arendegrupp="STRA" arendetyp="DI" arendeslag="NYB" arendeklass="GA" namndkod="SBN" kalla="1" checksum="27">
@@ -8,7 +9,8 @@
 					<ankomstDatum xmlns="www.tekis.se/arende">2024-09-01</ankomstDatum>
 					<uppdateradDatum xmlns="www.tekis.se/arende">2024-09-03</uppdateradDatum>
 					<registreradDatum xmlns="www.tekis.se/arende">2024-09-02</registreradDatum>
-					<handlaggare handlaggareId="19" signatur="HAD" xmlns="www.tekis.se/arende">
+					<handlaggare handlaggareId="19" signatur="HAD"
+						xmlns="www.tekis.se/arende">
 						<fornamn>Kapten</fornamn>
 						<efternamn>Haddock</efternamn>
 					</handlaggare>
@@ -22,7 +24,7 @@
 							<efternamn>Rastapopoulos</efternamn>
 							<intressentKommunikationLista>
 								<intressentKommunikation arAktiv="true" checksum="-123456789">
-									<beskrivning>070-1234567</beskrivning>
+									<beskrivning>070-1740605</beskrivning>
 									<komtyp>MOB</komtyp>
 								</intressentKommunikation>
 								<intressentKommunikation arAktiv="true" checksum="1234567890">
@@ -126,7 +128,7 @@
 									<efternamn>Rastapopoulos</efternamn>
 									<intressentKommunikationLista>
 										<intressentKommunikation arAktiv="true" checksum="-123456789">
-											<beskrivning>070-1234567</beskrivning>
+											<beskrivning>070-1740605</beskrivning>
 											<komtyp>MOB</komtyp>
 										</intressentKommunikation>
 										<intressentKommunikation arAktiv="true" checksum="1234567890">
@@ -205,7 +207,7 @@
 									<efternamn>Rastapopoulos</efternamn>
 									<intressentKommunikationLista>
 										<intressentKommunikation arAktiv="true" checksum="-123456789">
-											<beskrivning>070-1234567</beskrivning>
+											<beskrivning>070-1740605</beskrivning>
 											<komtyp>MOB</komtyp>
 										</intressentKommunikation>
 										<intressentKommunikation arAktiv="true" checksum="1234567890">
@@ -285,7 +287,8 @@
 					<ankomstDatum xmlns="www.tekis.se/arende">2024-09-01</ankomstDatum>
 					<uppdateradDatum xmlns="www.tekis.se/arende">2024-09-03</uppdateradDatum>
 					<registreradDatum xmlns="www.tekis.se/arende">2024-09-02</registreradDatum>
-					<handlaggare handlaggareId="19" signatur="HAD" xmlns="www.tekis.se/arende">
+					<handlaggare handlaggareId="19" signatur="HAD"
+						xmlns="www.tekis.se/arende">
 						<fornamn>Kapten</fornamn>
 						<efternamn>Haddock</efternamn>
 					</handlaggare>
