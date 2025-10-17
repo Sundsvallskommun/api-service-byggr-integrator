@@ -50,12 +50,12 @@ class ApiResponseMapperTest {
 
 	@Test
 	void mapStringIntegerMapToKeyValue() {
-		Map<String, Integer> myMap = Map.of("key1", 1, "key2", 2);
+		final Map<String, Map<Integer, String>> myMap = Map.of("key1", Map.of(1, "1234"), "key2", Map.of(2, ""));
 
-		List<KeyValue> keyValues = apiResponseMapper.mapToKeyValue(myMap);
+		final List<KeyValue> keyValues = apiResponseMapper.mapToKeyValue(myMap);
 
 		assertThat(keyValues).hasSize(2).satisfiesExactlyInAnyOrder(
-			keyVal -> assertThat(keyVal.value()).isEqualTo("key1 [1]"),
-			keyVal -> assertThat(keyVal.value()).isEqualTo("key2 [2]"));
+			keyVal -> assertThat(keyVal.value()).isEqualTo("key1 - besvarad 1234 [1]"),
+			keyVal -> assertThat(keyVal.value()).isEqualTo("key2 - ej besvarad [2]"));
 	}
 }

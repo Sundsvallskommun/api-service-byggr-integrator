@@ -55,18 +55,6 @@ class NeighborhoodNotificationResource {
 		return ok(byggrIntegratorService.findNeighborhoodNotifications(identifier));
 	}
 
-	@GetMapping(path = "/neighborhood-notifications/{identifier}/{caseNumber}/properties", produces = APPLICATION_JSON_VALUE)
-	@Operation(summary = "Lists all properties that are included in provided neighborhood notification case where the provided identifier is a stakeholder", responses = {
-		@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
-	})
-	ResponseEntity<List<KeyValue>> findNeighborhoodNotificationFacilities(
-		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @ValidPersonalOrOrgNumber @PathVariable final String identifier,
-		@Parameter(name = "caseNumber", description = "Case number", example = "BYGG 2024-000559") @NotBlank @PathVariable final String caseNumber) {
-
-		return ok(byggrIntegratorService.getNeighborhoodNotificationFacilities(identifier, caseNumber));
-	}
-
 	@GetMapping(path = "/neighborhood-notifications/properties", produces = APPLICATION_JSON_VALUE)
 	@Operation(summary = "Lists all properties that are included in provided neighborhood notification case where the provided identifier is a stakeholder", responses = {
 		@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)

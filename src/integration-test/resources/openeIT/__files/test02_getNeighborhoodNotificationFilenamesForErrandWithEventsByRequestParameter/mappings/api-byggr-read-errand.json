@@ -20,7 +20,7 @@
 		"transformers": [
 			"response-template"
 		],
-		"bodyFileName": "test07_getNeighborhoodNotificationFilenamesForErrandWithEventsByRequestParameter/responses/api-byggr-read-errand-response.xml",
+		"bodyFileName": "test02_getNeighborhoodNotificationFilenamesForErrandWithEventsByRequestParameter/responses/api-byggr-read-errand-response.xml",
 		"status": 200
 	},
 	"name": "api-byggr-read-errand"

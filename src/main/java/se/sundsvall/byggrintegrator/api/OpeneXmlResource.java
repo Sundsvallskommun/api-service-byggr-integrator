@@ -41,18 +41,6 @@ public class OpeneXmlResource {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
-	@GetMapping(path = "/cases/{caseNumber}/type", produces = APPLICATION_XML_VALUE)
-	@Operation(summary = "Return xml structure errand type for the errand matching sent in case number",
-		responses = {
-			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
-		})
-	public ResponseEntity<Weight> getErrandType(
-		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "caseNumber", description = "Case number from ByggR", example = "BYGG 2001-123456") @NotBlank @PathVariable final String caseNumber) {
-
-		return ResponseEntity.ok(byggrIntegratorService.getErrandType(caseNumber));
-	}
-
 	@GetMapping(path = "/cases/type", produces = APPLICATION_XML_VALUE)
 	@Operation(summary = "Return xml structure errand type for the errand matching sent in case number",
 		responses = {

@@ -14,9 +14,9 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 @Component
 public class ApiResponseMapper {
 
-	private static final String KEY_TEMPLATE = "%s [%s]";
+	private static final String KEY_TEMPLATE = "%s%s [%d]";
 
-	public List<KeyValue> mapToKeyValueResponseList(List<ByggrErrandDto> errands) {
+	public List<KeyValue> mapToKeyValueResponseList(final List<ByggrErrandDto> errands) {
 		final var position = new AtomicInteger(1);
 
 		return errands.stream()
@@ -26,22 +26,37 @@ public class ApiResponseMapper {
 			.toList();
 	}
 
-	private KeyValue mapToKeyValue(int position, String value) {
+	private KeyValue mapToKeyValue(final int position, final String value) {
 		return new KeyValue(String.valueOf(position), value);
 	}
 
-	public Weight mapToWeight(GetArendeResponse errand) {
+	public Weight mapToWeight(final GetArendeResponse errand) {
 		return Weight.builder()
 			.withValue(CaseTypeEnum.translate(errand.getGetArendeResult().getArendetyp()))
 			.build();
 	}
 
-	public List<KeyValue> mapToKeyValue(final Map<String, Integer> propertyDesignationAndRemissIdMap) {
+	public List<KeyValue> mapToKeyValue(final Map<String, Map<Integer, String>> propertyDesignationAndRemissIdMap) {
 		final var position = new AtomicInteger(1);
 
 		return propertyDesignationAndRemissIdMap.entrySet().stream()
-			.map(entry -> KEY_TEMPLATE.formatted(entry.getKey(), entry.getValue()))
+			.flatMap(entry -> formatRemissInfo(entry.getKey(), entry.getValue()).stream())
 			.map(value -> mapToKeyValue(position.getAndIncrement(), value))
+			.toList();
+	}
+
+	private List<String> formatRemissInfo(final String propertyDesignation, final Map<Integer, String> remissIdToSvarDatumMap) {
+		return remissIdToSvarDatumMap.entrySet().stream()
+			.map(entry -> {
+				final var remissId = entry.getKey();
+				final var svarDatum = entry.getValue();
+
+				final var statusText = (svarDatum == null || svarDatum.isBlank() || "nil".equalsIgnoreCase(svarDatum))
+					? " - ej besvarad"
+					: " - besvarad " + svarDatum.split("T")[0];
+
+				return KEY_TEMPLATE.formatted(propertyDesignation, statusText, remissId);
+			})
 			.toList();
 	}
 }

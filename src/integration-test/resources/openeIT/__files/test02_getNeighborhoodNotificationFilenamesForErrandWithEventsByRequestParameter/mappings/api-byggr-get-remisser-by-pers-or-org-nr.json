@@ -23,7 +23,7 @@
 		"transformers": [
 			"response-template"
 		],
-		"bodyFileName": "test06_getNeighborhoodNotificationFacilitiesWithRequestParameters/responses/api-byggr-get-remisser-by-pers-org-nr.xml",
+		"bodyFileName": "test02_getNeighborhoodNotificationFilenamesForErrandWithEventsByRequestParameter/responses/api-byggr-get-remisser-by-pers-org-nr.xml",
 		"status": 200
 	},
 	"name": "api-byggr-get-remisser-by-pers-org-nr"

@@ -22,60 +22,15 @@ import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class OpeneXmlResourceTest {
 
-	@MockitoBean
-	private ByggrIntegratorService mockByggrIntegratorService;
-
-	@Autowired
-	private WebTestClient webTestClient;
-
 	private static final String INVALID_MUNICIPALITY_ID = "InvalidMunicipalityId";
 	private static final String VALID_MUNICIPALITY_ID = "2281";
 	private static final String CASE_NUMBER = "diaryNumber";
 	private static final String VALUE = "value";
-
-	private static final String ERRAND_TYPE_URL = "/{municipalityId}/opene/cases/{caseNumber}/type";
 	private static final String ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL = "/{municipalityId}/opene/cases/type";
-
-	// ----------------------------------------------------------------
-	// ErrandType resources tests
-	// ----------------------------------------------------------------
-	@Test
-	void testGetErrandType() {
-		final var weight = Weight.builder().withValue(VALUE).build();
-
-		when(mockByggrIntegratorService.getErrandType(CASE_NUMBER)).thenReturn(weight);
-
-		final var responseBody = webTestClient.get()
-			.uri(ERRAND_TYPE_URL, VALID_MUNICIPALITY_ID, CASE_NUMBER)
-			.exchange()
-			.expectStatus().isOk()
-			.expectHeader()
-			.contentType(APPLICATION_XML)
-			.expectBody(String.class)
-			.returnResult()
-			.getResponseBody();
-
-		assertThat(responseBody).isNotNull().isEqualToIgnoringNewLines("<Weight>value</Weight>");
-
-		verify(mockByggrIntegratorService).getErrandType(CASE_NUMBER);
-		verifyNoMoreInteractions(mockByggrIntegratorService);
-	}
-
-	@Test
-	void testGetErrandType_faultyMunicipalityId_shouldThrowException() {
-		final var responseBody = webTestClient.get()
-			.uri(ERRAND_TYPE_URL, INVALID_MUNICIPALITY_ID, CASE_NUMBER)
-			.exchange()
-			.expectStatus().isBadRequest()
-			.expectHeader().contentType(APPLICATION_PROBLEM_XML)
-			.expectBody(String.class)
-			.returnResult()
-			.getResponseBody();
-
-		assertThat(responseBody).isNotNull().contains("getErrandType.municipalityId: not a valid municipality ID");
-
-		verifyNoInteractions(mockByggrIntegratorService);
-	}
+	@MockitoBean
+	private ByggrIntegratorService mockByggrIntegratorService;
+	@Autowired
+	private WebTestClient webTestClient;
 
 	@Test
 	void testGetErrandTypeWithRequestParameter() {

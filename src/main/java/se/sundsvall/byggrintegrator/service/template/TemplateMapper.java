@@ -2,7 +2,7 @@ package se.sundsvall.byggrintegrator.service.template;
 
 import static java.util.Optional.ofNullable;
 
-import java.util.Collections;
+import generated.se.sundsvall.arendeexport.v4.HandelseHandling;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -14,15 +14,12 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 import se.sundsvall.byggrintegrator.model.FileTemplateDto;
-import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
-import se.sundsvall.byggrintegrator.service.util.LegalIdUtility;
 
 @Component
 public class TemplateMapper {
 
-	// Name of the file Thymeleaf should use as template
+	// Name of the file Thymeleaf should use as a template
 	private static final String TEMPLATE_FILE = "neighborhood-notification-file-list";
 	private static final String DESCRIPTION_PROPERTY_DESIGNATION_TEMPLATE_FILE = "description-property-designation";
 	private static final Locale LOCALE = Locale.of("sv", "SE");
@@ -30,20 +27,26 @@ public class TemplateMapper {
 	private final TemplateProperties templateProperties;
 	private final ITemplateEngine templateEngine;
 
-	public TemplateMapper(TemplateProperties templateProperties, ITemplateEngine templateEngine) {
+	public TemplateMapper(final TemplateProperties templateProperties, final ITemplateEngine templateEngine) {
 		this.templateProperties = templateProperties;
 		this.templateEngine = templateEngine;
+	}
+
+	private static <T> Predicate<T> distinctByKey(final Function<? super T, ?> keyExtractor) {
+		final Set<Object> seen = ConcurrentHashMap.newKeySet();
+		return t -> seen.add(keyExtractor.apply(t));
 	}
 
 	/**
 	 * Generate a list of files as HTML
 	 *
 	 * @param  byggrErrandDto The errand to generate the file list for
+	 * @param  handlingtyper  The handling typer to use when generating the file list
 	 * @return                The HTML as a string
 	 */
-	public String generateFileList(final String municipalityId, final ByggrErrandDto byggrErrandDto, final Map<String, String> handlingtyper, String identifier) {
+	public String generateFileList(final String municipalityId, final ByggrErrandDto byggrErrandDto, final Map<String, String> handlingtyper, final List<HandelseHandling> handling) {
 		final var fileTemplateDtoList = ofNullable(byggrErrandDto)
-			.map(errandDto -> mapByggrFilesToList(municipalityId, errandDto, handlingtyper, identifier))
+			.map(errandDto -> mapByggrFilesToList(municipalityId, handlingtyper, handling))
 			.orElse(List.of());
 
 		final var context = new Context(LOCALE);
@@ -62,11 +65,11 @@ public class TemplateMapper {
 	}
 
 	/**
-	 * Create a supplementary header for the file list
-	 * The supplementary header is the description of the errand concatenated with the property designation
+	 * Create a supplementary header for the file list The supplementary header is the description of the errand
+	 * concatenated with the property designation
 	 *
 	 * @param  byggrErrandDto The errand
-	 * @return
+	 * @return                The supplementary header
 	 */
 	private String createSupplementaryHeader(final ByggrErrandDto byggrErrandDto) {
 		return ofNullable(byggrErrandDto)
@@ -75,40 +78,22 @@ public class TemplateMapper {
 	}
 
 	// Create a list that we iterate over with Thymeleaf
-	private List<FileTemplateDto> mapByggrFilesToList(final String municipalityId, final ByggrErrandDto byggrErrandDto, final Map<String, String> handlingtyper, String identifier) {
-		return ofNullable(byggrErrandDto.getEvents()).orElse(Collections.emptyList()).stream()
-			.filter(ByggrFilterUtility::isValidEvent)
-			.filter(hasStakeholderWithIdentifier(identifier)) // Only act on events that has a stakeholder with legal id matching sent in identifier
-			.map(event -> ofNullable(event.getFiles()).orElse(Collections.emptyMap()))
-			.map(Map::entrySet)
-			.flatMap(Set::stream)
-			.map(entry -> mapToFileTemplateDto(municipalityId, entry.getKey(), entry.getValue(), handlingtyper))
+	private List<FileTemplateDto> mapByggrFilesToList(final String municipalityId, final Map<String, String> handlingtyper, final List<HandelseHandling> handling) {
+		return handling.stream()
+			.map(entry -> mapToFileTemplateDto(municipalityId, entry.getHandlingId(), entry, handlingtyper))
 			.filter(distinctByKey(FileTemplateDto::getFileName)) // Remove duplicate file names if such exists
 			.sorted((o1, o2) -> o2.getFileUrl().compareTo(o1.getFileUrl()))
 			.toList();
 	}
 
-	private Predicate<? super Event> hasStakeholderWithIdentifier(String identifier) {
-		return event -> ofNullable(event.getStakeholders())
-			.orElse(Collections.emptyList())
-			.stream()
-			.anyMatch(stakeholder -> LegalIdUtility.isEqual(stakeholder.getLegalId(), identifier));
-	}
-
-	private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-		final Set<Object> seen = ConcurrentHashMap.newKeySet();
-		return t -> seen.add(keyExtractor.apply(t));
-	}
-
-	// Create a FileTemplateDto containing the URL to the file and the file name as the display name
-	private FileTemplateDto mapToFileTemplateDto(final String municipalityId, final String fileId, final ByggrErrandDto.Event.DocumentNameAndType documentNameAndType, final Map<String, String> handlingtyper) {
+	private FileTemplateDto mapToFileTemplateDto(final String municipalityId, final int fileId, final HandelseHandling documentNameAndType, final Map<String, String> handlingtyper) {
 		return FileTemplateDto.builder()
 			.withFileUrl(parseFileUrl(municipalityId, fileId))
 			.withFileName(parseFileName(documentNameAndType, handlingtyper))
 			.build();
 	}
 
-	private String parseFileUrl(final String municipalityId, final String fileId) {
+	private String parseFileUrl(final String municipalityId, final int fileId) {
 		// String content is divided into the following: [domain][version]/[municipalityid][subdirectory][file identificator]
 		return "%s%s/%s%s%s".formatted(
 			templateProperties.domain(),
@@ -118,10 +103,10 @@ public class TemplateMapper {
 			fileId);
 	}
 
-	private String parseFileName(final ByggrErrandDto.Event.DocumentNameAndType documentNameAndType, final Map<String, String> handlingtyper) {
+	private String parseFileName(final HandelseHandling documentNameAndType, final Map<String, String> handlingtyper) {
 		// String content is divided into the following: [documentType] ([documentName])
 		return "%s (%s)".formatted(
-			handlingtyper.get(documentNameAndType.getDocumentType()),
-			documentNameAndType.getDocumentName());
+			handlingtyper.get(documentNameAndType.getTyp()),
+			documentNameAndType.getDokument().getNamn());
 	}
 }

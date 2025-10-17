@@ -17,7 +17,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.xml.datatype.XMLGregorianCalendar;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -46,7 +49,7 @@ public class ByggrIntegratorService {
 	private final TemplateMapper templateMapper;
 	private final ByggrFilterUtility filterUtility;
 
-	public ByggrIntegratorService(ByggrIntegrationMapper byggrIntegrationMapper, ByggrIntegration byggrIntegration, ApiResponseMapper apiResponseMapper, TemplateMapper templateMapper, ByggrFilterUtility filterUtility) {
+	public ByggrIntegratorService(final ByggrIntegrationMapper byggrIntegrationMapper, final ByggrIntegration byggrIntegration, final ApiResponseMapper apiResponseMapper, final TemplateMapper templateMapper, final ByggrFilterUtility filterUtility) {
 		this.byggrIntegrationMapper = byggrIntegrationMapper;
 		this.byggrIntegration = byggrIntegration;
 		this.apiResponseMapper = apiResponseMapper;
@@ -55,7 +58,7 @@ public class ByggrIntegratorService {
 	}
 
 	@Cacheable("findNeighborhoodNotificationsCache")
-	public List<KeyValue> findNeighborhoodNotifications(String identifier) {
+	public List<KeyValue> findNeighborhoodNotifications(final String identifier) {
 		final var roles = byggrIntegration.getRoles();
 		if (CollectionUtils.isEmpty(roles)) {
 			throw createProblem(NOT_FOUND, ERROR_ROLES_NOT_FOUND);
@@ -74,7 +77,7 @@ public class ByggrIntegratorService {
 	}
 
 	@Cacheable("findApplicantErrandsCache")
-	public List<KeyValue> findApplicantErrands(String identifier) {
+	public List<KeyValue> findApplicantErrands(final String identifier) {
 		// Prefix identifier if it contains organisation legal id and add hyphen to identifier as ByggR integration formats
 		// legal id that way
 		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
@@ -97,7 +100,7 @@ public class ByggrIntegratorService {
 	}
 
 	@Cacheable("getErrandTypeCache")
-	public Weight getErrandType(String caseNumber) {
+	public Weight getErrandType(final String caseNumber) {
 		final var errand = byggrIntegration.getErrand(caseNumber);
 
 		return ofNullable(errand)
@@ -106,13 +109,31 @@ public class ByggrIntegratorService {
 	}
 
 	@Cacheable("listNeighborhoodNotificationFilesCache")
-	public String listNeighborhoodNotificationFiles(String municipalityId, String identifier, String caseNumber) {
+	public String listNeighborhoodNotificationFiles(final String municipalityId, final String identifier, final String caseNumber, final String referralReference) {
 		// Fetch errand from ByggR
 		final var result = byggrIntegration.getErrand(caseNumber);
 
-		// Prefix identifier if it contains organisation legal id and add hyphen to identifier as ByggR integration formats
+		// Extract referralReferenceId
+		final var referralReferenceId = Optional.ofNullable(referralReference)
+			.filter(reference -> reference.contains("[") && reference.contains("]"))
+			.map(reference -> {
+				final var start = reference.indexOf('[');
+				final var end = reference.indexOf(']');
+				return Integer.parseInt(reference.substring(start + 1, end));
+			})
+			.orElse(0);
+
+		// Prefix identifier if it contains organizations legal id and add hyphen to identifier as ByggR integration formats
 		// legal id that way
 		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
+
+		final var remissResult = byggrIntegration.getRemisserByPersOrgNr(processedIdentifier).getGetRemisserByPersOrgNrResult()
+			.getRemiss()
+			.stream()
+			.filter(remiss -> referralReferenceId == remiss.getRemissId()).findFirst()
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, "Remiss not found"));
+
+		remissResult.getUtskicksHandlingar().getHandling();
 
 		// Filter on event that matches incoming id
 		final var match = filterUtility.filterEvents(processedIdentifier, byggrIntegrationMapper.mapToByggrErrandDto(result));
@@ -121,10 +142,10 @@ public class ByggrIntegratorService {
 		final var handlingtyper = byggrIntegration.getHandlingTyper();
 
 		// Map to API response
-		return templateMapper.generateFileList(municipalityId, match, handlingtyper, processedIdentifier);
+		return templateMapper.generateFileList(municipalityId, match, handlingtyper, remissResult.getUtskicksHandlingar().getHandling());
 	}
 
-	public void readFile(String fileId, HttpServletResponse response) {
+	public void readFile(final String fileId, final HttpServletResponse response) {
 		ofNullable(byggrIntegration.getDocument(fileId))
 			.map(GetDocumentResponse::getGetDocumentResult)
 			.map(List::getFirst)
@@ -134,15 +155,16 @@ public class ByggrIntegratorService {
 	}
 
 	public List<KeyValue> getNeighborhoodNotificationFacilities(final String identifier, final String caseNumber) {
-		var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
+		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
 
-		var remisser = byggrIntegration.getRemisserByPersOrgNr(processedIdentifier);
+		final var remisser = byggrIntegration.getRemisserByPersOrgNr(processedIdentifier);
 
-		var propertyDesignationAndRemissIdMap = remisser.getGetRemisserByPersOrgNrResult().getRemiss().stream()
+		final var propertyDesignationAndRemissIdMap = remisser.getGetRemisserByPersOrgNrResult().getRemiss().stream()
 			// Filter to only include remisser with the given case number
 			.filter(remiss -> caseNumber.equals(remiss.getDnr()))
 			// Creates a map where the propertyDesignation is the key and the remissId is the value
-			.collect(Collectors.toMap(Remiss::getFastighetsbeteckning, Remiss::getRemissId));
+			.collect(Collectors.toMap(Remiss::getFastighetsbeteckning, remis -> Map.of(remis.getRemissId(),
+				Optional.ofNullable(remis.getSvarDatum()).map(XMLGregorianCalendar::toString).orElse(""))));
 
 		return apiResponseMapper.mapToKeyValue(propertyDesignationAndRemissIdMap);
 	}

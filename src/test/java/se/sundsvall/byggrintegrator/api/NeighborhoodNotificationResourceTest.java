@@ -32,22 +32,19 @@ import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class NeighborhoodNotificationResourceTest {
 
-	@MockitoBean
-	private ByggrIntegratorService mockByggrIntegratorService;
-
-	@Autowired
-	private WebTestClient webTestClient;
-
 	private static final String VALID_IDENTIFIER = "190101011234";
 	private static final String VALID_MUNICIPALITY_ID = "2281";
 	private static final String VALID_CASE_NUMBER = "123456789";
 	private static final String INVALID_IDENTIFIER = "invalid identifier";
 	private static final String INVALID_MUNICIPALITY_ID = "invalid municipality";
 	private static final String INVALID_CASE_NUMBER = "   ";
-
 	private static final String NEIGHBORHOOD_NOTIFICATION_URL = "/{municipalityId}/neighborhood-notifications/{identifier}/errands";
 	private static final String NEIGHBORHOOD_NOTIFICATION_FACILITIES_URL = "/{municipalityId}/neighborhood-notifications/{identifier}/{caseNumber}/properties";
 	private static final String NEIGHBORHOOD_NOTIFICATION_FACILITIES_REQUEST_PARAMETERS_URL = "/{municipalityId}/neighborhood-notifications/properties";
+	@MockitoBean
+	private ByggrIntegratorService mockByggrIntegratorService;
+	@Autowired
+	private WebTestClient webTestClient;
 
 	@Test
 	void testFindNeighborhoodNotifications() {
@@ -156,114 +153,6 @@ class NeighborhoodNotificationResourceTest {
 		assertThat(responseBody.getDetail()).isEqualTo("404 Detail");
 
 		verify(mockByggrIntegratorService).findNeighborhoodNotifications(VALID_IDENTIFIER);
-		verifyNoMoreInteractions(mockByggrIntegratorService);
-	}
-
-	@Test
-	void findNeighborhoodNotificationFacilities() {
-		when(mockByggrIntegratorService.getNeighborhoodNotificationFacilities(VALID_IDENTIFIER, VALID_CASE_NUMBER)).thenReturn(List.of(new KeyValue("key", "value")));
-
-		final var responseBody = webTestClient.get()
-			.uri(NEIGHBORHOOD_NOTIFICATION_FACILITIES_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER, VALID_CASE_NUMBER)
-			.exchange()
-			.expectStatus().isOk()
-			.expectBodyList(KeyValue.class)
-			.hasSize(1)
-			.returnResult()
-			.getResponseBody();
-
-		assertThat(responseBody).isNotNull();
-		assertThat(responseBody.getFirst().key()).isEqualTo("key");
-		assertThat(responseBody.getFirst().value()).isEqualTo("value");
-
-		verify(mockByggrIntegratorService).getNeighborhoodNotificationFacilities(VALID_IDENTIFIER, VALID_CASE_NUMBER);
-		verifyNoMoreInteractions(mockByggrIntegratorService);
-	}
-
-	@Test
-	void findNeighborhoodNotificationFacilities_faultyMunicipalityId_shouldThrowException() {
-		final var responseBody = webTestClient.get()
-			.uri(NEIGHBORHOOD_NOTIFICATION_FACILITIES_URL, INVALID_MUNICIPALITY_ID, VALID_IDENTIFIER, VALID_CASE_NUMBER)
-			.exchange()
-			.expectStatus().isBadRequest()
-			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(ConstraintViolationProblem.class)
-			.returnResult()
-			.getResponseBody();
-
-		assertThat(responseBody).isNotNull();
-		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("findNeighborhoodNotificationFacilities.municipalityId", "not a valid municipality ID"));
-
-		verifyNoInteractions(mockByggrIntegratorService);
-	}
-
-	@Test
-	void findNeighborhoodNotificationFacilities_faultyIdentifier_shouldThrowException() {
-		final var responseBody = webTestClient.get()
-			.uri(NEIGHBORHOOD_NOTIFICATION_FACILITIES_URL, VALID_MUNICIPALITY_ID, INVALID_IDENTIFIER, VALID_CASE_NUMBER)
-			.exchange()
-			.expectStatus().isBadRequest()
-			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(ConstraintViolationProblem.class)
-			.returnResult()
-			.getResponseBody();
-
-		assertThat(responseBody).isNotNull();
-		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("findNeighborhoodNotificationFacilities.identifier", "Invalid personal or organization number"));
-
-		verifyNoInteractions(mockByggrIntegratorService);
-	}
-
-	@Test
-	void findNeighborhoodNotificationFacilities_faultyCaseNumber_shouldThrowException() {
-		final var responseBody = webTestClient.get()
-			.uri(NEIGHBORHOOD_NOTIFICATION_FACILITIES_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER, INVALID_CASE_NUMBER)
-			.exchange()
-			.expectStatus().isBadRequest()
-			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(ConstraintViolationProblem.class)
-			.returnResult()
-			.getResponseBody();
-
-		assertThat(responseBody).isNotNull();
-		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
-			.containsExactlyInAnyOrder(tuple("findNeighborhoodNotificationFacilities.caseNumber", "must not be blank"));
-
-		verifyNoInteractions(mockByggrIntegratorService);
-	}
-
-	@Test
-	void findNeighborhoodNotificationFacilities_serviceThrows404() {
-		when(mockByggrIntegratorService.getNeighborhoodNotificationFacilities(VALID_IDENTIFIER, VALID_CASE_NUMBER)).thenThrow(Problem.builder()
-			.withTitle("404 Title")
-			.withStatus(Status.NOT_FOUND)
-			.withDetail("404 Detail")
-			.build());
-
-		final var responseBody = webTestClient.get()
-			.uri(NEIGHBORHOOD_NOTIFICATION_FACILITIES_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER, VALID_CASE_NUMBER)
-			.exchange()
-			.expectStatus().isNotFound()
-			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(ThrowableProblem.class)
-			.returnResult()
-			.getResponseBody();
-
-		assertThat(responseBody).isNotNull();
-		assertThat(responseBody.getStatus()).isEqualTo(Status.NOT_FOUND);
-		assertThat(responseBody.getMessage()).isEqualTo("404 Title: 404 Detail");
-		assertThat(responseBody.getTitle()).isEqualTo("404 Title");
-		assertThat(responseBody.getDetail()).isEqualTo("404 Detail");
-
-		verify(mockByggrIntegratorService).getNeighborhoodNotificationFacilities(VALID_IDENTIFIER, VALID_CASE_NUMBER);
 		verifyNoMoreInteractions(mockByggrIntegratorService);
 	}
 
