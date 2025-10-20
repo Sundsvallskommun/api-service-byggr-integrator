@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.springframework.cache.annotation.Cacheable;
@@ -114,13 +116,11 @@ public class ByggrIntegratorService {
 		final var result = byggrIntegration.getErrand(caseNumber);
 
 		// Extract referralReferenceId
-		final var referralReferenceId = Optional.ofNullable(referralReference)
-			.filter(reference -> reference.contains("[") && reference.contains("]"))
-			.map(reference -> {
-				final var start = reference.indexOf('[');
-				final var end = reference.indexOf(']');
-				return Integer.parseInt(reference.substring(start + 1, end));
-			})
+		final var pattern = Pattern.compile("\\[(\\d+)]");
+		final int referralReferenceId = Optional.ofNullable(referralReference)
+			.map(pattern::matcher)
+			.filter(Matcher::find)
+			.map(m -> Integer.parseInt(m.group(1)))
 			.orElse(0);
 
 		// Prefix identifier if it contains organizations legal id and add hyphen to identifier as ByggR integration formats
