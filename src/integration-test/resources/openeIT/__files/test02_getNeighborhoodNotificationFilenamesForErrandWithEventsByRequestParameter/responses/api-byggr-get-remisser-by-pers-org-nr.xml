@@ -6,7 +6,7 @@
 			<GetRemisserByPersOrgNrResult>
 				<Remiss utskickId="305903" remissId="305903">
 					<dnr xmlns="www.tekis.se/arende">BYGG 2024-000019</dnr>
-					<mottagare intressentId="132360" persOrgNr="19010101-0159" arForetag="false"
+					<mottagare intressentId="132360" persOrgNr="19030405-6789" arForetag="false"
 					  intressentVersionId="215809" kundnr="132360" arInternKund="false"
 					  arAktiv="true" checksum="-562864465|1337238894"
 					  docSplitToken="132360"
@@ -91,5 +91,3 @@
 		</GetRemisserByPersOrgNrResponse>
 	</SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
-
-

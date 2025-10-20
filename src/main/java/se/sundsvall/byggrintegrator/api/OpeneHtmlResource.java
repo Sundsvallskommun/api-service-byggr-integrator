@@ -40,21 +40,6 @@ public class OpeneHtmlResource {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
-	@GetMapping(path = "/neighborhood-notifications/{identifier}/{caseNumber}/filenames", produces = {
-		TEXT_HTML_VALUE
-	})
-	@Operation(summary = "Return html structure for all neighborhood-notification files belonging to the case matching sent case number where event stakeholder matches sent in identifier",
-		responses = {
-			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
-		})
-	public ResponseEntity<String> findNeighborhoodNotificationFiles(
-		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @PathVariable final String identifier,
-		@Parameter(name = "caseNumber", description = "Case number from ByggR to match", example = "BYGG 2001-123456") @NotBlank @PathVariable final String caseNumber) {
-
-		return ResponseEntity.ok(byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, identifier, caseNumber));
-	}
-
 	@GetMapping(path = "/neighborhood-notifications/filenames", produces = {
 		TEXT_HTML_VALUE
 	})
@@ -65,23 +50,10 @@ public class OpeneHtmlResource {
 	public ResponseEntity<String> findNeighborhoodNotificationFilesWithRequestParameter(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @RequestParam("identifier") final String identifier,
-		@Parameter(name = "caseNumber", description = "Case number from ByggR to match", example = "BYGG 2001-123456") @NotBlank @RequestParam("caseNumber") final String caseNumber) {
+		@Parameter(name = "caseNumber", description = "Case number from ByggR to match", example = "BYGG 2001-123456") @NotBlank @RequestParam("caseNumber") final String caseNumber,
+		@Parameter(name = "referralReference", description = "Referral reference from ByggR to match", example = "EXAMPLE 1:1 - ej besvarad [167334]") @NotBlank @RequestParam(name = "referralReference") final String referralReference) {
 
-		return ResponseEntity.ok(byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, identifier, caseNumber));
-	}
-
-	@GetMapping(path = "/cases/{caseNumber}/property-designation", produces = {
-		TEXT_HTML_VALUE
-	})
-	@Operation(summary = "Return html structure with the property designations belonging to the case number",
-		responses = {
-			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
-		})
-	public ResponseEntity<String> findPropertyDesignation(
-		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "caseNumber", description = "Case number from ByggR to match", example = "BYGG 2001-123456") @NotBlank @PathVariable("caseNumber") final String caseNumber) {
-
-		return ResponseEntity.ok(byggrIntegratorService.getPropertyDesignation(caseNumber));
+		return ResponseEntity.ok(byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, identifier, caseNumber, referralReference));
 	}
 
 	@GetMapping(path = "/cases/property-designation", produces = {

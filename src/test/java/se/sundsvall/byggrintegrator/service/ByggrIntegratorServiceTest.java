@@ -23,8 +23,10 @@ import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeRespo
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateDocumentResponse;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeArendenResponse;
 
+import generated.se.sundsvall.arendeexport.v4.ArrayOfHandelseHandling;
 import generated.se.sundsvall.arendeexport.v4.ArrayOfRemiss;
 import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
+import generated.se.sundsvall.arendeexport.v4.HandelseHandling;
 import generated.se.sundsvall.arendeexport.v4.Remiss;
 import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.v8.ObjectFactory;
@@ -55,33 +57,6 @@ import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 @ExtendWith(MockitoExtension.class)
 class ByggrIntegratorServiceTest {
 
-	@Mock
-	private ByggrIntegrationMapper mockByggrIntegrationMapper;
-
-	@Mock
-	private ByggrIntegration mockByggrIntegration;
-
-	@Mock
-	private ApiResponseMapper mockApiResponseMapper;
-
-	@Mock
-	private TemplateMapper mockTemplateMapper;
-
-	@Mock
-	private HttpServletResponse mockHttpServletResponse;
-
-	@Mock
-	private ByggrFilterUtility mockByggrFilterUtility;
-
-	@Mock
-	private ServletOutputStream mockServletOutputStream;
-
-	@Captor
-	private ArgumentCaptor<ByggrErrandDto> errandDtoCaptor;
-
-	@InjectMocks
-	private ByggrIntegratorService service;
-
 	private static final ObjectFactory OBJECT_FACTORY = new ObjectFactory();
 	private static final List<String> ROLES = List.of("ANM");
 	private static final String ORG_IDENTIFIER = "1234567890";
@@ -90,10 +65,35 @@ class ByggrIntegratorServiceTest {
 	private static final String PROCESSED_ORG_IDENTIFIER = "16123456-7890";
 	private static final String PROCESSED_PRIVATE_IDENTIFIER = "12345678-9012";
 	private static final String MUNICIPALITY_ID = "2281";
+	private static final String REFERRAL_REFERENCE = "1234567890";
+	@Mock
+	private ByggrIntegrationMapper mockByggrIntegrationMapper;
+	@Mock
+	private ByggrIntegration mockByggrIntegration;
+	@Mock
+	private ApiResponseMapper mockApiResponseMapper;
+	@Mock
+	private TemplateMapper mockTemplateMapper;
+	@Mock
+	private HttpServletResponse mockHttpServletResponse;
+	@Mock
+	private ByggrFilterUtility mockByggrFilterUtility;
+	@Mock
+	private ServletOutputStream mockServletOutputStream;
+	@Captor
+	private ArgumentCaptor<ByggrErrandDto> errandDtoCaptor;
+	@InjectMocks
+	private ByggrIntegratorService service;
+
+	private static Stream<Arguments> identifierProvider() {
+		return Stream.of(
+			Arguments.of(ORG_IDENTIFIER, PROCESSED_ORG_IDENTIFIER),
+			Arguments.of(PRIVATE_IDENTIFIER, PROCESSED_PRIVATE_IDENTIFIER));
+	}
 
 	@ParameterizedTest
 	@MethodSource("identifierProvider")
-	void testFindNeighborhoodNotifications(String identifier, String processedIdentifier) throws Exception {
+	void testFindNeighborhoodNotifications(final String identifier, final String processedIdentifier) throws Exception {
 		// Arrange
 		final var response = List.of(generateRelateradeArendenResponse(CASE_APPLICANT, processedIdentifier));
 		setField(mockByggrIntegrationMapper, "filterUtility", mockByggrFilterUtility);
@@ -129,7 +129,7 @@ class ByggrIntegratorServiceTest {
 
 	@ParameterizedTest
 	@MethodSource("identifierProvider")
-	void testFindNeighborhoodNotifications_whenEmpty_shouldReturnEmptyList(String identifier, String processedIdentifier) {
+	void testFindNeighborhoodNotifications_whenEmpty_shouldReturnEmptyList(final String identifier, final String processedIdentifier) {
 		// Arrange
 		final var response = List.of(OBJECT_FACTORY.createGetRelateradeArendenByPersOrgNrAndRoleResponse());
 
@@ -156,7 +156,7 @@ class ByggrIntegratorServiceTest {
 	@ValueSource(strings = {
 		ORG_IDENTIFIER, PRIVATE_IDENTIFIER
 	})
-	void testFindNeighborhoodNotifications_noRoles_shouldThrow404(String identifier) {
+	void testFindNeighborhoodNotifications_noRoles_shouldThrow404(final String identifier) {
 		// Arrange
 		when(mockByggrIntegration.getRoles()).thenReturn(emptyList());
 
@@ -176,26 +176,27 @@ class ByggrIntegratorServiceTest {
 
 	@ParameterizedTest
 	@MethodSource("identifierProvider")
-	void testListNeighborhoodNotificationFiles(String identifier, String processedIdentifier) {
+	void testListNeighborhoodNotificationFiles(final String identifier, final String processedIdentifier) {
 		when(mockByggrIntegration.getErrand(BYGGR_ERRAND_NUMBER)).thenReturn(OBJECT_FACTORY.createGetArendeResponse());
 		when(mockByggrIntegrationMapper.mapToByggrErrandDto(any())).thenReturn(ByggrErrandDto.builder().build());
 		when(mockByggrFilterUtility.filterEvents(eq(processedIdentifier), any(ByggrErrandDto.class))).thenReturn(ByggrErrandDto.builder().build());
-		when(mockTemplateMapper.generateFileList(anyString(), any(ByggrErrandDto.class), any(), eq(processedIdentifier))).thenReturn("html");
-
-		final var html = service.listNeighborhoodNotificationFiles(MUNICIPALITY_ID, identifier, BYGGR_ERRAND_NUMBER);
+		when(mockTemplateMapper.generateFileList(anyString(), any(ByggrErrandDto.class), any(), any())).thenReturn("html");
+		when(mockByggrIntegration.getRemisserByPersOrgNr(any())).thenReturn(
+			new GetRemisserByPersOrgNrResponse().withGetRemisserByPersOrgNrResult(new ArrayOfRemiss().withRemiss(new Remiss().withUtskicksHandlingar(new ArrayOfHandelseHandling().withHandling(new HandelseHandling())))));
+		final var html = service.listNeighborhoodNotificationFiles(MUNICIPALITY_ID, identifier, BYGGR_ERRAND_NUMBER, REFERRAL_REFERENCE);
 
 		assertThat(html).isEqualTo("html");
 		verify(mockByggrIntegration).getErrand(BYGGR_ERRAND_NUMBER);
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(any(GetArendeResponse.class));
 		verify(mockByggrFilterUtility).filterEvents(eq(processedIdentifier), any(ByggrErrandDto.class));
-		verify(mockTemplateMapper).generateFileList(eq(MUNICIPALITY_ID), any(ByggrErrandDto.class), any(), eq(processedIdentifier));
+		verify(mockTemplateMapper).generateFileList(eq(MUNICIPALITY_ID), any(ByggrErrandDto.class), any(), any());
 		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrFilterUtility, mockApiResponseMapper, mockApiResponseMapper);
 		verifyNoInteractions(mockApiResponseMapper);
 	}
 
 	@ParameterizedTest
 	@MethodSource("identifierProvider")
-	void testFindApplicantErrands(String identifier, String processedIdentifier) throws Exception {
+	void testFindApplicantErrands(final String identifier, final String processedIdentifier) throws Exception {
 		// Prepare list of unwanted handelseslag
 		setField(mockByggrFilterUtility, "applicantRoles", List.of(APPLICANT_ROLE));
 		setField(mockByggrIntegrationMapper, "filterUtility", mockByggrFilterUtility);
@@ -375,8 +376,8 @@ class ByggrIntegratorServiceTest {
 
 	@ParameterizedTest
 	@MethodSource("identifierProvider")
-	void getNeighborhoodNotificationFacilities(String identifier, String processedIdentifier) {
-		var caseNumber = "caseNumber";
+	void getNeighborhoodNotificationFacilities(final String identifier, final String processedIdentifier) {
+		final var caseNumber = "caseNumber";
 
 		when(mockByggrIntegration.getRemisserByPersOrgNr(processedIdentifier)).thenReturn(new GetRemisserByPersOrgNrResponse()
 			.withGetRemisserByPersOrgNrResult(new ArrayOfRemiss()
@@ -386,21 +387,15 @@ class ByggrIntegratorServiceTest {
 					.withRemissId(123))));
 		when(mockApiResponseMapper.mapToKeyValue(any())).thenCallRealMethod();
 
-		var result = service.getNeighborhoodNotificationFacilities(identifier, caseNumber);
+		final var result = service.getNeighborhoodNotificationFacilities(identifier, caseNumber);
 
 		verify(mockByggrIntegration).getRemisserByPersOrgNr(processedIdentifier);
 		verify(mockApiResponseMapper).mapToKeyValue(any());
 
 		assertThat(result).isNotNull().hasSize(1).allSatisfy(keyValue -> {
 			assertThat(keyValue.key()).isEqualTo("1");
-			assertThat(keyValue.value()).isEqualTo("propertyDesignation [123]");
+			assertThat(keyValue.value()).isEqualTo("propertyDesignation - ej besvarad [123]");
 		});
-	}
-
-	private static Stream<Arguments> identifierProvider() {
-		return Stream.of(
-			Arguments.of(ORG_IDENTIFIER, PROCESSED_ORG_IDENTIFIER),
-			Arguments.of(PRIVATE_IDENTIFIER, PROCESSED_PRIVATE_IDENTIFIER));
 	}
 
 	private void verifyNoMoreInterations() {

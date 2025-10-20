@@ -7,6 +7,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import generated.se.sundsvall.arendeexport.v4.ArrayOfHandelseHandling;
+import generated.se.sundsvall.arendeexport.v4.ArrayOfRemiss;
+import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
+import generated.se.sundsvall.arendeexport.v4.HandelseHandling;
+import generated.se.sundsvall.arendeexport.v4.Remiss;
 import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import java.util.List;
@@ -199,26 +204,30 @@ class ByggrIntegratorServiceCacheTest {
 		final var caseNumber = "caseNumber";
 		final var errand = new GetArendeResponse();
 		final var response = "response";
+		final var referralReference = "referralReference";
+		final var remissResult = new GetRemisserByPersOrgNrResponse().withGetRemisserByPersOrgNrResult(new ArrayOfRemiss().withRemiss(new Remiss().withUtskicksHandlingar(new ArrayOfHandelseHandling().withHandling(new HandelseHandling()))));
 
 		when(mockByggrIntegration.getErrand(caseNumber)).thenReturn(errand);
+		when(mockByggrIntegration.getRemisserByPersOrgNr(identifier)).thenReturn(remissResult);
 		when(mockByggrIntegrationMapper.mapToByggrErrandDto(errand)).thenCallRealMethod();
 		when(mockFilterUtility.filterEvents(eq(identifier), any())).thenAnswer(invocation -> invocation.getArgument(1));
-		when(mockTemplateMapper.generateFileList(eq(municipalityId), any(), any(), eq(identifier))).thenReturn(response);
+		when(mockTemplateMapper.generateFileList(eq(municipalityId), any(), any(), any())).thenReturn(response);
 
 		// First call - should hit the service
-		var result = byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, identifier, caseNumber);
+		var result = byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, identifier, caseNumber, referralReference);
 
 		// Mocks should only be called first time
 		verify(mockByggrIntegration).getErrand(caseNumber);
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(errand);
 		verify(mockByggrIntegration).getHandlingTyper();
 		verify(mockFilterUtility).filterEvents(eq(identifier), any());
-		verify(mockTemplateMapper).generateFileList(eq(municipalityId), any(), any(), eq(identifier));
+		verify(mockTemplateMapper).generateFileList(eq(municipalityId), any(), any(), any());
+		verify(mockByggrIntegration).getRemisserByPersOrgNr(identifier);
 
 		assertThat(result).isEqualTo(response);
 
 		// Second call - should hit the cache
-		result = byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, identifier, caseNumber);
+		result = byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, identifier, caseNumber, referralReference);
 
 		assertThat(result).isEqualTo(response);
 
@@ -227,7 +236,7 @@ class ByggrIntegratorServiceCacheTest {
 
 	@Test
 	void testListNeighborhoodNotificationFilesHasCorrectCacheAnnotation() throws NoSuchMethodException {
-		assertThat(ByggrIntegratorService.class.getMethod("listNeighborhoodNotificationFiles", String.class, String.class, String.class).getAnnotation(Cacheable.class).value()).containsExactly("listNeighborhoodNotificationFilesCache");
+		assertThat(ByggrIntegratorService.class.getMethod("listNeighborhoodNotificationFiles", String.class, String.class, String.class, String.class).getAnnotation(Cacheable.class).value()).containsExactly("listNeighborhoodNotificationFilesCache");
 	}
 
 }
