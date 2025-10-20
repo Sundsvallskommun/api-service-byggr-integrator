@@ -162,9 +162,9 @@ public class ByggrIntegratorService {
 		final var propertyDesignationAndRemissIdMap = remisser.getGetRemisserByPersOrgNrResult().getRemiss().stream()
 			// Filter to only include remisser with the given case number
 			.filter(remiss -> caseNumber.equals(remiss.getDnr()))
-			// Creates a map where the propertyDesignation is the key and the remissId is the value
-			.collect(Collectors.toMap(Remiss::getFastighetsbeteckning, remis -> Map.of(remis.getRemissId(),
-				Optional.ofNullable(remis.getSvarDatum()).map(XMLGregorianCalendar::toString).orElse(""))));
+			// Creates a map where the propertyDesignation is the key and the value is a map containing remissId and svarDatum
+			.collect(Collectors.toMap(Remiss::getFastighetsbeteckning, remiss -> Map.of(remiss.getRemissId(),
+				Optional.ofNullable(remiss.getSvarDatum()).map(XMLGregorianCalendar::toString).orElse(""))));
 
 		return apiResponseMapper.mapToKeyValue(propertyDesignationAndRemissIdMap);
 	}
