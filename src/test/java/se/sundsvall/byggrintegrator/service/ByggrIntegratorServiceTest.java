@@ -3,6 +3,7 @@ package se.sundsvall.byggrintegrator.service;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.AssertionsForClassTypes.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -41,13 +42,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.zalando.problem.Status;
 import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
@@ -80,8 +80,6 @@ class ByggrIntegratorServiceTest {
 	private ByggrFilterUtility mockByggrFilterUtility;
 	@Mock
 	private ServletOutputStream mockServletOutputStream;
-	@Captor
-	private ArgumentCaptor<ByggrErrandDto> errandDtoCaptor;
 	@InjectMocks
 	private ByggrIntegratorService service;
 
@@ -378,13 +376,23 @@ class ByggrIntegratorServiceTest {
 	@MethodSource("identifierProvider")
 	void getNeighborhoodNotificationFacilities(final String identifier, final String processedIdentifier) {
 		final var caseNumber = "caseNumber";
+		final var propertyDesignation1 = "propertyDesignation1";
+		final var propertyDesignation2 = "propertyDesignation2";
 
 		when(mockByggrIntegration.getRemisserByPersOrgNr(processedIdentifier)).thenReturn(new GetRemisserByPersOrgNrResponse()
 			.withGetRemisserByPersOrgNrResult(new ArrayOfRemiss()
 				.withRemiss(new Remiss()
 					.withDnr(caseNumber)
-					.withFastighetsbeteckning("propertyDesignation")
-					.withRemissId(123))));
+					.withFastighetsbeteckning(propertyDesignation1)
+					.withRemissId(123),
+					new Remiss()
+						.withDnr(caseNumber)
+						.withFastighetsbeteckning(propertyDesignation1)
+						.withRemissId(456),
+					new Remiss()
+						.withDnr(caseNumber)
+						.withFastighetsbeteckning(propertyDesignation2)
+						.withRemissId(789))));
 		when(mockApiResponseMapper.mapToKeyValue(any())).thenCallRealMethod();
 
 		final var result = service.getNeighborhoodNotificationFacilities(identifier, caseNumber);
@@ -392,10 +400,10 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegration).getRemisserByPersOrgNr(processedIdentifier);
 		verify(mockApiResponseMapper).mapToKeyValue(any());
 
-		assertThat(result).isNotNull().hasSize(1).allSatisfy(keyValue -> {
-			assertThat(keyValue.key()).isEqualTo("1");
-			assertThat(keyValue.value()).isEqualTo("propertyDesignation - ej besvarad [123]");
-		});
+		assertThat(result).hasSize(3).extracting(KeyValue::key, KeyValue::value).contains(
+			tuple("1", "propertyDesignation1 - ej besvarad [123]"),
+			tuple("2", "propertyDesignation1 - ej besvarad [456]"),
+			tuple("3", "propertyDesignation2 - ej besvarad [789]"));
 	}
 
 	private void verifyNoMoreInterations() {
