@@ -16,6 +16,7 @@ import generated.se.sundsvall.arendeexport.v8.GetDocumentResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -161,10 +162,16 @@ public class ByggrIntegratorService {
 
 		final var propertyDesignationAndRemissIdMap = remisser.getGetRemisserByPersOrgNrResult().getRemiss().stream()
 			// Filter to only include remisser with the given case number
-			.filter(remiss -> caseNumber.equals(remiss.getDnr()))
+			.filter(remiss -> caseNumber.equals(remiss.getDnr()) && remiss.getFastighetsbeteckning() != null)
 			// Creates a map where the propertyDesignation is the key and the value is a map containing remissId and svarDatum
-			.collect(Collectors.toMap(Remiss::getFastighetsbeteckning, remiss -> Map.of(remiss.getRemissId(),
-				Optional.ofNullable(remiss.getSvarDatum()).map(XMLGregorianCalendar::toString).orElse(""))));
+			.collect(Collectors.toMap(Remiss::getFastighetsbeteckning,
+				remiss -> Map.of(remiss.getRemissId(),
+					Optional.ofNullable(remiss.getSvarDatum()).map(XMLGregorianCalendar::toString).orElse("")),
+				(map1, map2) -> {
+					var merged = new LinkedHashMap<>(map1);
+					merged.putAll(map2);
+					return merged;
+				}));
 
 		return apiResponseMapper.mapToKeyValue(propertyDesignationAndRemissIdMap);
 	}
