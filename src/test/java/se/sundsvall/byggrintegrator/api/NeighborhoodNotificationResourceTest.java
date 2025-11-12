@@ -39,10 +39,11 @@ class NeighborhoodNotificationResourceTest {
 	private static final String INVALID_MUNICIPALITY_ID = "invalid municipality";
 	private static final String INVALID_CASE_NUMBER = "   ";
 	private static final String NEIGHBORHOOD_NOTIFICATION_URL = "/{municipalityId}/neighborhood-notifications/{identifier}/errands";
-	private static final String NEIGHBORHOOD_NOTIFICATION_FACILITIES_URL = "/{municipalityId}/neighborhood-notifications/{identifier}/{caseNumber}/properties";
 	private static final String NEIGHBORHOOD_NOTIFICATION_FACILITIES_REQUEST_PARAMETERS_URL = "/{municipalityId}/neighborhood-notifications/properties";
+
 	@MockitoBean
 	private ByggrIntegratorService mockByggrIntegratorService;
+
 	@Autowired
 	private WebTestClient webTestClient;
 

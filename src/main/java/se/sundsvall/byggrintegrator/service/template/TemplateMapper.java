@@ -6,6 +6,8 @@ import generated.se.sundsvall.arendeexport.v4.HandelseHandling;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -80,7 +82,7 @@ public class TemplateMapper {
 	// Create a list that we iterate over with Thymeleaf
 	private List<FileTemplateDto> mapByggrFilesToList(final String municipalityId, final Map<String, String> handlingtyper, final List<HandelseHandling> handling) {
 		return handling.stream()
-			.map(entry -> mapToFileTemplateDto(municipalityId, entry.getHandlingId(), entry, handlingtyper))
+			.map(entry -> mapToFileTemplateDto(municipalityId, parseDokId(entry), entry, handlingtyper))
 			.filter(distinctByKey(FileTemplateDto::getFileName)) // Remove duplicate file names if such exists
 			.sorted((o1, o2) -> o2.getFileUrl().compareTo(o1.getFileUrl()))
 			.toList();
@@ -108,5 +110,13 @@ public class TemplateMapper {
 		return "%s (%s)".formatted(
 			handlingtyper.get(documentNameAndType.getTyp()),
 			documentNameAndType.getDokument().getNamn());
+	}
+
+	private int parseDokId(final HandelseHandling handelseHandling) {
+		return Optional.ofNullable(handelseHandling.getDokument().getDokId())
+			.filter(Objects::nonNull)
+			.filter(id -> id.matches("\\d+"))
+			.map(Integer::parseInt)
+			.orElse(-1);
 	}
 }

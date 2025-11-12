@@ -47,7 +47,7 @@ public class FileResource {
 	public ResponseEntity<Void> readFile(
 		final HttpServletResponse response,
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "fileId", description = "File id", example = "123456") @PathVariable("fileId") final String fileId) {
+		@Parameter(name = "fileId", description = "File id", example = "123456") @PathVariable final String fileId) {
 
 		byggrIntegratorService.readFile(fileId, response);
 		return ok().build();

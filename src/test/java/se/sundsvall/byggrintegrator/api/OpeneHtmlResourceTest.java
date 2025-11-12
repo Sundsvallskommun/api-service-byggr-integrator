@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
 
 @ActiveProfiles("junit")
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 class OpeneHtmlResourceTest {
 
 	private static final String INFO_QUERY_RESPONSE_HEADER = "InfoQueryResponse";
@@ -30,8 +31,10 @@ class OpeneHtmlResourceTest {
 	private static final String FAULTY_MUNICIPALITY_ID = "notValid";
 	private static final String NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH = "/{municipalityId}/opene/neighborhood-notifications/filenames";
 	private static final String REFERRAL_REFERENCE = "referralReference";
+
 	@MockitoBean
 	private ByggrIntegratorService mockByggrIntegratorService;
+
 	@Autowired
 	private WebTestClient webTestClient;
 

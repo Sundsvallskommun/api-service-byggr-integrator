@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import generated.se.sundsvall.arendeexport.v4.ArrayOfHandelseHandling;
 import generated.se.sundsvall.arendeexport.v4.ArrayOfRemiss;
@@ -32,7 +33,7 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
+@SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT, properties = {
 	"spring.cache.type=SIMPLE",
 	"spring.cache.cache-names=findNeighborhoodNotificationsCache, findApplicantErrandsCache, getPropertyDesignationCache, getErrandTypeCache, listNeighborhoodNotificationFilesCache, getHandlingTyperCache"
 })

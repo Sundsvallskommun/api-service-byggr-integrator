@@ -7,7 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.MimeTypeUtils;
 
-public class MimeTypeUtility {
+public final class MimeTypeUtility {
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(MimeTypeUtility.class);
 	private static final MimeTypeDetector DETECTOR = new MimeTypeDetector();
 

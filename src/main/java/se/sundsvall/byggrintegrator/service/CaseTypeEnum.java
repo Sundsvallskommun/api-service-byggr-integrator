@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum CaseTypeEnum {
+
 	BYGGLOV("BL", 11),
 	RIVNINGSLOV("RL", 12),
 	MARKLOV("MARK", 13),

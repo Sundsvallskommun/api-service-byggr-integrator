@@ -66,20 +66,28 @@ class ByggrIntegratorServiceTest {
 	private static final String PROCESSED_PRIVATE_IDENTIFIER = "12345678-9012";
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String REFERRAL_REFERENCE = "1234567890";
+
 	@Mock
 	private ByggrIntegrationMapper mockByggrIntegrationMapper;
+
 	@Mock
 	private ByggrIntegration mockByggrIntegration;
+
 	@Mock
 	private ApiResponseMapper mockApiResponseMapper;
+
 	@Mock
 	private TemplateMapper mockTemplateMapper;
+
 	@Mock
 	private HttpServletResponse mockHttpServletResponse;
+
 	@Mock
 	private ByggrFilterUtility mockByggrFilterUtility;
+
 	@Mock
 	private ServletOutputStream mockServletOutputStream;
+
 	@InjectMocks
 	private ByggrIntegratorService service;
 

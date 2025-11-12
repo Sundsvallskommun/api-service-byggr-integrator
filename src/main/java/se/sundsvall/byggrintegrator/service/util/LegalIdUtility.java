@@ -3,9 +3,10 @@ package se.sundsvall.byggrintegrator.service.util;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.containsNone;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
-public class LegalIdUtility {
+public final class LegalIdUtility {
+
 	private static final int LEGAL_ID_MINIMUM_LENGTH = 5;
 	private static final int LEGAL_ID_HYPHEN_POSITION_FROM_RIGHT = 4;
 
@@ -54,8 +55,7 @@ public class LegalIdUtility {
 	 *                          evaluated string
 	 */
 	public static boolean isEqual(String legalIdToMatch, String evaluatedLegalId) {
-		return StringUtils.equals(legalIdToMatch, evaluatedLegalId) ||
-			(evaluatedLegalId.startsWith("16") && StringUtils.equals(legalIdToMatch, evaluatedLegalId.substring(2)));
+		return Strings.CS.equals(legalIdToMatch, evaluatedLegalId) ||
+			(evaluatedLegalId.startsWith("16") && Strings.CS.equals(legalIdToMatch, evaluatedLegalId.substring(2)));
 	}
-
 }

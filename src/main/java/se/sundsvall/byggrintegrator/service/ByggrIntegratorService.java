@@ -1,6 +1,8 @@
 package se.sundsvall.byggrintegrator.service;
 
+import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.util.StreamUtils.copy;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,6 +48,8 @@ public class ByggrIntegratorService {
 	public static final String ERROR_ERRAND_NOT_FOUND = "No errand with diary number %s was found";
 	public static final String ERROR_FILE_NOT_FOUND = "No file with id %s was found";
 	public static final String ERROR_FILE_COULD_NOT_BE_READ = "Could not read file content for document data with id %s";
+
+	private static final List<String> SUPPRESSED_HANDELSE_HANDLING_TYPE = List.of("GRA");
 
 	private final ByggrIntegrationMapper byggrIntegrationMapper;
 	private final ByggrIntegration byggrIntegration;
@@ -134,7 +139,12 @@ public class ByggrIntegratorService {
 			.filter(remiss -> referralReferenceId == remiss.getRemissId()).findFirst()
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, "Remiss not found"));
 
-		remissResult.getUtskicksHandlingar().getHandling();
+		// Filter out unwanted types (e.g. GRA).
+		final var filteredHandelseHandlingList = Optional.ofNullable(remissResult.getUtskicksHandlingar().getHandling()).orElse(emptyList())
+			.stream()
+			.filter(Objects::nonNull)
+			.filter(handelseHandling -> !SUPPRESSED_HANDELSE_HANDLING_TYPE.contains(defaultIfBlank(handelseHandling.getTyp(), "")))
+			.toList();
 
 		// Filter on event that matches incoming id
 		final var match = filterUtility.filterEvents(processedIdentifier, byggrIntegrationMapper.mapToByggrErrandDto(result));
@@ -143,7 +153,7 @@ public class ByggrIntegratorService {
 		final var handlingtyper = byggrIntegration.getHandlingTyper();
 
 		// Map to API response
-		return templateMapper.generateFileList(municipalityId, match, handlingtyper, remissResult.getUtskicksHandlingar().getHandling());
+		return templateMapper.generateFileList(municipalityId, match, handlingtyper, filteredHandelseHandlingList);
 	}
 
 	public void readFile(final String fileId, final HttpServletResponse response) {

@@ -1,10 +1,10 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
+import static generated.se.sundsvall.arendeexport.v4.RemissStatusFilter.EJ_BESVARAD;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 
 import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNr;
-import generated.se.sundsvall.arendeexport.v4.RemissStatusFilter;
 import generated.se.sundsvall.arendeexport.v8.Arende;
 import generated.se.sundsvall.arendeexport.v8.ArendeFastighet;
 import generated.se.sundsvall.arendeexport.v8.ArendeIntressent;
@@ -209,7 +209,6 @@ public class ByggrIntegrationMapper {
 	public GetRemisserByPersOrgNr toGetRemisserByPersOrgNrRequest(final String identifier) {
 		return new GetRemisserByPersOrgNr()
 			.withPersOrgNr(identifier)
-			.withStatusFilter(RemissStatusFilter.NONE);
+			.withStatusFilter(EJ_BESVARAD);
 	}
-
 }

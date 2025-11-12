@@ -12,6 +12,9 @@
 		"bodyPatterns": [
 			{
 				"matchesXPath": "//*[local-name()='GetRemisserByPersOrgNr']"
+			},
+			{
+				"matchesXPath": "//*[local-name()='statusFilter' and text()='EjBesvarad']"
 			}
 		],
 		"urlPath": "/api-byggr/endpoint"

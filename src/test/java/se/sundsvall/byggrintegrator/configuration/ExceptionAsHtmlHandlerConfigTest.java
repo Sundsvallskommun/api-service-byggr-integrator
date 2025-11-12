@@ -21,6 +21,7 @@ import se.sundsvall.dept44.requestid.RequestId;
 @ActiveProfiles("junit")
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 class ExceptionAsHtmlHandlerConfigTest {
+
 	private static final String UUID = randomUUID().toString();
 
 	@Autowired
