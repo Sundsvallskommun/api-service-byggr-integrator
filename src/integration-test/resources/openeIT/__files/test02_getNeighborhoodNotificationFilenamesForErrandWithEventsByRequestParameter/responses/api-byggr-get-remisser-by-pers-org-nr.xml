@@ -83,6 +83,19 @@
 							</dokument>
 							<refTyp>Bifogad</refTyp>
 						</handling>
+                        <handling handlingId="1535783" checksum="39">
+                            <typ>GRA</typ>
+                            <status>Expedierad</status>
+                            <handlingDatum>2025-11-10</handlingDatum>
+                            <uuid>98e13257-1cc8-4168-a562-8c3982638617</uuid>
+                            <makulerad>false</makulerad>
+                            <dokument dokId="1370311" checksum="1991139143|638983649020000000">
+                                <namn>Grannehörande</namn>
+                                <skapadDatum>2025-11-10T09:48:20+01:00</skapadDatum>
+                                <handlaggare handlaggareId="682" signatur="sus11ost"/>
+                            </dokument>
+                            <refTyp>Bifogad</refTyp>
+                        </handling>
 					</utskicksHandlingar>
 					<senastSvarDatum xmlns="www.tekis.se/arende">2024-09-25</senastSvarDatum>
 					<svarDatum xmlns="www.tekis.se/arende">2024-09-30T15:17:23.817</svarDatum>

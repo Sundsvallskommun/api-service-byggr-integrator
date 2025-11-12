@@ -2,6 +2,7 @@ package se.sundsvall.byggrintegrator.api;
 
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+import static org.springframework.http.ResponseEntity.ok;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -43,13 +44,11 @@ public class OpeneXmlResource {
 
 	@GetMapping(path = "/cases/type", produces = APPLICATION_XML_VALUE)
 	@Operation(summary = "Return xml structure errand type for the errand matching sent in case number",
-		responses = {
-			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
-		})
+		responses = @ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true))
 	public ResponseEntity<Weight> getErrandTypeWithRequestParameter(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "caseNumber", description = "Case number from ByggR", example = "BYGG 2001-123456") @NotBlank @RequestParam("caseNumber") final String caseNumber) {
+		@Parameter(name = "caseNumber", description = "Case number from ByggR", example = "BYGG 2001-123456") @NotBlank @RequestParam final String caseNumber) {
 
-		return ResponseEntity.ok(byggrIntegratorService.getErrandType(caseNumber));
+		return ok(byggrIntegratorService.getErrandType(caseNumber));
 	}
 }

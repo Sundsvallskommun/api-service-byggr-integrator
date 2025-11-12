@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_XML;
 import static org.springframework.http.MediaType.APPLICATION_XML;
 
@@ -19,7 +20,7 @@ import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
 
 @ActiveProfiles("junit")
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 class OpeneXmlResourceTest {
 
 	private static final String INVALID_MUNICIPALITY_ID = "InvalidMunicipalityId";
@@ -27,8 +28,10 @@ class OpeneXmlResourceTest {
 	private static final String CASE_NUMBER = "diaryNumber";
 	private static final String VALUE = "value";
 	private static final String ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL = "/{municipalityId}/opene/cases/type";
+
 	@MockitoBean
 	private ByggrIntegratorService mockByggrIntegratorService;
+
 	@Autowired
 	private WebTestClient webTestClient;
 

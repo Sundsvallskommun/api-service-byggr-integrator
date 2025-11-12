@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import generated.se.sundsvall.arendeexport.v4.Dokument;
 import generated.se.sundsvall.arendeexport.v4.HandelseHandling;
@@ -22,7 +23,7 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
 
 @ActiveProfiles("junit")
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 class TemplateMapperTest {
 
 	@MockitoBean
@@ -87,10 +88,11 @@ class TemplateMapperTest {
 			"1234",
 			createByggrErrandDto(identifier),
 			Map.of("SKR", "Skrivelse", "PLAN", "Planer", "RIT", "Ritningar"),
-			List.of(new HandelseHandling().withHandlingId(1).withTyp("SKR").withDokument(new Dokument().withNamn("file1.txt")),
-				new HandelseHandling().withHandlingId(2).withTyp("PLAN").withDokument(new Dokument().withNamn("file2.txt")),
-				new HandelseHandling().withHandlingId(4).withTyp("PLAN").withDokument(new Dokument().withNamn("file2.txt")),
-				new HandelseHandling().withHandlingId(3).withTyp("RIT").withDokument(new Dokument().withNamn("file3.pdf"))));
+			List.of(
+				new HandelseHandling().withTyp("SKR").withDokument(new Dokument().withNamn("file1.txt").withDokId("1")),
+				new HandelseHandling().withTyp("PLAN").withDokument(new Dokument().withNamn("file2.txt").withDokId("2")),
+				new HandelseHandling().withTyp("PLAN").withDokument(new Dokument().withNamn("file2.txt").withDokId("4")),
+				new HandelseHandling().withTyp("RIT").withDokument(new Dokument().withNamn("file3.pdf").withDokId("3"))));
 
 		assertThat(html).containsIgnoringWhitespaces("""
 			<p>Bygglov för tillbyggnad av fritidshus (RUNSVIK 1:22)</p>

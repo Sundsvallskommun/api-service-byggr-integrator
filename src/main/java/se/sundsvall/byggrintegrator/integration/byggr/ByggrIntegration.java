@@ -1,7 +1,8 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
-import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
-import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
+import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toMap;
 
 import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfString;
@@ -15,10 +16,9 @@ import jakarta.xml.ws.soap.SOAPFaultException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
@@ -61,7 +61,7 @@ public class ByggrIntegration {
 	}
 
 	private ArrayOfString rolesToArrayOfString(final List<String> roles) {
-		return Objects.isNull(roles) ? null : new ArrayOfString().withString(roles);
+		return isNull(roles) ? null : new ArrayOfString().withString(roles);
 	}
 
 	@Cacheable("getRolesCache")
@@ -73,7 +73,7 @@ public class ByggrIntegration {
 				.filter(Roll::isArAktiv)
 				.map(Roll::getRollKod)
 				.toList())
-			.orElse(List.of());
+			.orElse(emptyList());
 	}
 
 	public GetArendeResponse getErrand(final String dnr) {
@@ -81,7 +81,7 @@ public class ByggrIntegration {
 			return byggrClient.getArende(byggrIntegrationMapper.mapToGetArendeRequest(dnr));
 		} catch (final SOAPFaultException e) {
 			var faultString = extractFaultString(e);
-			if (startsWithIgnoreCase(faultString, SOAP_FAULT_PREFIX_ERRAND_NOT_FOUND)) {
+			if (Strings.CI.startsWith(faultString, SOAP_FAULT_PREFIX_ERRAND_NOT_FOUND)) {
 				LOG.warn(faultString);
 
 				return null;
@@ -97,8 +97,8 @@ public class ByggrIntegration {
 			return byggrClient.getDocument(byggrIntegrationMapper.mapToGetDocumentRequest(documentId));
 		} catch (SOAPFaultException e) {
 			var faultString = extractFaultString(e);
-			if (startsWithIgnoreCase(faultString, SOAP_FAULT_PREFIX_ERROR_GETTING_DOCUMENT) ||
-				containsIgnoreCase(faultString, SOAP_FAULT_PREFIX_DOCUMENT_ID_NOT_VALID)) {
+			if (Strings.CI.startsWith(faultString, SOAP_FAULT_PREFIX_ERROR_GETTING_DOCUMENT) ||
+				Strings.CI.contains(faultString, SOAP_FAULT_PREFIX_DOCUMENT_ID_NOT_VALID)) {
 				LOG.warn(faultString);
 
 				return null;
@@ -113,7 +113,7 @@ public class ByggrIntegration {
 		var response = byggrClient.getHandlingTyper(byggrIntegrationMapper.createGetHandlingTyperRequest());
 
 		return response.getGetHandlingTyperResult().getHandlingTyp().stream()
-			.collect(Collectors.toMap(HandlingTyp::getTyp, HandlingTyp::getBeskrivning));
+			.collect(toMap(HandlingTyp::getTyp, HandlingTyp::getBeskrivning));
 	}
 
 	public GetRemisserByPersOrgNrResponse getRemisserByPersOrgNr(final String identifier) {

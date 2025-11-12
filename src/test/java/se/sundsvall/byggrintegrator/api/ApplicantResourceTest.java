@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
@@ -24,21 +25,20 @@ import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
 
 @ActiveProfiles("junit")
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 class ApplicantResourceTest {
+
+	private static final String VALID_IDENTIFIER = "190101011234";
+	private static final String VALID_MUNICIPALITY_ID = "2281";
+	private static final String INVALID_MUNICIPALITY_ID = "invalid municipality";
+	private static final String INVALID_IDENTIFIER = "invalid identifier";
+	private static final String APPLICANT_URL = "/{municipalityId}/applicants/{identifier}/errands";
 
 	@MockitoBean
 	private ByggrIntegratorService mockByggrIntegratorService;
 
 	@Autowired
 	private WebTestClient webTestClient;
-
-	private static final String VALID_IDENTIFIER = "190101011234";
-	private static final String VALID_MUNICIPALITY_ID = "2281";
-	private static final String INVALID_MUNICIPALITY_ID = "invalid municipality";
-	private static final String INVALID_IDENTIFIER = "invalid identifier";
-
-	private static final String APPLICANT_URL = "/{municipalityId}/applicants/{identifier}/errands";
 
 	@Test
 	void testFindApplicantErrands() {

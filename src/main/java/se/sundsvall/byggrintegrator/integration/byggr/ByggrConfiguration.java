@@ -24,7 +24,7 @@ public class ByggrConfiguration {
 		.withWriteXmlDeclaration(true);
 
 	@Bean
-	public FeignBuilderCustomizer feignBuilderCustomizer(final ByggrProperties byggrProperties) {
+	FeignBuilderCustomizer feignBuilderCustomizer(final ByggrProperties byggrProperties) {
 		return FeignMultiCustomizer.create()
 			.withDecoder(new SOAPJAXBDecoder())
 			.withEncoder(SOAP_ENCODER_BUILDER.build())
