@@ -44,10 +44,12 @@ class NeighborhoodNotificationResource {
 	}
 
 	@GetMapping(path = "/neighborhood-notifications/{identifier}/errands", produces = APPLICATION_JSON_VALUE)
-	@Operation(summary = "Lists all neighborhood notifications where the provided identifier is a stakeholder", responses = {
-		@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true),
-		@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-	})
+	@Operation(summary = "Lists all neighborhood notifications where the provided identifier is a stakeholder",
+		description = "Returns errands filtered by: valid GRANHO events with subtype GRAUTS, excluding configured unwanted event types, matching the identifier as a stakeholder in events not older than 60 days",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+		})
 	ResponseEntity<List<KeyValue>> findNeighborhoodNotifications(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @ValidPersonalOrOrgNumber @PathVariable final String identifier) {
@@ -56,9 +58,11 @@ class NeighborhoodNotificationResource {
 	}
 
 	@GetMapping(path = "/neighborhood-notifications/properties", produces = APPLICATION_JSON_VALUE)
-	@Operation(summary = "Lists all properties that are included in provided neighborhood notification case where the provided identifier is a stakeholder", responses = {
-		@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
-	})
+	@Operation(summary = "Lists all properties that are included in provided neighborhood notification case where the provided identifier is a stakeholder",
+		description = "Returns properties filtered by: matching the provided case number, having a property designation, and where the identifier is a stakeholder in the referral",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true)
+		})
 	ResponseEntity<List<KeyValue>> findNeighborhoodNotificationFacilitiesWithRequestParameters(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @ValidPersonalOrOrgNumber @RequestParam final String identifier,
