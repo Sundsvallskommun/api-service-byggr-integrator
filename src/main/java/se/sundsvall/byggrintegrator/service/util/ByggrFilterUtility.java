@@ -23,36 +23,24 @@ import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.Notificat
  * The filter utility has three configurable settings:
  * <p>
  * <code>
- * service:
- *   byggr:
- *     filter-utility:
- *       applicant:
- *         roles:
- *           - Example
- *           - Example2
- *       notifications:
- *         unwanted-event-types:
- *           - Example
- *           - Example2
- *           - Example3
- *       document-types:
- *         unwanted-document-types:
- *           - Example
- *           - Example2
+ * service: byggr: filter-utility: applicant: roles: - Example - Example2 notifications: unwanted-event-types: - Example - Example2 - Example3 document-types: unwanted-document-types: - Example - Example2
  * </code>
  * <p>
  * The first setting (applicant roles) contains the list of the roles that will be matched against to establish if the
  * stakeholder is to be interpreted as applicant for the errand or not. If the stakeholder matches one of the values in
- * the list, it is interpreted as applicant for the errand.
+ * the list, it is
+ * interpreted as applicant for the errand.
  * <p>
  * The second setting (notification unwanted-event-types) is used to filter out errands when collecting neighborhood
  * notifications. If an errand contains an event with event type matching one of the defined value(s), the errand is
- * filtered out from the returned response. If property is not set, then no filtering is made. Observe that filtering is
- * always done regarding that the errand must have a GRANHO event with event type GRAUTS to be returned in the response.
+ * filtered out from the
+ * returned response. If property is not set, then no filtering is made. Observe that filtering is always done regarding
+ * that the errand must have a GRANHO event with event type GRAUTS to be returned in the response.
  * <p>
  * The third setting (document-types unwanted-document-types) is used to filter documents when fetching a
- * neighborhood-notification. There is some documents that should not be included in the response and this setting
- * is used to filter out those documents. If property is not set, then no filtering is made.
+ * neighborhood-notification. There is some documents that should not be included in the response and this setting is
+ * used to filter out those documents.
+ * If property is not set, then no filtering is made.
  */
 @Component
 public class ByggrFilterUtility {
@@ -81,7 +69,7 @@ public class ByggrFilterUtility {
 			.orElse(null);
 	}
 
-	public static boolean isValidEvent(Event event) {
+	public static boolean isValidEvent(final Event event) {
 		if (Objects.nonNull(event) && WANTED_TYPE.equalsIgnoreCase(event.getEventType()) && WANTED_SUBTYPE.equalsIgnoreCase(event.getEventSubtype())) {
 			LOG.info("Valid event with type {} and subtype {} having id {} found", WANTED_TYPE, WANTED_SUBTYPE, event.getId());
 			return true;
@@ -97,7 +85,7 @@ public class ByggrFilterUtility {
 	 * @param  identifier The identifier for the neighbor stakeholder to use when filtering errands
 	 * @return            A list containing neighborhood notifications where neighborhood legal id matches sent in identfier
 	 */
-	public List<ByggrErrandDto> filterNeighborhoodNotifications(List<ByggrErrandDto> errands, String identifier) {
+	public List<ByggrErrandDto> filterNeighborhoodNotifications(final List<ByggrErrandDto> errands, final String identifier) {
 		return errands.stream()
 			.filter(errand -> isNotEmpty(errand.getEvents()))
 			.filter(errand -> hasValidEvent(errand.getByggrCaseNumber(), errand.getEvents()))
@@ -106,7 +94,7 @@ public class ByggrFilterUtility {
 			.toList();
 	}
 
-	private boolean hasValidEvent(String dnr, List<Event> events) {
+	private boolean hasValidEvent(final String dnr, final List<Event> events) {
 		LOG.info("Validating case with dnr {}", dnr);
 
 		var hasValidEvent = false;
@@ -124,7 +112,7 @@ public class ByggrFilterUtility {
 		return hasValidEvent && !hasInvalidEvent;
 	}
 
-	private boolean isInvalidEvent(Event event) {
+	private boolean isInvalidEvent(final Event event) {
 		final var unwantedEvent = Objects.nonNull(event) && ofNullable(unwantedSubtypes)
 			.map(list -> WANTED_TYPE.equalsIgnoreCase(event.getEventType()) && list.stream().anyMatch(event.getEventSubtype()::equalsIgnoreCase))
 			.orElse(false);
@@ -136,7 +124,7 @@ public class ByggrFilterUtility {
 		return unwantedEvent;
 	}
 
-	public ByggrErrandDto filterEvents(String identifier, ByggrErrandDto errand) {
+	public ByggrErrandDto filterEvents(final String identifier, final ByggrErrandDto errand) {
 		if (isNull(errand)) {
 			return null;
 		}
@@ -144,7 +132,7 @@ public class ByggrFilterUtility {
 		final var filteredEvents = errand.getEvents().stream()
 			.filter(event -> WANTED_TYPE.equalsIgnoreCase(event.getEventType()))
 			.filter(event -> WANTED_SUBTYPE.equalsIgnoreCase(event.getEventSubtype()))
-			.filter(event -> ofNullable(event.getEventDate()).map(eventDate -> eventDate.isAfter(now().minusDays(31))).orElse(false)) // Events must have a date and not be older than 30 days to be included
+			.filter(event -> ofNullable(event.getEventDate()).map(eventDate -> eventDate.isAfter(now().minusDays(61))).orElse(false)) // Events must have a date and not be older than 60 days to be included
 			.filter(event -> event.getStakeholders().stream().anyMatch(stakeholder -> LegalIdUtility.isEqual(stakeholder.getLegalId(), identifier)))
 			.toList();
 
@@ -152,7 +140,7 @@ public class ByggrFilterUtility {
 		return errand;
 	}
 
-	public boolean hasValidDocumentType(HandelseHandling handling) {
+	public boolean hasValidDocumentType(final HandelseHandling handling) {
 		return ofNullable(handling)
 			.map(HandelseHandling::getTyp)
 			.map(type -> !unwantedDocumentTypes.contains(type))
@@ -166,13 +154,13 @@ public class ByggrFilterUtility {
 	 * @param  legalId The legal id for the applicant party to filter out errands on
 	 * @return         A list containing errands where sent in legal id is applicant
 	 */
-	public List<ByggrErrandDto> filterCasesForApplicant(List<ByggrErrandDto> errands, String legalId) {
+	public List<ByggrErrandDto> filterCasesForApplicant(final List<ByggrErrandDto> errands, final String legalId) {
 		return errands.stream()
 			.filter(errand -> isApplicant(errand.getStakeholders(), legalId))
 			.toList();
 	}
 
-	private boolean isApplicant(List<Stakeholder> stakeholders, String identifier) {
+	private boolean isApplicant(final List<Stakeholder> stakeholders, final String identifier) {
 		return ofNullable(stakeholders).orElse(Collections.emptyList()).stream()
 			.filter(stakeholder -> LegalIdUtility.isEqual(stakeholder.getLegalId(), identifier))
 			.map(Stakeholder::getRoles)

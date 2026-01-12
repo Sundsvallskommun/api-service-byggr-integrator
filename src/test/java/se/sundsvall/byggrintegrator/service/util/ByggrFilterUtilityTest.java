@@ -28,13 +28,6 @@ class ByggrFilterUtilityTest {
 	@InjectMocks
 	private ByggrFilterUtility byggrFilterUtility;
 
-	@ParameterizedTest
-	@MethodSource("validEventArgumentProvider")
-	void isValidEvent(Event event, boolean expectedResult) {
-		// Act and assert
-		assertThat(ByggrFilterUtility.isValidEvent(event)).isEqualTo(expectedResult);
-	}
-
 	private static Stream<Arguments> validEventArgumentProvider() {
 		return Stream.of(
 			Arguments.of(null, false),
@@ -46,9 +39,64 @@ class ByggrFilterUtilityTest {
 			Arguments.of(createEvent("GRANHO", "GRAUTS"), true));
 	}
 
+	private static Stream<Arguments> filterNeighborhoodNotificationsArgumentProvider() {
+		return Stream.of(
+			Arguments.of(List.of(createEvent(null, "GRAUTS", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("GRANHO", null, LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", LocalDate.now())), "otherId", 0, 0),
+			Arguments.of(List.of(createEvent("type", "subtype", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", LocalDate.now().minusDays(61))), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", LocalDate.now().minusDays(30))), STAKEHOLDER_LEGAL_ID, 1, 1),
+			Arguments.of(List.of(createEvent("granho", "grauts", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 1),
+			Arguments.of(List.of(
+				createEvent("granho", "grauts", LocalDate.now()),
+				createEvent("granho", "grauts", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 2));
+	}
+
+	private static Stream<Arguments> filterErrandsForApplicantArgumentProvider() {
+		return Stream.of(
+			Arguments.of(createErrand(List.of(Stakeholder.builder().withLegalId(STAKEHOLDER_LEGAL_ID).withRoles(List.of("SOK")).build())), 1),
+			Arguments.of(createErrand(List.of(Stakeholder.builder().withLegalId(STAKEHOLDER_LEGAL_ID).withRoles(List.of("KPER")).build())), 1),
+			Arguments.of(createErrand(List.of(Stakeholder.builder().withLegalId("OTHER_ID").withRoles(List.of("SOK")).build())), 0),
+			Arguments.of(createErrand(List.of(Stakeholder.builder().withLegalId("OTHER_ID").withRoles(List.of("KPER")).build())), 0),
+			Arguments.of(createErrand(List.of(Stakeholder.builder().withLegalId(STAKEHOLDER_LEGAL_ID).withRoles(List.of("OTHER_ROLE")).build())), 0),
+			Arguments.of(createErrand(null), 0));
+	}
+
+	private static ByggrErrandDto createErrand(final List<Stakeholder> stakeholders) {
+		return ByggrErrandDto.builder()
+			.withStakeholders(stakeholders)
+			.build();
+	}
+
+	private static Event createEvent(final String type, final String subtype) {
+		return Event.builder()
+			.withEventType(type)
+			.withEventSubtype(subtype)
+			.build();
+	}
+
+	private static Event createEvent(final String type, final String subtype, final LocalDate date) {
+		return Event.builder()
+			.withEventType(type)
+			.withEventSubtype(subtype)
+			.withEventDate(date)
+			.withStakeholders(List.of(Stakeholder.builder()
+				.withLegalId(ByggrFilterUtilityTest.STAKEHOLDER_LEGAL_ID)
+				.build()))
+			.build();
+	}
+
+	@ParameterizedTest
+	@MethodSource("validEventArgumentProvider")
+	void isValidEvent(final Event event, final boolean expectedResult) {
+		// Act and assert
+		assertThat(ByggrFilterUtility.isValidEvent(event)).isEqualTo(expectedResult);
+	}
+
 	@ParameterizedTest
 	@MethodSource("filterNeighborhoodNotificationsArgumentProvider")
-	void filterNeighborhoodNotifications(List<Event> events, String identifier, int expectedErrandsSize, int expectedEventsSize) {
+	void filterNeighborhoodNotifications(final List<Event> events, final String identifier, final int expectedErrandsSize, final int expectedEventsSize) {
 		// Act
 		final var errands = byggrFilterUtility.filterNeighborhoodNotifications(List.of(
 			ByggrErrandDto.builder()
@@ -60,20 +108,6 @@ class ByggrFilterUtilityTest {
 		if (expectedErrandsSize > 0) {
 			assertThat(errands.getFirst().getEvents()).hasSize(expectedEventsSize);
 		}
-	}
-
-	private static Stream<Arguments> filterNeighborhoodNotificationsArgumentProvider() {
-		return Stream.of(
-			Arguments.of(List.of(createEvent(null, "GRAUTS", STAKEHOLDER_LEGAL_ID, LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("GRANHO", null, STAKEHOLDER_LEGAL_ID, LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", STAKEHOLDER_LEGAL_ID, LocalDate.now())), "otherId", 0, 0),
-			Arguments.of(List.of(createEvent("type", "subtype", STAKEHOLDER_LEGAL_ID, LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", STAKEHOLDER_LEGAL_ID, LocalDate.now().minusDays(31))), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", STAKEHOLDER_LEGAL_ID, LocalDate.now().minusDays(30))), STAKEHOLDER_LEGAL_ID, 1, 1),
-			Arguments.of(List.of(createEvent("granho", "grauts", STAKEHOLDER_LEGAL_ID, LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 1),
-			Arguments.of(List.of(
-				createEvent("granho", "grauts", STAKEHOLDER_LEGAL_ID, LocalDate.now()),
-				createEvent("granho", "grauts", STAKEHOLDER_LEGAL_ID, LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 2));
 	}
 
 	@Test
@@ -92,45 +126,11 @@ class ByggrFilterUtilityTest {
 
 	@ParameterizedTest
 	@MethodSource("filterErrandsForApplicantArgumentProvider")
-	void filterErrandsForApplicant(ByggrErrandDto errand, int expetedErrandSize) {
+	void filterErrandsForApplicant(final ByggrErrandDto errand, final int expetedErrandSize) {
 		// Prepare list of applicant roles
 		setField(byggrFilterUtility, "applicantRoles", List.of("SOK", "KPER"));
 
 		// Act and assert
 		assertThat(byggrFilterUtility.filterCasesForApplicant(List.of(errand), STAKEHOLDER_LEGAL_ID)).hasSize(expetedErrandSize);
-	}
-
-	private static Stream<Arguments> filterErrandsForApplicantArgumentProvider() {
-		return Stream.of(
-			Arguments.of(createErrand(List.of(Stakeholder.builder().withLegalId(STAKEHOLDER_LEGAL_ID).withRoles(List.of("SOK")).build())), 1),
-			Arguments.of(createErrand(List.of(Stakeholder.builder().withLegalId(STAKEHOLDER_LEGAL_ID).withRoles(List.of("KPER")).build())), 1),
-			Arguments.of(createErrand(List.of(Stakeholder.builder().withLegalId("OTHER_ID").withRoles(List.of("SOK")).build())), 0),
-			Arguments.of(createErrand(List.of(Stakeholder.builder().withLegalId("OTHER_ID").withRoles(List.of("KPER")).build())), 0),
-			Arguments.of(createErrand(List.of(Stakeholder.builder().withLegalId(STAKEHOLDER_LEGAL_ID).withRoles(List.of("OTHER_ROLE")).build())), 0),
-			Arguments.of(createErrand(null), 0));
-	}
-
-	private static ByggrErrandDto createErrand(List<Stakeholder> stakeholders) {
-		return ByggrErrandDto.builder()
-			.withStakeholders(stakeholders)
-			.build();
-	}
-
-	private static Event createEvent(String type, String subtype) {
-		return Event.builder()
-			.withEventType(type)
-			.withEventSubtype(subtype)
-			.build();
-	}
-
-	private static Event createEvent(String type, String subtype, String stakeholderLegalId, LocalDate date) {
-		return Event.builder()
-			.withEventType(type)
-			.withEventSubtype(subtype)
-			.withEventDate(date)
-			.withStakeholders(List.of(Stakeholder.builder()
-				.withLegalId(stakeholderLegalId)
-				.build()))
-			.build();
 	}
 }

@@ -1,13 +1,13 @@
 openapi: 3.1.0
 info:
   title: api-service-byggr-integrator
-  contact: {}
+  contact: { }
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
   version: "2.2"
 servers:
-  - url: http://localhost:58070
+  - url: http://localhost:51699
     description: Generated server url
 tags:
   - name: Open-E
@@ -209,6 +209,9 @@ paths:
         - Neighborhood notifications
       summary: Lists all neighborhood notifications where the provided identifier
         is a stakeholder
+      description: "Returns errands filtered by: valid GRANHO events with subtype\
+        \ GRAUTS, excluding configured unwanted event types, matching the identifier\
+        \ as a stakeholder in events not older than 60 days"
       operationId: findNeighborhoodNotifications
       parameters:
         - name: municipalityId
@@ -267,6 +270,9 @@ paths:
         - Neighborhood notifications
       summary: Lists all properties that are included in provided neighborhood notification
         case where the provided identifier is a stakeholder
+      description: "Returns properties filtered by: matching the provided case number,\
+        \ having a property designation, and where the identifier is a stakeholder\
+        \ in the referral"
       operationId: findNeighborhoodNotificationFacilitiesWithRequestParameters
       parameters:
         - name: municipalityId
@@ -460,7 +466,7 @@ components:
           format: uri
         parameters:
           type: object
-          additionalProperties: {}
+          additionalProperties: { }
     StatusType:
       type: object
       properties:
@@ -516,7 +522,7 @@ components:
           format: uri
         parameters:
           type: object
-          additionalProperties: {}
+          additionalProperties: { }
         suppressed:
           type: array
           items:
@@ -553,7 +559,7 @@ components:
     ThrowableProblem:
       type: object
       properties:
-        cause: {}
+        cause: { }
         stackTrace:
           type: array
           items:
@@ -592,7 +598,7 @@ components:
           format: uri
         parameters:
           type: object
-          additionalProperties: {}
+          additionalProperties: { }
         suppressed:
           type: array
           items:
@@ -647,4 +653,4 @@ components:
         value:
           type: string
           description: The value of the key-value pair
-  securitySchemes: {}
+  securitySchemes: { }
