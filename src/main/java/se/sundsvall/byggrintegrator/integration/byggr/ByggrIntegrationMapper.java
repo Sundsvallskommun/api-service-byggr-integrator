@@ -1,9 +1,5 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
-import static generated.se.sundsvall.arendeexport.v4.RemissStatusFilter.EJ_BESVARAD;
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-
 import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNr;
 import generated.se.sundsvall.arendeexport.v8.Arende;
 import generated.se.sundsvall.arendeexport.v8.ArendeFastighet;
@@ -40,6 +36,10 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
+
+import static generated.se.sundsvall.arendeexport.v4.RemissStatusFilter.EJ_BESVARAD;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 
 /**
  * Mapper for handling mappings between ByggR responses and the internal dto class used in the service layer

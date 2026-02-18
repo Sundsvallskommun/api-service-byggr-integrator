@@ -1,17 +1,17 @@
 package se.sundsvall.byggrintegrator.configuration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.I_AM_A_TEAPOT;
-import static org.springframework.http.MediaType.APPLICATION_PROBLEM_XML;
-
 import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.I_AM_A_TEAPOT;
+import static org.springframework.http.MediaType.APPLICATION_PROBLEM_XML;
 
 @SpringBootTest(classes = ExceptionAsXmlHandlerConfig.class)
 class ExceptionAsXmlHandlerConfigTest {

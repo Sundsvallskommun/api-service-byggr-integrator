@@ -1,13 +1,13 @@
 package se.sundsvall.byggrintegrator.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeResponse;
-import static se.sundsvall.byggrintegrator.TestObjectFactory.generateByggrErrandDtos;
-
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeResponse;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.generateByggrErrandDtos;
 
 class ApiResponseMapperTest {
 

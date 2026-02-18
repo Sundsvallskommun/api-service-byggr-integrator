@@ -1,11 +1,5 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
-
 import generated.se.sundsvall.arendeexport.v8.ArrayOfRoll;
 import generated.se.sundsvall.arendeexport.v8.GetDocument;
 import generated.se.sundsvall.arendeexport.v8.GetDocumentResponse;
@@ -20,6 +14,12 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import se.sundsvall.byggrintegrator.Application;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {
 	"spring.cache.type=SIMPLE",
