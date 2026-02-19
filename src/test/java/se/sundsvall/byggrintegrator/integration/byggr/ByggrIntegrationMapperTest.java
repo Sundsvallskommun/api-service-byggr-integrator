@@ -1,5 +1,18 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
+import generated.se.sundsvall.arendeexport.v8.RollTyp;
+import generated.se.sundsvall.arendeexport.v8.StatusFilter;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import se.sundsvall.byggrintegrator.Application;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
+import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.APPLICANT_ROLE;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.BYGGR_ARENDE_NR_1;
@@ -14,19 +27,6 @@ import static se.sundsvall.byggrintegrator.TestObjectFactory.WANTED_DOCUMENT_NAM
 import static se.sundsvall.byggrintegrator.TestObjectFactory.WANTED_DOKUMENT_TYPE;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeResponse;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeArendenResponse;
-
-import generated.se.sundsvall.arendeexport.v8.RollTyp;
-import generated.se.sundsvall.arendeexport.v8.StatusFilter;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import se.sundsvall.byggrintegrator.Application;
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
-import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("junit")

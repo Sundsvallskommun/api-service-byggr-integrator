@@ -1,9 +1,9 @@
 package se.sundsvall.byggrintegrator.service.util;
 
+import org.apache.commons.lang3.Strings;
+
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.containsNone;
-
-import org.apache.commons.lang3.Strings;
 
 public final class LegalIdUtility {
 

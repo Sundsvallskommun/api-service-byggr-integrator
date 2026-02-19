@@ -1,10 +1,10 @@
 package se.sundsvall.byggrintegrator.api;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static se.sundsvall.byggrintegrator.api.ResponseEnhancer.addInfoQueryResponseHeader;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static se.sundsvall.byggrintegrator.api.ResponseEnhancer.addInfoQueryResponseHeader;
 
 class ResponseEnhancerTest {
 

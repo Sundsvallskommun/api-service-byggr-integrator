@@ -1,17 +1,5 @@
 package se.sundsvall.byggrintegrator.service;
 
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
-import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.util.StreamUtils.copy;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
-import static org.zalando.problem.Status.NOT_FOUND;
-import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.addHyphen;
-import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.prefixOrgnbr;
-import static se.sundsvall.byggrintegrator.service.util.MimeTypeUtility.detectMimeType;
-
 import generated.se.sundsvall.arendeexport.v4.Remiss;
 import generated.se.sundsvall.arendeexport.v8.Dokument;
 import generated.se.sundsvall.arendeexport.v8.GetDocumentResponse;
@@ -39,6 +27,18 @@ import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
 import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
+
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.util.StreamUtils.copy;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+import static org.zalando.problem.Status.NOT_FOUND;
+import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.addHyphen;
+import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.prefixOrgnbr;
+import static se.sundsvall.byggrintegrator.service.util.MimeTypeUtility.detectMimeType;
 
 @Service
 public class ByggrIntegratorService {

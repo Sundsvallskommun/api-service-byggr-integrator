@@ -1,10 +1,5 @@
 package se.sundsvall.byggrintegrator.service.util;
 
-import static java.time.LocalDate.now;
-import static java.util.Objects.isNull;
-import static java.util.Optional.ofNullable;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-
 import generated.se.sundsvall.arendeexport.v8.HandelseHandling;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +13,11 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.ApplicantProperties;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.DocumentProperties;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.NotificationProperties;
+
+import static java.time.LocalDate.now;
+import static java.util.Objects.isNull;
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 /**
  * The filter utility has three configurable settings:

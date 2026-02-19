@@ -1,7 +1,5 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
-import static se.sundsvall.byggrintegrator.integration.byggr.ByggrConfiguration.CLIENT_ID;
-
 import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNr;
 import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
 import generated.se.sundsvall.arendeexport.v8.GetArende;
@@ -17,6 +15,8 @@ import generated.se.sundsvall.arendeexport.v8.GetRollerResponse;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import static se.sundsvall.byggrintegrator.integration.byggr.ByggrConfiguration.CLIENT_ID;
 
 @CircuitBreaker(name = CLIENT_ID)
 @FeignClient(name = CLIENT_ID, url = "${integration.byggr.url}", configuration = ByggrConfiguration.class)

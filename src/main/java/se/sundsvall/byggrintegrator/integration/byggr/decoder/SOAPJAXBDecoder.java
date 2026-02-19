@@ -1,7 +1,5 @@
 package se.sundsvall.byggrintegrator.integration.byggr.decoder;
 
-import static org.zalando.problem.Status.BAD_GATEWAY;
-
 import feign.FeignException;
 import feign.Response;
 import feign.codec.Decoder;
@@ -13,6 +11,8 @@ import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import org.zalando.problem.Problem;
+
+import static org.zalando.problem.Status.BAD_GATEWAY;
 
 public class SOAPJAXBDecoder implements Decoder {
 

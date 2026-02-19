@@ -1,12 +1,5 @@
 package se.sundsvall.byggrintegrator.configuration;
 
-import static java.util.UUID.randomUUID;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.I_AM_A_TEAPOT;
-import static org.springframework.http.MediaType.TEXT_HTML;
-
 import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,6 +10,13 @@ import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.dept44.requestid.RequestId;
+
+import static java.util.UUID.randomUUID;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.I_AM_A_TEAPOT;
+import static org.springframework.http.MediaType.TEXT_HTML;
 
 @ActiveProfiles("junit")
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.MOCK)

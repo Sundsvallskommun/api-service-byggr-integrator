@@ -1,8 +1,5 @@
 package se.sundsvall.byggrintegrator.service.util;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
@@ -17,6 +14,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrFilterUtilityTest {

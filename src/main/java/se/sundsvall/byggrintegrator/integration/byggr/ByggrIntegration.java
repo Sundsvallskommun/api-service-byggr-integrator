@@ -1,9 +1,5 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
-import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.toMap;
-
 import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfString;
 import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
@@ -23,6 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+
+import static java.util.Collections.emptyList;
+import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toMap;
 
 @Component
 public class ByggrIntegration {
