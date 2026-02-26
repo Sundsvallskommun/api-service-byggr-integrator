@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,12 +14,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-import org.zalando.problem.StatusType;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.byggrintegrator.api.OpeneHtmlResource;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 import se.sundsvall.dept44.requestid.RequestId;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 /**
  * Configuration to convert exceptions and problems to HTML responses.
@@ -49,15 +49,14 @@ public class ExceptionAsHtmlHandlerConfig {
 
 		@ExceptionHandler(ThrowableProblem.class)
 		@ResponseBody
-		public ResponseEntity<String> handleProblem(Problem problem) {
+		public ResponseEntity<String> handleProblem(final Problem problem) {
 			LOG.info("Mapping problem to HTML string {}.", problem);
 
 			context.setVariable(TEMPLATE_ERROR_MESSAGE, createBody(ERROR_MESSAGE, problem.getTitle()));
 
 			return ResponseEntity
 				.status(Optional.ofNullable(problem.getStatus())
-					.map(StatusType::getStatusCode)
-					.orElse(HttpStatus.INTERNAL_SERVER_ERROR.value()))
+					.orElse(INTERNAL_SERVER_ERROR))
 				.contentType(MediaType.TEXT_HTML)
 				.body(processTemplate());
 		}
@@ -70,7 +69,7 @@ public class ExceptionAsHtmlHandlerConfig {
 			context.setVariable(TEMPLATE_ERROR_MESSAGE, createBody(ERROR_MESSAGE, exception.getMessage()));
 
 			return ResponseEntity
-				.status(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+				.status(INTERNAL_SERVER_ERROR)
 				.contentType(MediaType.TEXT_HTML)
 				.body(processTemplate());
 		}
@@ -83,7 +82,7 @@ public class ExceptionAsHtmlHandlerConfig {
 			context.setVariable(TEMPLATE_ERROR_MESSAGE, createBody(VALIDATION_ERROR_MESSAGE, exception.getMessage()));
 
 			return ResponseEntity
-				.status(Status.BAD_REQUEST.getStatusCode())
+				.status(BAD_REQUEST)
 				.contentType(MediaType.TEXT_HTML)
 				.body(processTemplate());
 		}

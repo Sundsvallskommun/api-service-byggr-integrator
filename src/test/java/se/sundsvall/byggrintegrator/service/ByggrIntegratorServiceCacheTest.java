@@ -9,8 +9,10 @@ import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.annotation.Cacheable;
@@ -38,6 +40,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 	"spring.cache.cache-names=findNeighborhoodNotificationsCache, findApplicantErrandsCache, getPropertyDesignationCache, getErrandTypeCache, listNeighborhoodNotificationFilesCache, getHandlingTyperCache"
 })
 @ActiveProfiles("junit")
+@ExtendWith(MockitoExtension.class)
 class ByggrIntegratorServiceCacheTest {
 
 	@Autowired
