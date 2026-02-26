@@ -13,8 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 import se.sundsvall.dept44.test.annotation.resource.Load;
 import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 
@@ -22,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 
 @ExtendWith({
 	MockitoExtension.class, ResourceLoaderExtension.class
@@ -65,7 +65,7 @@ class SOAPJAXBDecoderTest {
 		Assertions.assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> decoder.decode(mockResponse, SOAPEnvelope.class))
 			.withMessage("Couldn't fetch information from ByggR: SOAP response body is empty")
-			.satisfies(problem -> assertThat(problem.getStatus()).isEqualTo(Status.BAD_GATEWAY));
+			.satisfies(problem -> assertThat(problem.getStatus()).isEqualTo(BAD_GATEWAY));
 
 		verify(mockResponse).body();
 		verify(mockResponseBody).asInputStream();
@@ -80,7 +80,7 @@ class SOAPJAXBDecoderTest {
 		Assertions.assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> decoder.decode(mockResponse, GetRelateradeArendenByPersOrgNrAndRoleResponse.class))
 			.withMessage("Couldn't fetch information from ByggR")
-			.satisfies(problem -> assertThat(problem.getStatus()).isEqualTo(Status.BAD_GATEWAY));
+			.satisfies(problem -> assertThat(problem.getStatus()).isEqualTo(BAD_GATEWAY));
 
 		verify(mockResponse).body();
 		verify(mockResponseBody).asInputStream();
@@ -116,7 +116,7 @@ class SOAPJAXBDecoderTest {
 		Assertions.assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> decoder.decode(mockResponse, nonRawType))
 			.withMessage("Couldn't fetch information from ByggR: SOAP only supports decoding raw types. Found ?")
-			.satisfies(problem -> assertThat(problem.getStatus()).isEqualTo(Status.BAD_GATEWAY));
+			.satisfies(problem -> assertThat(problem.getStatus()).isEqualTo(BAD_GATEWAY));
 
 		verify(mockResponse).body();
 		verify(mockResponseBody).asInputStream();

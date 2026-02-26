@@ -5,18 +5,17 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.MultiValueMap;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
-import org.zalando.problem.violations.ConstraintViolationProblem;
-import org.zalando.problem.violations.Violation;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
+import se.sundsvall.dept44.problem.violations.Violation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -25,11 +24,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
-import static org.zalando.problem.Status.BAD_REQUEST;
 
 @ActiveProfiles("junit")
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
 class NeighborhoodNotificationResourceTest {
 
 	private static final String VALID_IDENTIFIER = "190101011234";
@@ -82,7 +83,7 @@ class NeighborhoodNotificationResourceTest {
 		assertThat(responseBody).isNotNull();
 		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
+		assertThat(responseBody.getViolations()).extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("findNeighborhoodNotifications.municipalityId", "not a valid municipality ID"));
 
 		verifyNoInteractions(mockByggrIntegratorService);
@@ -102,7 +103,7 @@ class NeighborhoodNotificationResourceTest {
 		assertThat(responseBody).isNotNull();
 		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
+		assertThat(responseBody.getViolations()).extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("findNeighborhoodNotifications.identifier", "Invalid personal or organization number"));
 
 		verifyNoInteractions(mockByggrIntegratorService);
@@ -122,7 +123,7 @@ class NeighborhoodNotificationResourceTest {
 		assertThat(responseBody).isNotNull();
 		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
+		assertThat(responseBody.getViolations()).extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(
 				tuple("findNeighborhoodNotifications.identifier", "Invalid personal or organization number"),
 				tuple("findNeighborhoodNotifications.municipalityId", "not a valid municipality ID"));
@@ -134,7 +135,7 @@ class NeighborhoodNotificationResourceTest {
 	void testFindNeighborhoodNotifications_serviceThrows404() {
 		when(mockByggrIntegratorService.findNeighborhoodNotifications(anyString())).thenThrow(Problem.builder()
 			.withTitle("404 Title")
-			.withStatus(Status.NOT_FOUND)
+			.withStatus(NOT_FOUND)
 			.withDetail("404 Detail")
 			.build());
 
@@ -143,13 +144,12 @@ class NeighborhoodNotificationResourceTest {
 			.exchange()
 			.expectStatus().isNotFound()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(ThrowableProblem.class)
+			.expectBody(Problem.class)
 			.returnResult()
 			.getResponseBody();
 
 		assertThat(responseBody).isNotNull();
-		assertThat(responseBody.getStatus()).isEqualTo(Status.NOT_FOUND);
-		assertThat(responseBody.getMessage()).isEqualTo("404 Title: 404 Detail");
+		assertThat(responseBody.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(responseBody.getTitle()).isEqualTo("404 Title");
 		assertThat(responseBody.getDetail()).isEqualTo("404 Detail");
 
@@ -196,7 +196,7 @@ class NeighborhoodNotificationResourceTest {
 		assertThat(responseBody).isNotNull();
 		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
+		assertThat(responseBody.getViolations()).extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("findNeighborhoodNotificationFacilitiesWithRequestParameters.municipalityId", "not a valid municipality ID"));
 
 		verifyNoInteractions(mockByggrIntegratorService);
@@ -218,7 +218,7 @@ class NeighborhoodNotificationResourceTest {
 		assertThat(responseBody).isNotNull();
 		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
+		assertThat(responseBody.getViolations()).extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("findNeighborhoodNotificationFacilitiesWithRequestParameters.identifier", "Invalid personal or organization number"));
 
 		verifyNoInteractions(mockByggrIntegratorService);
@@ -240,7 +240,7 @@ class NeighborhoodNotificationResourceTest {
 		assertThat(responseBody).isNotNull();
 		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
 		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(responseBody.getViolations()).extracting(Violation::getField, Violation::getMessage)
+		assertThat(responseBody.getViolations()).extracting(Violation::field, Violation::message)
 			.containsExactlyInAnyOrder(tuple("findNeighborhoodNotificationFacilitiesWithRequestParameters.caseNumber", "must not be blank"));
 
 		verifyNoInteractions(mockByggrIntegratorService);
@@ -250,7 +250,7 @@ class NeighborhoodNotificationResourceTest {
 	void findNeighborhoodNotificationFacilitiesWithRequestParameters_serviceThrows404() {
 		when(mockByggrIntegratorService.getNeighborhoodNotificationFacilities(VALID_IDENTIFIER, VALID_CASE_NUMBER)).thenThrow(Problem.builder()
 			.withTitle("404 Title")
-			.withStatus(Status.NOT_FOUND)
+			.withStatus(NOT_FOUND)
 			.withDetail("404 Detail")
 			.build());
 
@@ -261,13 +261,12 @@ class NeighborhoodNotificationResourceTest {
 			.exchange()
 			.expectStatus().isNotFound()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(ThrowableProblem.class)
+			.expectBody(Problem.class)
 			.returnResult()
 			.getResponseBody();
 
 		assertThat(responseBody).isNotNull();
-		assertThat(responseBody.getStatus()).isEqualTo(Status.NOT_FOUND);
-		assertThat(responseBody.getMessage()).isEqualTo("404 Title: 404 Detail");
+		assertThat(responseBody.getStatus()).isEqualTo(NOT_FOUND);
 		assertThat(responseBody.getTitle()).isEqualTo("404 Title");
 		assertThat(responseBody.getDetail()).isEqualTo("404 Detail");
 

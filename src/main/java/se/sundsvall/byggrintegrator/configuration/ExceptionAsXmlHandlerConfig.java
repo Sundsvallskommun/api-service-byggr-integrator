@@ -5,18 +5,18 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.byggrintegrator.api.OpeneXmlResource;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_XML;
-import static org.zalando.problem.Status.BAD_REQUEST;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 /**
  * Configuration needed to convert execption responses to correct response content types
@@ -35,7 +35,7 @@ public class ExceptionAsXmlHandlerConfig {
 
 		@ExceptionHandler(ThrowableProblem.class)
 		@ResponseBody
-		public ResponseEntity<Problem> handleProblem(Problem problem) {
+		public ResponseEntity<Problem> handleProblem(final Problem problem) {
 			return ResponseEntity
 				.status(exctractStatusCode(problem))
 				.contentType(APPLICATION_PROBLEM_XML)
@@ -48,7 +48,7 @@ public class ExceptionAsXmlHandlerConfig {
 			LOGGER.info(LOG_MESSAGE, exception);
 
 			return ResponseEntity
-				.status(Status.BAD_REQUEST.getStatusCode())
+				.status(BAD_REQUEST)
 				.contentType(APPLICATION_PROBLEM_XML)
 				.body(createProblem(BAD_REQUEST, exception));
 		}
@@ -59,12 +59,12 @@ public class ExceptionAsXmlHandlerConfig {
 			LOGGER.info(LOG_MESSAGE, exception);
 
 			return ResponseEntity
-				.status(Status.INTERNAL_SERVER_ERROR.getStatusCode())
+				.status(INTERNAL_SERVER_ERROR)
 				.contentType(APPLICATION_PROBLEM_XML)
 				.body(createProblem(INTERNAL_SERVER_ERROR, exception));
 		}
 
-		private static ThrowableProblem createProblem(Status status, Exception exception) {
+		private static ThrowableProblem createProblem(HttpStatus status, Exception exception) {
 			return Problem.builder()
 				.withStatus(status)
 				.withTitle(status.getReasonPhrase())
@@ -72,11 +72,11 @@ public class ExceptionAsXmlHandlerConfig {
 				.build();
 		}
 
-		private static int exctractStatusCode(Problem problem) {
-			return Optional.ofNullable(problem.getStatus()).orElse(INTERNAL_SERVER_ERROR).getStatusCode();
+		private static HttpStatus exctractStatusCode(final Problem problem) {
+			return Optional.ofNullable(problem.getStatus()).orElse(INTERNAL_SERVER_ERROR);
 		}
 
-		private static String extractMessage(Exception e) {
+		private static String extractMessage(final Exception e) {
 			return Optional.ofNullable(e.getMessage()).orElse(String.valueOf(e));
 		}
 	}
