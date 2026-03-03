@@ -3,9 +3,11 @@ package se.sundsvall.byggrintegrator.api;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.xmlunit.assertj.XmlAssert;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
@@ -21,6 +23,7 @@ import static org.springframework.http.MediaType.APPLICATION_XML;
 
 @ActiveProfiles("junit")
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
+@AutoConfigureWebTestClient
 class OpeneXmlResourceTest {
 
 	private static final String INVALID_MUNICIPALITY_ID = "InvalidMunicipalityId";
@@ -51,7 +54,7 @@ class OpeneXmlResourceTest {
 			.returnResult()
 			.getResponseBody();
 
-		assertThat(responseBody).isNotNull().isEqualToIgnoringNewLines("<Weight>value</Weight>");
+		XmlAssert.assertThat(responseBody).isNotNull().and("<Weight>value</Weight>").normalizeWhitespace().areIdentical();
 
 		verify(mockByggrIntegratorService).getErrandType(CASE_NUMBER);
 		verifyNoMoreInteractions(mockByggrIntegratorService);

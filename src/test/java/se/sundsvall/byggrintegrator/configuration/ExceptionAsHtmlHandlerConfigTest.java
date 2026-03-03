@@ -6,16 +6,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import se.sundsvall.byggrintegrator.Application;
+import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.requestid.RequestId;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONTENT_TOO_LARGE;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.I_AM_A_TEAPOT;
 import static org.springframework.http.MediaType.TEXT_HTML;
 
 @ActiveProfiles("junit")
@@ -37,7 +36,7 @@ class ExceptionAsHtmlHandlerConfigTest {
 		// Arrange
 		final var detail = "Detail";
 		final var problem = Problem.builder()
-			.withStatus(Status.I_AM_A_TEAPOT)
+			.withStatus(CONTENT_TOO_LARGE)
 			.withTitle("Some title")
 			.withDetail(detail)
 			.build();
@@ -47,7 +46,7 @@ class ExceptionAsHtmlHandlerConfigTest {
 
 		// Assert
 		assertThat(result).isNotNull();
-		assertThat(result.getStatusCode()).isEqualTo(I_AM_A_TEAPOT);
+		assertThat(result.getStatusCode()).isEqualTo(CONTENT_TOO_LARGE);
 		assertThat(result.getHeaders().getContentType()).isEqualTo(TEXT_HTML);
 		assertThat(result.getBody())
 			.isNotNull()

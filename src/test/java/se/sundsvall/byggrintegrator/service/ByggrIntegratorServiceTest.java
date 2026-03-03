@@ -21,14 +21,13 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.zalando.problem.Status;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,6 +44,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.APPLICANT_ROLE;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.CASE_APPLICANT;
@@ -170,8 +171,8 @@ class ByggrIntegratorServiceTest {
 		assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> service.findNeighborhoodNotifications(identifier))
 			.satisfies(throwableProblem -> {
-				assertThat(throwableProblem.getStatus()).isEqualTo(Status.NOT_FOUND);
-				assertThat(throwableProblem.getTitle()).isEqualTo(Status.NOT_FOUND.getReasonPhrase());
+				assertThat(throwableProblem.getStatus()).isEqualTo(NOT_FOUND);
+				assertThat(throwableProblem.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
 				assertThat(throwableProblem.getDetail()).isEqualTo("No roles found, cannot continue fetching neighborhood notifications");
 			});
 
@@ -283,8 +284,8 @@ class ByggrIntegratorServiceTest {
 		assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> service.getErrandType(dnr))
 			.satisfies(throwableProblem -> {
-				assertThat(throwableProblem.getStatus()).isEqualTo(Status.NOT_FOUND);
-				assertThat(throwableProblem.getTitle()).isEqualTo(Status.NOT_FOUND.getReasonPhrase());
+				assertThat(throwableProblem.getStatus()).isEqualTo(NOT_FOUND);
+				assertThat(throwableProblem.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
 				assertThat(throwableProblem.getDetail()).isEqualTo("No errand with diary number dnr was found");
 			});
 
@@ -348,8 +349,8 @@ class ByggrIntegratorServiceTest {
 		assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> service.readFile(fileId, mockHttpServletResponse))
 			.satisfies(throwableProblem -> {
-				assertThat(throwableProblem.getStatus()).isEqualTo(Status.NOT_FOUND);
-				assertThat(throwableProblem.getTitle()).isEqualTo(Status.NOT_FOUND.getReasonPhrase());
+				assertThat(throwableProblem.getStatus()).isEqualTo(NOT_FOUND);
+				assertThat(throwableProblem.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
 				assertThat(throwableProblem.getDetail()).isEqualTo("No file with id fileId was found");
 			});
 
@@ -367,8 +368,8 @@ class ByggrIntegratorServiceTest {
 		assertThatExceptionOfType(ThrowableProblem.class)
 			.isThrownBy(() -> service.readFile(fileId, mockHttpServletResponse))
 			.satisfies(throwableProblem -> {
-				assertThat(throwableProblem.getStatus()).isEqualTo(Status.INTERNAL_SERVER_ERROR);
-				assertThat(throwableProblem.getTitle()).isEqualTo(Status.INTERNAL_SERVER_ERROR.getReasonPhrase());
+				assertThat(throwableProblem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
+				assertThat(throwableProblem.getTitle()).isEqualTo(INTERNAL_SERVER_ERROR.getReasonPhrase());
 				assertThat(throwableProblem.getDetail()).isEqualTo("Could not read file content for document data with id fileId");
 			});
 

@@ -3,13 +3,13 @@ package se.sundsvall.byggrintegrator.api;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.zalando.problem.Problem;
-import org.zalando.problem.Status;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
+import se.sundsvall.dept44.problem.Problem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -17,10 +17,12 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 
 @ActiveProfiles("junit")
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
+@AutoConfigureWebTestClient
 class OpeneHtmlResourceTest {
 
 	private static final String INFO_QUERY_RESPONSE_HEADER = "InfoQueryResponse";
@@ -137,7 +139,7 @@ class OpeneHtmlResourceTest {
 	void testFindNeighborhoodNotificationFilesWithRequestParameter_whenServiceThrowsProblem() {
 		when(mockByggrIntegratorService.listNeighborhoodNotificationFiles(MUNICIPALITY_ID, IDENTIFIER, CASE_NUMBER, REFERRAL_REFERENCE)).thenThrow(Problem.builder()
 			.withTitle("404 Title")
-			.withStatus(Status.NOT_FOUND)
+			.withStatus(NOT_FOUND)
 			.withDetail("404 Detail")
 			.build());
 

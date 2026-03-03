@@ -16,26 +16,26 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.zalando.problem.Problem;
-import org.zalando.problem.StatusType;
-import org.zalando.problem.ThrowableProblem;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
 import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
+import se.sundsvall.dept44.problem.Problem;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.util.StreamUtils.copy;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
-import static org.zalando.problem.Status.NOT_FOUND;
 import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.addHyphen;
 import static se.sundsvall.byggrintegrator.service.util.LegalIdUtility.prefixOrgnbr;
 import static se.sundsvall.byggrintegrator.service.util.MimeTypeUtility.detectMimeType;
@@ -195,7 +195,7 @@ public class ByggrIntegratorService {
 			response.setContentLength(byggRFile.getFil().getFilBuffer().length);
 
 			copy(new ByteArrayInputStream(byggRFile.getFil().getFilBuffer()), response.getOutputStream());
-		} catch (final IOException e) {
+		} catch (final IOException _) {
 			throw createProblem(INTERNAL_SERVER_ERROR, ERROR_FILE_COULD_NOT_BE_READ.formatted(documentId));
 		}
 	}
@@ -215,7 +215,7 @@ public class ByggrIntegratorService {
 		return name + "." + extension.toLowerCase();
 	}
 
-	private ThrowableProblem createProblem(final StatusType status, final String detail) {
+	private ThrowableProblem createProblem(final HttpStatus status, final String detail) {
 		return Problem.builder()
 			.withStatus(status)
 			.withTitle(status.getReasonPhrase())
