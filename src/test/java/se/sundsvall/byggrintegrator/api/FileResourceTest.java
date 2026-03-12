@@ -32,7 +32,7 @@ class FileResourceTest {
 
 	private static final String VALID_MUNICIPALITY_ID = "2281";
 	private static final String INVALID_MUNICIPALITY_ID = "invalid municipality";
-	private static final String APPLICANT_URL = "/{municipalityId}/files/{fileId}";
+	private static final String APPLICANT_URL = "/{municipalityId}/files/{fileId}?token={token}";
 
 	@MockitoBean
 	private ByggrIntegratorService mockByggrIntegratorService;
@@ -43,22 +43,23 @@ class FileResourceTest {
 	@Test
 	void testReadFile() {
 		final var fileId = randomUUID().toString();
+		final var token = randomUUID().toString();
 
 		webTestClient.get()
-			.uri(APPLICANT_URL, VALID_MUNICIPALITY_ID, fileId)
+			.uri(APPLICANT_URL, VALID_MUNICIPALITY_ID, fileId, token)
 			.exchange()
 			.expectStatus().isOk()
 			.expectBody()
 			.isEmpty();
 
-		verify(mockByggrIntegratorService).readFile(eq(fileId), any(HttpServletResponse.class));
+		verify(mockByggrIntegratorService).readFile(eq(VALID_MUNICIPALITY_ID), eq(fileId), eq(token), any(HttpServletResponse.class));
 		verifyNoMoreInteractions(mockByggrIntegratorService);
 	}
 
 	@Test
 	void testFindApplicantErrands_faultyMunicipalityId_shouldThrowException() {
 		final var responseBody = webTestClient.get()
-			.uri(APPLICANT_URL, INVALID_MUNICIPALITY_ID, randomUUID().toString())
+			.uri(APPLICANT_URL, INVALID_MUNICIPALITY_ID, randomUUID().toString(), randomUUID().toString())
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)

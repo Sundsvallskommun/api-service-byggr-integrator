@@ -87,6 +87,9 @@ class ByggrIntegratorServiceTest {
 	private ByggrFilterUtility mockByggrFilterUtility;
 
 	@Mock
+	private FileAccessTokenService mockFileAccessTokenService;
+
+	@Mock
 	private ServletOutputStream mockServletOutputStream;
 
 	@InjectMocks
@@ -297,13 +300,15 @@ class ByggrIntegratorServiceTest {
 	void testReadFile() throws Exception {
 		// Arrange
 		final var fileId = "fileId";
+		final var token = "valid-token";
 		when(mockByggrIntegration.getDocument(fileId)).thenReturn(generateDocumentResponse(fileId));
 		when(mockHttpServletResponse.getOutputStream()).thenReturn(mockServletOutputStream);
 
 		// Act
-		service.readFile(fileId, mockHttpServletResponse);
+		service.readFile(MUNICIPALITY_ID, fileId, token, mockHttpServletResponse);
 
 		// Assert
+		verify(mockFileAccessTokenService).validateToken(MUNICIPALITY_ID, fileId, token);
 		verify(mockByggrIntegration).getDocument(fileId);
 		verify(mockHttpServletResponse).addHeader(CONTENT_TYPE, "text/plain");
 		verify(mockHttpServletResponse).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"random.txt\"");
@@ -319,6 +324,7 @@ class ByggrIntegratorServiceTest {
 	@Test
 	void testReadFile_2() throws IOException {
 		final var fileId = "fileId";
+		final var token = "valid-token";
 
 		final var dokument = OBJECT_FACTORY.createDokument()
 			.withDokId(fileId)
@@ -330,8 +336,9 @@ class ByggrIntegratorServiceTest {
 		when(mockByggrIntegration.getDocument(fileId)).thenReturn(OBJECT_FACTORY.createGetDocumentResponse().withGetDocumentResult(dokument));
 		when(mockHttpServletResponse.getOutputStream()).thenReturn(mockServletOutputStream);
 
-		service.readFile(fileId, mockHttpServletResponse);
+		service.readFile(MUNICIPALITY_ID, fileId, token, mockHttpServletResponse);
 
+		verify(mockFileAccessTokenService).validateToken(MUNICIPALITY_ID, fileId, token);
 		verify(mockByggrIntegration).getDocument(fileId);
 		verify(mockHttpServletResponse).addHeader(CONTENT_TYPE, "application/pdf");
 		verify(mockHttpServletResponse).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"random-name.pdf\"");
@@ -344,16 +351,18 @@ class ByggrIntegratorServiceTest {
 	void testReadFile_fileNotFound() {
 		// Arrange
 		final var fileId = "fileId";
+		final var token = "valid-token";
 
 		// Act and assert
 		assertThatExceptionOfType(ThrowableProblem.class)
-			.isThrownBy(() -> service.readFile(fileId, mockHttpServletResponse))
+			.isThrownBy(() -> service.readFile(MUNICIPALITY_ID, fileId, token, mockHttpServletResponse))
 			.satisfies(throwableProblem -> {
 				assertThat(throwableProblem.getStatus()).isEqualTo(NOT_FOUND);
 				assertThat(throwableProblem.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
 				assertThat(throwableProblem.getDetail()).isEqualTo("No file with id fileId was found");
 			});
 
+		verify(mockFileAccessTokenService).validateToken(MUNICIPALITY_ID, fileId, token);
 		verify(mockByggrIntegration).getDocument(fileId);
 		verifyNoMoreInterations();
 	}
@@ -362,17 +371,19 @@ class ByggrIntegratorServiceTest {
 	void testReadFile_fileProcessingException() throws Exception {
 		// Arrange
 		final var fileId = "fileId";
+		final var token = "valid-token";
 		when(mockByggrIntegration.getDocument(fileId)).thenReturn(generateDocumentResponse(fileId));
 		when(mockHttpServletResponse.getOutputStream()).thenThrow(new IOException("An error occured during byte array copy"));
 
 		assertThatExceptionOfType(ThrowableProblem.class)
-			.isThrownBy(() -> service.readFile(fileId, mockHttpServletResponse))
+			.isThrownBy(() -> service.readFile(MUNICIPALITY_ID, fileId, token, mockHttpServletResponse))
 			.satisfies(throwableProblem -> {
 				assertThat(throwableProblem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
 				assertThat(throwableProblem.getTitle()).isEqualTo(INTERNAL_SERVER_ERROR.getReasonPhrase());
 				assertThat(throwableProblem.getDetail()).isEqualTo("Could not read file content for document data with id fileId");
 			});
 
+		verify(mockFileAccessTokenService).validateToken(MUNICIPALITY_ID, fileId, token);
 		verify(mockByggrIntegration).getDocument(fileId);
 		verify(mockHttpServletResponse).addHeader(CONTENT_TYPE, "text/plain");
 		verify(mockHttpServletResponse).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"random.txt\"");
@@ -416,6 +427,6 @@ class ByggrIntegratorServiceTest {
 	}
 
 	private void verifyNoMoreInterations() {
-		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockByggrFilterUtility, mockApiResponseMapper, mockHttpServletResponse);
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockByggrFilterUtility, mockApiResponseMapper, mockHttpServletResponse, mockFileAccessTokenService);
 	}
 }

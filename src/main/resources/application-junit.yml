@@ -6,6 +6,32 @@ integration:
     url: http://somehost.com
     connect-timeout-in-seconds: 1
     read-timeout-in-seconds: 2
+
+file-access-token:
+  expiration: PT24H
+  cron: "-"
+
+spring:
+  datasource:
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    url: jdbc:tc:mariadb:10.6:///junittest
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        hbm2ddl:
+          schema-generation:
+            script:
+              append: false
+      jakarta:
+        persistence:
+          schema-generation:
+            create-source: metadata
+            database:
+              action: update
+            scripts:
+              action: create
+              create-target: target/database/generated-schema.sql
 service:
   byggr:
     filter-util:

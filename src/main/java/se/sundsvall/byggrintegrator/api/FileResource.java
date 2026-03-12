@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
@@ -42,14 +43,16 @@ public class FileResource {
 	@GetMapping(path = "/files/{fileId}", produces = APPLICATION_OCTET_STREAM_VALUE)
 	@Operation(summary = "Return file content for file matching the provided id", responses = {
 		@ApiResponse(responseCode = "200", description = "Successful operation", useReturnTypeSchema = true),
-		@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+		@ApiResponse(responseCode = "404", description = "Not found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class))),
+		@ApiResponse(responseCode = "410", description = "Token has expired", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 	})
 	public ResponseEntity<Void> readFile(
 		final HttpServletResponse response,
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "fileId", description = "File id", example = "123456") @PathVariable final String fileId) {
+		@Parameter(name = "fileId", description = "File id", example = "123456") @PathVariable final String fileId,
+		@Parameter(name = "token", description = "Access token", required = true) @RequestParam final String token) {
 
-		byggrIntegratorService.readFile(fileId, response);
+		byggrIntegratorService.readFile(municipalityId, fileId, token, response);
 		return ok().build();
 	}
 }
