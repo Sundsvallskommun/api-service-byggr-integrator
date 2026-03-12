@@ -56,13 +56,16 @@ public class ByggrIntegratorService {
 	private final ApiResponseMapper apiResponseMapper;
 	private final TemplateMapper templateMapper;
 	private final ByggrFilterUtility filterUtility;
+	private final FileAccessTokenService fileAccessTokenService;
 
-	public ByggrIntegratorService(final ByggrIntegrationMapper byggrIntegrationMapper, final ByggrIntegration byggrIntegration, final ApiResponseMapper apiResponseMapper, final TemplateMapper templateMapper, final ByggrFilterUtility filterUtility) {
+	public ByggrIntegratorService(final ByggrIntegrationMapper byggrIntegrationMapper, final ByggrIntegration byggrIntegration, final ApiResponseMapper apiResponseMapper, final TemplateMapper templateMapper, final ByggrFilterUtility filterUtility,
+		final FileAccessTokenService fileAccessTokenService) {
 		this.byggrIntegrationMapper = byggrIntegrationMapper;
 		this.byggrIntegration = byggrIntegration;
 		this.apiResponseMapper = apiResponseMapper;
 		this.templateMapper = templateMapper;
 		this.filterUtility = filterUtility;
+		this.fileAccessTokenService = fileAccessTokenService;
 	}
 
 	@Cacheable("findNeighborhoodNotificationsCache")
@@ -156,7 +159,8 @@ public class ByggrIntegratorService {
 		return templateMapper.generateFileList(municipalityId, match, handlingtyper, filteredHandelseHandlingList);
 	}
 
-	public void readFile(final String fileId, final HttpServletResponse response) {
+	public void readFile(final String municipalityId, final String fileId, final String token, final HttpServletResponse response) {
+		fileAccessTokenService.validateToken(municipalityId, fileId, token);
 		ofNullable(byggrIntegration.getDocument(fileId))
 			.map(GetDocumentResponse::getGetDocumentResult)
 			.map(List::getFirst)

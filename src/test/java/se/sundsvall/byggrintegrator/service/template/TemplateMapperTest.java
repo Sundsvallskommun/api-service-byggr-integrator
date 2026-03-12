@@ -13,8 +13,11 @@ import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
+import se.sundsvall.byggrintegrator.service.FileAccessTokenService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -26,8 +29,13 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT)
 class TemplateMapperTest {
 
+	private static final String TOKEN = "test-token-uuid";
+
 	@MockitoBean
 	private TemplateProperties mockProperties;
+
+	@MockitoBean
+	private FileAccessTokenService mockFileAccessTokenService;
 
 	@Autowired
 	private TemplateMapper templateMapper;
@@ -83,6 +91,7 @@ class TemplateMapperTest {
 		when(mockProperties.domain()).thenReturn("https://somewhere.com/");
 		when(mockProperties.version()).thenReturn("1.0");
 		when(mockProperties.subDirectory()).thenReturn("/files/");
+		when(mockFileAccessTokenService.createToken(eq("1234"), anyString())).thenReturn(TOKEN);
 
 		final var html = templateMapper.generateFileList(
 			"1234",
@@ -97,14 +106,15 @@ class TemplateMapperTest {
 		assertThat(html).containsIgnoringWhitespaces("""
 			<p>Bygglov för tillbyggnad av fritidshus (RUNSVIK 1:22)</p>
 			<ul>
-				<li><a href="https://somewhere.com/1.0/1234/files/3">Ritningar (file3.pdf)</a></li>
-				<li><a href="https://somewhere.com/1.0/1234/files/2">Planer (file2.txt)</a></li>
-				<li><a href="https://somewhere.com/1.0/1234/files/1">Skrivelse (file1.txt)</a></li>
+				<li><a href="https://somewhere.com/1.0/1234/files/3?token=test-token-uuid">Ritningar (file3.pdf)</a></li>
+				<li><a href="https://somewhere.com/1.0/1234/files/2?token=test-token-uuid">Planer (file2.txt)</a></li>
+				<li><a href="https://somewhere.com/1.0/1234/files/1?token=test-token-uuid">Skrivelse (file1.txt)</a></li>
 			</ul>""");
 		verify(mockProperties, times(4)).domain();
 		verify(mockProperties, times(4)).version();
 		verify(mockProperties, times(4)).subDirectory();
-		verifyNoMoreInteractions(mockProperties);
+		verify(mockFileAccessTokenService, times(4)).createToken(eq("1234"), anyString());
+		verifyNoMoreInteractions(mockProperties, mockFileAccessTokenService);
 	}
 
 	@Test

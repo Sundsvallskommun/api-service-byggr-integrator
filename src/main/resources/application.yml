@@ -60,9 +60,21 @@ openapi:
   title: ${spring.application.name}
   version: '@project.version@'
 
+file-access-token:
+  expiration: PT24H
+  cron: "0 0 3 * * *"
+
 spring:
   application:
     name: api-service-byggr-integrator
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+  flyway:
+    enabled: true
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html

@@ -15,6 +15,7 @@ import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.FileTemplateDto;
+import se.sundsvall.byggrintegrator.service.FileAccessTokenService;
 
 import static java.util.Optional.ofNullable;
 
@@ -28,10 +29,12 @@ public class TemplateMapper {
 
 	private final TemplateProperties templateProperties;
 	private final ITemplateEngine templateEngine;
+	private final FileAccessTokenService fileAccessTokenService;
 
-	public TemplateMapper(final TemplateProperties templateProperties, final ITemplateEngine templateEngine) {
+	public TemplateMapper(final TemplateProperties templateProperties, final ITemplateEngine templateEngine, final FileAccessTokenService fileAccessTokenService) {
 		this.templateProperties = templateProperties;
 		this.templateEngine = templateEngine;
+		this.fileAccessTokenService = fileAccessTokenService;
 	}
 
 	private static <T> Predicate<T> distinctByKey(final Function<? super T, ?> keyExtractor) {
@@ -96,13 +99,16 @@ public class TemplateMapper {
 	}
 
 	private String parseFileUrl(final String municipalityId, final int fileId) {
-		// String content is divided into the following: [domain][version]/[municipalityid][subdirectory][file identificator]
-		return "%s%s/%s%s%s".formatted(
+		// String content is divided into the following: [domain][version]/[municipalityid][subdirectory][file
+		// identificator]?token=[uuid]
+		final var token = fileAccessTokenService.createToken(municipalityId, String.valueOf(fileId));
+		return "%s%s/%s%s%s?token=%s".formatted(
 			templateProperties.domain(),
 			templateProperties.version(),
 			municipalityId,
 			templateProperties.subDirectory(),
-			fileId);
+			fileId,
+			token);
 	}
 
 	private String parseFileName(final HandelseHandling documentNameAndType, final Map<String, String> handlingtyper) {
