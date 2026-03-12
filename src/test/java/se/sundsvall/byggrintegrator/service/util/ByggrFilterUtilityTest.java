@@ -36,7 +36,13 @@ class ByggrFilterUtilityTest {
 			Arguments.of(createEvent(null, "GRAUTS"), false),
 			Arguments.of(createEvent("type", "subtype"), false),
 			Arguments.of(createEvent("granho", "grauts"), true),
-			Arguments.of(createEvent("GRANHO", "GRAUTS"), true));
+			Arguments.of(createEvent("GRANHO", "GRAUTS"), true),
+			Arguments.of(createEvent("KOMFAST", null), false),
+			Arguments.of(createEvent(null, "KOMFASVA"), false),
+			Arguments.of(createEvent("komfast", "komfasva"), true),
+			Arguments.of(createEvent("KOMFAST", "KOMFASVA"), true),
+			Arguments.of(createEvent("GRANHO", "KOMFASVA"), false),
+			Arguments.of(createEvent("KOMFAST", "GRAUTS"), false));
 	}
 
 	private static Stream<Arguments> filterNeighborhoodNotificationsArgumentProvider() {
@@ -50,7 +56,16 @@ class ByggrFilterUtilityTest {
 			Arguments.of(List.of(createEvent("granho", "grauts", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 1),
 			Arguments.of(List.of(
 				createEvent("granho", "grauts", LocalDate.now()),
-				createEvent("granho", "grauts", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 2));
+				createEvent("granho", "grauts", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 2),
+			Arguments.of(List.of(createEvent(null, "KOMFASVA", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("KOMFAST", null, LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASVA", LocalDate.now())), "otherId", 0, 0),
+			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASVA", LocalDate.now().minusDays(61))), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASVA", LocalDate.now().minusDays(30))), STAKEHOLDER_LEGAL_ID, 1, 1),
+			Arguments.of(List.of(createEvent("komfast", "komfasva", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 1),
+			Arguments.of(List.of(
+				createEvent("KOMFAST", "KOMFASVA", LocalDate.now()),
+				createEvent("GRANHO", "GRAUTS", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 2));
 	}
 
 	private static Stream<Arguments> filterErrandsForApplicantArgumentProvider() {
@@ -111,7 +126,7 @@ class ByggrFilterUtilityTest {
 	}
 
 	@Test
-	void filterNeighborhoodNotificationsWhenUnwantedEventTypesExists() {
+	void filterNeighborhoodNotificationsWhenUnwantedEventTypesExistsForGranho() {
 		// Prepare list of unwanted subtype
 		setField(byggrFilterUtility, "unwantedSubtypes", List.of("GRASVA"));
 
@@ -121,7 +136,19 @@ class ByggrFilterUtilityTest {
 
 		// Act and assert
 		assertThat(byggrFilterUtility.filterNeighborhoodNotifications(errands, null)).isEmpty();
+	}
 
+	@Test
+	void filterNeighborhoodNotificationsWhenUnwantedEventTypesExistsForKomfast() {
+		// Prepare list of unwanted subtype
+		setField(byggrFilterUtility, "unwantedSubtypes", List.of("GRASVA"));
+
+		final var errands = List.of(ByggrErrandDto.builder()
+			.withEvents(List.of(createEvent("KOMFAST", "KOMFASVA"), createEvent("KOMFAST", "GRASVA")))
+			.build());
+
+		// Act and assert
+		assertThat(byggrFilterUtility.filterNeighborhoodNotifications(errands, null)).isEmpty();
 	}
 
 	@ParameterizedTest
