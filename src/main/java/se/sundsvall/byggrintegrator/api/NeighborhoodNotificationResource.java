@@ -45,7 +45,7 @@ class NeighborhoodNotificationResource {
 
 	@GetMapping(path = "/neighborhood-notifications/{identifier}/errands", produces = APPLICATION_JSON_VALUE)
 	@Operation(summary = "Lists all neighborhood notifications where the provided identifier is a stakeholder",
-		description = "Returns errands filtered by: valid GRANHO events with subtype GRAUTS, excluding configured unwanted event types, matching the identifier as a stakeholder in events not older than 60 days",
+		description = "Returns errands filtered by: valid GRANHO events with subtype GRAUTS or KOMFAST events with subtype KOMFASVA, excluding configured unwanted event types, matching the identifier as a stakeholder in events not older than 60 days",
 		responses = {
 			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true),
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))

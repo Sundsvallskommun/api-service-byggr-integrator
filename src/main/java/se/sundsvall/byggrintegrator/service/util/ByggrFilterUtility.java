@@ -3,6 +3,7 @@ package se.sundsvall.byggrintegrator.service.util;
 import generated.se.sundsvall.arendeexport.v8.HandelseHandling;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,8 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
  * notifications. If an errand contains an event with event type matching one of the defined value(s), the errand is
  * filtered out from the
  * returned response. If property is not set, then no filtering is made. Observe that filtering is always done regarding
- * that the errand must have a GRANHO event with event type GRAUTS to be returned in the response.
+ * that the errand must have a valid event type/subtype pair (GRANHO/GRAUTS or KOMFAST/KOMFASVA) to be returned in the
+ * response.
  * <p>
  * The third setting (document-types unwanted-document-types) is used to filter documents when fetching a
  * neighborhood-notification. There is some documents that should not be included in the response and this setting is
@@ -47,8 +49,9 @@ public class ByggrFilterUtility {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ByggrFilterUtility.class);
 
-	private static final String WANTED_TYPE = "GRANHO";
-	private static final String WANTED_SUBTYPE = "GRAUTS";
+	private static final Map<String, String> WANTED_TYPE_SUBTYPE_PAIRS = Map.of(
+		"GRANHO", "GRAUTS",
+		"KOMFAST", "KOMFASVA");
 
 	private final List<String> applicantRoles;
 	private final List<String> unwantedSubtypes;
@@ -70,11 +73,21 @@ public class ByggrFilterUtility {
 	}
 
 	public static boolean isValidEvent(final Event event) {
-		if (Objects.nonNull(event) && WANTED_TYPE.equalsIgnoreCase(event.getEventType()) && WANTED_SUBTYPE.equalsIgnoreCase(event.getEventSubtype())) {
-			LOG.info("Valid event with type {} and subtype {} having id {} found", WANTED_TYPE, WANTED_SUBTYPE, event.getId());
+		if (Objects.nonNull(event) && isWantedTypePair(event.getEventType(), event.getEventSubtype())) {
+			LOG.info("Valid event with type {} and subtype {} having id {} found", event.getEventType(), event.getEventSubtype(), event.getId());
 			return true;
 		}
 		return false;
+	}
+
+	private static boolean isWantedTypePair(final String type, final String subtype) {
+		return WANTED_TYPE_SUBTYPE_PAIRS.entrySet().stream()
+			.anyMatch(entry -> entry.getKey().equalsIgnoreCase(type) && entry.getValue().equalsIgnoreCase(subtype));
+	}
+
+	private static boolean isWantedType(final String type) {
+		return WANTED_TYPE_SUBTYPE_PAIRS.keySet().stream()
+			.anyMatch(key -> key.equalsIgnoreCase(type));
 	}
 
 	/**
@@ -114,11 +127,11 @@ public class ByggrFilterUtility {
 
 	private boolean isInvalidEvent(final Event event) {
 		final var unwantedEvent = Objects.nonNull(event) && ofNullable(unwantedSubtypes)
-			.map(list -> WANTED_TYPE.equalsIgnoreCase(event.getEventType()) && list.stream().anyMatch(event.getEventSubtype()::equalsIgnoreCase))
+			.map(list -> isWantedType(event.getEventType()) && list.stream().anyMatch(event.getEventSubtype()::equalsIgnoreCase))
 			.orElse(false);
 
 		if (unwantedEvent) {
-			LOG.info("Unwanted eventid with type {} and subtype matching one of {} found: {}", WANTED_TYPE, unwantedSubtypes, event.getId());
+			LOG.info("Unwanted event with type {} and subtype matching one of {} found: {}", event.getEventType(), unwantedSubtypes, event.getId());
 		}
 
 		return unwantedEvent;
@@ -130,8 +143,7 @@ public class ByggrFilterUtility {
 		}
 
 		final var filteredEvents = errand.getEvents().stream()
-			.filter(event -> WANTED_TYPE.equalsIgnoreCase(event.getEventType()))
-			.filter(event -> WANTED_SUBTYPE.equalsIgnoreCase(event.getEventSubtype()))
+			.filter(event -> isWantedTypePair(event.getEventType(), event.getEventSubtype()))
 			.filter(event -> ofNullable(event.getEventDate()).map(eventDate -> eventDate.isAfter(now().minusDays(61))).orElse(false)) // Events must have a date and not be older than 60 days to be included
 			.filter(event -> event.getStakeholders().stream().anyMatch(stakeholder -> LegalIdUtility.isEqual(stakeholder.getLegalId(), identifier)))
 			.toList();
