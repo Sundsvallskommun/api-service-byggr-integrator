@@ -50,7 +50,7 @@ public class ByggrIntegratorService {
 	public static final String ERROR_FILE_NOT_FOUND = "No file with id %s was found";
 	public static final String ERROR_FILE_COULD_NOT_BE_READ = "Could not read file content for document data with id %s";
 
-	private static final List<String> SUPPRESSED_HANDELSE_HANDLING_TYPE = List.of("GRA");
+	private static final List<String> SUPPRESSED_HANDELSE_HANDLING_TYPE = List.of("GRA", "REMISS", "UNDUT");
 
 	private final ByggrIntegrationMapper byggrIntegrationMapper;
 	private final ByggrIntegration byggrIntegration;
@@ -143,7 +143,7 @@ public class ByggrIntegratorService {
 			.filter(remiss -> referralReferenceId == remiss.getRemissId()).findFirst()
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, "Remiss not found"));
 
-		// Filter out unwanted types (e.g. GRA).
+		// Filter out unwanted types (GRA, REMISS, UNDUT).
 		final var filteredHandelseHandlingList = Optional.ofNullable(remissResult.getUtskicksHandlingar().getHandling()).orElse(emptyList())
 			.stream()
 			.filter(Objects::nonNull)

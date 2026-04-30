@@ -204,6 +204,33 @@ class ByggrIntegratorServiceTest {
 		verifyNoInteractions(mockApiResponseMapper);
 	}
 
+	@Test
+	void testListNeighborhoodNotificationFilesFiltersUnwantedHandlingTypes() {
+		final var identifier = PRIVATE_IDENTIFIER;
+		final var processedIdentifier = PROCESSED_PRIVATE_IDENTIFIER;
+		final var keepHandling = new HandelseHandling().withTyp("BIL");
+		final var graHandling = new HandelseHandling().withTyp("GRA");
+		final var remissHandling = new HandelseHandling().withTyp("REMISS");
+		final var undutHandling = new HandelseHandling().withTyp("UNDUT");
+
+		when(mockByggrIntegration.getErrand(BYGGR_ERRAND_NUMBER)).thenReturn(OBJECT_FACTORY.createGetArendeResponse());
+		when(mockByggrIntegrationMapper.mapToByggrErrandDto(any())).thenReturn(ByggrErrandDto.builder().build());
+		when(mockByggrFilterUtility.filterEvents(eq(processedIdentifier), any(ByggrErrandDto.class))).thenReturn(ByggrErrandDto.builder().build());
+		when(mockTemplateMapper.generateFileList(anyString(), any(ByggrErrandDto.class), any(), any())).thenReturn("html");
+		when(mockByggrIntegration.getRemisserByPersOrgNr(any())).thenReturn(
+			new GetRemisserByPersOrgNrResponse().withGetRemisserByPersOrgNrResult(new ArrayOfRemiss().withRemiss(new Remiss()
+				.withUtskicksHandlingar(new ArrayOfHandelseHandling().withHandling(keepHandling, graHandling, remissHandling, undutHandling)))));
+
+		service.listNeighborhoodNotificationFiles(MUNICIPALITY_ID, identifier, BYGGR_ERRAND_NUMBER, REFERRAL_REFERENCE);
+
+		@SuppressWarnings("unchecked")
+		final var captor = org.mockito.ArgumentCaptor.forClass(List.class);
+		verify(mockTemplateMapper).generateFileList(eq(MUNICIPALITY_ID), any(ByggrErrandDto.class), any(), captor.capture());
+		assertThat(captor.getValue())
+			.extracting(handling -> ((HandelseHandling) handling).getTyp())
+			.containsExactly("BIL");
+	}
+
 	@ParameterizedTest
 	@MethodSource("identifierProvider")
 	void testFindApplicantErrands(final String identifier, final String processedIdentifier) throws Exception {
