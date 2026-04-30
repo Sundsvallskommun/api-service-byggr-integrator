@@ -1,4 +1,5 @@
 <p th:text="${supplementaryHeader}"/>
+<p>För att kunna ta del av dina handlingar i efterhand behöver du spara ner dem innan du skickar in ditt svar. När svaret har skickats in finns handlingarna inte längre tillgängliga i e-tjänsten.</p>
 <ul>
 	<li th:each="file: ${fileList}"><a th:href="${file.fileUrl}" th:text="${file.fileName}"></a></li>
 </ul>
