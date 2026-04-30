@@ -404,14 +404,20 @@ class ByggrIntegratorServiceTest {
 				.withRemiss(new Remiss()
 					.withDnr(caseNumber)
 					.withFastighetsbeteckning(propertyDesignation1)
+					.withMottagare(new generated.se.sundsvall.arendeexport.v4.HandelseIntressent()
+						.withRollLista(new generated.se.sundsvall.arendeexport.v4.ArrayOfString2().withRoll("GRAN")))
 					.withRemissId(123),
 					new Remiss()
 						.withDnr(caseNumber)
 						.withFastighetsbeteckning(propertyDesignation1)
+						.withMottagare(new generated.se.sundsvall.arendeexport.v4.HandelseIntressent()
+							.withRollLista(new generated.se.sundsvall.arendeexport.v4.ArrayOfString2().withRoll("FAG")))
 						.withRemissId(456),
 					new Remiss()
 						.withDnr(caseNumber)
 						.withFastighetsbeteckning(propertyDesignation2)
+						.withMottagare(new generated.se.sundsvall.arendeexport.v4.HandelseIntressent()
+							.withRollLista(new generated.se.sundsvall.arendeexport.v4.ArrayOfString2().withRoll("GRAN")))
 						.withRemissId(789))));
 		when(mockApiResponseMapper.mapToKeyValue(any())).thenCallRealMethod();
 
@@ -421,9 +427,9 @@ class ByggrIntegratorServiceTest {
 		verify(mockApiResponseMapper).mapToKeyValue(any());
 
 		assertThat(result).hasSize(3).extracting(KeyValue::key, KeyValue::value).contains(
-			tuple("1", "propertyDesignation1 - ej besvarad [123]"),
-			tuple("2", "propertyDesignation1 - ej besvarad [456]"),
-			tuple("3", "propertyDesignation2 - ej besvarad [789]"));
+			tuple("1", "propertyDesignation1 – Lämna svar som granne [123]"),
+			tuple("2", "propertyDesignation1 – Lämna svar som fastighetsägare [456]"),
+			tuple("3", "propertyDesignation2 – Lämna svar som granne [789]"));
 	}
 
 	private void verifyNoMoreInterations() {

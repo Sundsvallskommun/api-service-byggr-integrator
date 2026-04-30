@@ -50,12 +50,22 @@ class ApiResponseMapperTest {
 
 	@Test
 	void mapStringIntegerMapToKeyValue() {
-		final Map<String, Map<Integer, String>> myMap = Map.of("key1", Map.of(1, "1234"), "key2", Map.of(2, ""));
+		final Map<String, Map<Integer, String>> myMap = Map.of("key1", Map.of(1, "GRAN"), "key2", Map.of(2, "FAG"));
 
 		final List<KeyValue> keyValues = apiResponseMapper.mapToKeyValue(myMap);
 
 		assertThat(keyValues).hasSize(2).satisfiesExactlyInAnyOrder(
-			keyVal -> assertThat(keyVal.value()).isEqualTo("key1 - besvarad 1234 [1]"),
-			keyVal -> assertThat(keyVal.value()).isEqualTo("key2 - ej besvarad [2]"));
+			keyVal -> assertThat(keyVal.value()).isEqualTo("key1 – Lämna svar som granne [1]"),
+			keyVal -> assertThat(keyVal.value()).isEqualTo("key2 – Lämna svar som fastighetsägare [2]"));
+	}
+
+	@Test
+	void mapStringIntegerMapToKeyValueFiltersUnknownRoles() {
+		final Map<String, Map<Integer, String>> myMap = Map.of("key1", Map.of(1, "GRAN"), "key2", Map.of(2, "OTHER"));
+
+		final List<KeyValue> keyValues = apiResponseMapper.mapToKeyValue(myMap);
+
+		assertThat(keyValues).hasSize(1).satisfiesExactly(
+			keyVal -> assertThat(keyVal.value()).isEqualTo("key1 – Lämna svar som granne [1]"));
 	}
 }

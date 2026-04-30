@@ -14,7 +14,11 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 @Component
 public class ApiResponseMapper {
 
-	private static final String KEY_TEMPLATE = "%s%s [%d]";
+	private static final String KEY_TEMPLATE = "%s – Lämna svar som %s [%d]";
+	static final String ROLE_NEIGHBOUR = "GRAN";
+	static final String ROLE_PROPERTY_OWNER = "FAG";
+	private static final String ROLE_TEXT_NEIGHBOUR = "granne";
+	private static final String ROLE_TEXT_PROPERTY_OWNER = "fastighetsägare";
 
 	public List<KeyValue> mapToKeyValueResponseList(final List<ByggrErrandDto> errands) {
 		final var position = new AtomicInteger(1);
@@ -45,18 +49,27 @@ public class ApiResponseMapper {
 			.toList();
 	}
 
-	private List<String> formatRemissInfo(final String propertyDesignation, final Map<Integer, String> remissIdToSvarDatumMap) {
-		return remissIdToSvarDatumMap.entrySet().stream()
+	private List<String> formatRemissInfo(final String propertyDesignation, final Map<Integer, String> remissIdToRoleMap) {
+		return remissIdToRoleMap.entrySet().stream()
 			.map(entry -> {
 				final var remissId = entry.getKey();
-				final var svarDatum = entry.getValue();
-
-				final var statusText = (svarDatum == null || svarDatum.isBlank() || "nil".equalsIgnoreCase(svarDatum))
-					? " - ej besvarad"
-					: " - besvarad " + svarDatum.split("T")[0];
-
-				return KEY_TEMPLATE.formatted(propertyDesignation, statusText, remissId);
+				final var roleText = toRoleText(entry.getValue());
+				if (roleText == null) {
+					return null;
+				}
+				return KEY_TEMPLATE.formatted(propertyDesignation, roleText, remissId);
 			})
+			.filter(Objects::nonNull)
 			.toList();
+	}
+
+	private String toRoleText(final String role) {
+		if (ROLE_NEIGHBOUR.equalsIgnoreCase(role)) {
+			return ROLE_TEXT_NEIGHBOUR;
+		}
+		if (ROLE_PROPERTY_OWNER.equalsIgnoreCase(role)) {
+			return ROLE_TEXT_PROPERTY_OWNER;
+		}
+		return null;
 	}
 }
