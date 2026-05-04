@@ -60,7 +60,7 @@
 							</intressentKommunikation>
 						</intressentKommunikationLista>
 						<rollLista>
-							<roll>KPER</roll>
+							<roll>GRAN</roll>
 						</rollLista>
 					</mottagare>
 					<fnr xsi:nil="true" xmlns="www.tekis.se/arende" />

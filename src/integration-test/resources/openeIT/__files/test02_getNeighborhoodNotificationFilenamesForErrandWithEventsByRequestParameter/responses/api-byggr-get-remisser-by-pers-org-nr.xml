@@ -96,6 +96,32 @@
                             </dokument>
                             <refTyp>Bifogad</refTyp>
                         </handling>
+                        <handling handlingId="1535784" checksum="40">
+                            <typ>REMISS</typ>
+                            <status>Expedierad</status>
+                            <handlingDatum>2025-11-10</handlingDatum>
+                            <uuid>98e13257-1cc8-4168-a562-8c3982638618</uuid>
+                            <makulerad>false</makulerad>
+                            <dokument dokId="1370312" checksum="1991139143|638983649020000001">
+                                <namn>Remiss</namn>
+                                <skapadDatum>2025-11-10T09:48:20+01:00</skapadDatum>
+                                <handlaggare handlaggareId="682" signatur="sus11ost"/>
+                            </dokument>
+                            <refTyp>Bifogad</refTyp>
+                        </handling>
+                        <handling handlingId="1535785" checksum="41">
+                            <typ>UNDUT</typ>
+                            <status>Expedierad</status>
+                            <handlingDatum>2025-11-10</handlingDatum>
+                            <uuid>98e13257-1cc8-4168-a562-8c3982638619</uuid>
+                            <makulerad>false</makulerad>
+                            <dokument dokId="1370313" checksum="1991139143|638983649020000002">
+                                <namn>Underrättelse</namn>
+                                <skapadDatum>2025-11-10T09:48:20+01:00</skapadDatum>
+                                <handlaggare handlaggareId="682" signatur="sus11ost"/>
+                            </dokument>
+                            <refTyp>Bifogad</refTyp>
+                        </handling>
 					</utskicksHandlingar>
 					<senastSvarDatum xmlns="www.tekis.se/arende">2024-09-25</senastSvarDatum>
 					<svarDatum xmlns="www.tekis.se/arende">2024-09-30T15:17:23.817</svarDatum>

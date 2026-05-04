@@ -1,5 +1,7 @@
 package se.sundsvall.byggrintegrator.service;
 
+import generated.se.sundsvall.arendeexport.v4.AbstractArendeIntressent;
+import generated.se.sundsvall.arendeexport.v4.ArrayOfString2;
 import generated.se.sundsvall.arendeexport.v4.Remiss;
 import generated.se.sundsvall.arendeexport.v8.Dokument;
 import generated.se.sundsvall.arendeexport.v8.GetDocumentResponse;
@@ -14,7 +16,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.xml.datatype.XMLGregorianCalendar;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -49,7 +50,7 @@ public class ByggrIntegratorService {
 	public static final String ERROR_FILE_NOT_FOUND = "No file with id %s was found";
 	public static final String ERROR_FILE_COULD_NOT_BE_READ = "Could not read file content for document data with id %s";
 
-	private static final List<String> SUPPRESSED_HANDELSE_HANDLING_TYPE = List.of("GRA");
+	private static final List<String> SUPPRESSED_HANDELSE_HANDLING_TYPE = List.of("GRA", "REMISS", "UNDUT");
 
 	private final ByggrIntegrationMapper byggrIntegrationMapper;
 	private final ByggrIntegration byggrIntegration;
@@ -142,7 +143,7 @@ public class ByggrIntegratorService {
 			.filter(remiss -> referralReferenceId == remiss.getRemissId()).findFirst()
 			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, "Remiss not found"));
 
-		// Filter out unwanted types (e.g. GRA).
+		// Filter out unwanted types (GRA, REMISS, UNDUT).
 		final var filteredHandelseHandlingList = Optional.ofNullable(remissResult.getUtskicksHandlingar().getHandling()).orElse(emptyList())
 			.stream()
 			.filter(Objects::nonNull)
@@ -177,10 +178,9 @@ public class ByggrIntegratorService {
 		final var propertyDesignationAndRemissIdMap = remisser.getGetRemisserByPersOrgNrResult().getRemiss().stream()
 			// Filter to only include remisser with the given case number
 			.filter(remiss -> caseNumber.equals(remiss.getDnr()) && remiss.getFastighetsbeteckning() != null)
-			// Creates a map where the propertyDesignation is the key and the value is a map containing remissId and svarDatum
+			// Creates a map where the propertyDesignation is the key and the value is a map containing remissId and recipient role
 			.collect(Collectors.toMap(Remiss::getFastighetsbeteckning,
-				remiss -> Map.of(remiss.getRemissId(),
-					Optional.ofNullable(remiss.getSvarDatum()).map(XMLGregorianCalendar::toString).orElse("")),
+				remiss -> Map.of(remiss.getRemissId(), extractRecipientRole(remiss)),
 				(map1, map2) -> {
 					var merged = new LinkedHashMap<>(map1);
 					merged.putAll(map2);
@@ -188,6 +188,18 @@ public class ByggrIntegratorService {
 				}));
 
 		return apiResponseMapper.mapToKeyValue(propertyDesignationAndRemissIdMap);
+	}
+
+	private String extractRecipientRole(final Remiss remiss) {
+		return Optional.ofNullable(remiss.getMottagare())
+			.map(AbstractArendeIntressent::getRollLista)
+			.map(ArrayOfString2::getRoll)
+			.filter(roller -> !roller.isEmpty())
+			.map(roller -> roller.stream()
+				.filter(role -> ApiResponseMapper.ROLE_NEIGHBOUR.equalsIgnoreCase(role) || ApiResponseMapper.ROLE_PROPERTY_OWNER.equalsIgnoreCase(role))
+				.findFirst()
+				.orElse(roller.getFirst()))
+			.orElse("");
 	}
 
 	private void addToResponse(final String documentId, final HttpServletResponse response, final Dokument byggRFile) {

@@ -105,6 +105,7 @@ class TemplateMapperTest {
 
 		assertThat(html).containsIgnoringWhitespaces("""
 			<p>Bygglov för tillbyggnad av fritidshus (RUNSVIK 1:22)</p>
+			<p>För att kunna ta del av dina handlingar i efterhand behöver du spara ner dem innan du skickar in ditt svar. När svaret har skickats in finns handlingarna inte längre tillgängliga i e-tjänsten.</p>
 			<ul>
 				<li><a href="https://somewhere.com/1.0/1234/files/3?token=test-token-uuid">Ritningar (file3.pdf)</a></li>
 				<li><a href="https://somewhere.com/1.0/1234/files/2?token=test-token-uuid">Planer (file2.txt)</a></li>
