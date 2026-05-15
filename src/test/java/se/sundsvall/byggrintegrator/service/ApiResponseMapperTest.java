@@ -1,8 +1,13 @@
 package se.sundsvall.byggrintegrator.service;
 
+import generated.se.sundsvall.arendeexport.v4.ArrayOfString2;
+import generated.se.sundsvall.arendeexport.v4.HandelseIntressent;
+import generated.se.sundsvall.arendeexport.v4.Remiss;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +51,68 @@ class ApiResponseMapperTest {
 		final var response = apiResponseMapper.mapToWeight(generateArendeResponse("dnr"));
 
 		assertThat(response.getValue()).isEqualTo("11"); // BL translated to integer value according to the CaseTypeEnum
+	}
+
+	@Test
+	void testMapToWeight_remissNeighbour() {
+		final var remiss = new Remiss().withMottagare(new HandelseIntressent()
+			.withRollLista(new ArrayOfString2().withRoll("GRAN")));
+
+		final var response = apiResponseMapper.mapToWeight(remiss);
+
+		assertThat(response.getValue()).isEqualTo("1");
+	}
+
+	@Test
+	void testMapToWeight_remissPropertyOwner() {
+		final var remiss = new Remiss().withMottagare(new HandelseIntressent()
+			.withRollLista(new ArrayOfString2().withRoll("FAG")));
+
+		final var response = apiResponseMapper.mapToWeight(remiss);
+
+		assertThat(response.getValue()).isEqualTo("2");
+	}
+
+	@Test
+	void testMapToWeight_remissPicksGranOverNoise() {
+		final var remiss = new Remiss().withMottagare(new HandelseIntressent()
+			.withRollLista(new ArrayOfString2().withRoll("SAMF", "GRAN")));
+
+		final var response = apiResponseMapper.mapToWeight(remiss);
+
+		assertThat(response.getValue()).isEqualTo("1");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {
+		"KPER", "SAMF", "OTHER"
+	})
+	void testMapToWeight_remissUnknownRoles(final String role) {
+		final var remiss = new Remiss().withMottagare(new HandelseIntressent()
+			.withRollLista(new ArrayOfString2().withRoll(role)));
+
+		final var response = apiResponseMapper.mapToWeight(remiss);
+
+		assertThat(response.getValue()).isEqualTo("0");
+	}
+
+	@Test
+	void testMapToWeight_remissEmptyRollLista() {
+		final var remiss = new Remiss().withMottagare(new HandelseIntressent()
+			.withRollLista(new ArrayOfString2()));
+
+		final var response = apiResponseMapper.mapToWeight(remiss);
+
+		assertThat(response.getValue()).isEqualTo("0");
+	}
+
+	@Test
+	void testMapToWeight_remissNullMottagare() {
+		final var remiss = new Remiss().withMottagare(null);
+
+		final var response = apiResponseMapper.mapToWeight(remiss);
+
+		assertThat(response.getValue()).isEqualTo("0");
 	}
 
 	@Test

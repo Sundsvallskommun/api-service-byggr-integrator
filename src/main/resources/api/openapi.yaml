@@ -143,6 +143,68 @@ paths:
             application/xml:
               schema:
                 $ref: "#/components/schemas/Weight"
+  /{municipalityId}/opene/referrals/type:
+    get:
+      tags:
+      - Open-E
+      summary: Return xml structure with the referral recipient role weight for the
+        matching referral
+      operationId: getReferralTypeWithRequestParameter
+      parameters:
+      - name: municipalityId
+        in: path
+        description: Municipality ID
+        required: true
+        schema:
+          type: string
+        example: 2281
+      - name: identifier
+        in: query
+        description: Personal or organization number
+        required: true
+        schema:
+          type: string
+          minLength: 1
+        example: 190102031234
+      - name: referralReference
+        in: query
+        description: Referral reference from ByggR to match
+        required: true
+        schema:
+          type: string
+          minLength: 1
+        example: "SILJE 2:65 – Lämna svar som fastighetsägare [188115]"
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Weight"
+        "400":
+          description: Bad Request
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Weight"
+        "404":
+          description: Not Found
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Weight"
+        "500":
+          description: Internal Server Error
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Weight"
+        "502":
+          description: Bad Gateway
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Weight"
   /{municipalityId}/opene/cases/property-designation:
     get:
       tags:

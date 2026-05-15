@@ -70,4 +70,15 @@ class OpeneIT extends AbstractAppTest {
 			.sendRequestAndVerifyResponse();
 	}
 
+	@Test
+	void test04_getReferralTypeForExistingReferralWithRequestParameter() {
+		setupCall()
+			.withServicePath("/2281/opene/referrals/type?identifier=190304056789&referralReference=SKÖNSMON 1:1 - besvarad 2024-09-30 [305903]")
+			.withHttpMethod(GET)
+			.withExpectedResponseStatus(OK)
+			.withExpectedResponseHeader(CONTENT_TYPE, List.of(APPLICATION_XML_VALUE))
+			.withExpectedResponse(RESPONSE_FILE_XML)
+			.sendRequestAndVerifyResponse();
+	}
+
 }

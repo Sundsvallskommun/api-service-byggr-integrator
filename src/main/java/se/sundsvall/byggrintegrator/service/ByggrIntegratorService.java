@@ -47,10 +47,12 @@ public class ByggrIntegratorService {
 	public static final String TEMPLATE_CONTENT_DISPOSITION_HEADER_VALUE = "attachment; filename=\"%s\"";
 	public static final String ERROR_ROLES_NOT_FOUND = "No roles found, cannot continue fetching neighborhood notifications";
 	public static final String ERROR_ERRAND_NOT_FOUND = "No errand with diary number %s was found";
+	public static final String ERROR_REMISS_NOT_FOUND = "No remiss with referralReference %s was found";
 	public static final String ERROR_FILE_NOT_FOUND = "No file with id %s was found";
 	public static final String ERROR_FILE_COULD_NOT_BE_READ = "Could not read file content for document data with id %s";
 
 	private static final List<String> SUPPRESSED_HANDELSE_HANDLING_TYPE = List.of("GRA", "REMISS", "UNDUT");
+	private static final Pattern REFERRAL_REFERENCE_ID_PATTERN = Pattern.compile("\\[(\\d+)]");
 
 	private final ByggrIntegrationMapper byggrIntegrationMapper;
 	private final ByggrIntegration byggrIntegration;
@@ -120,18 +122,26 @@ public class ByggrIntegratorService {
 			.orElseThrow(() -> createProblem(NOT_FOUND, ERROR_ERRAND_NOT_FOUND.formatted(caseNumber)));
 	}
 
+	@Cacheable("getReferralTypeCache")
+	public Weight getReferralType(final String identifier, final String referralReference) {
+		final var referralReferenceId = extractReferralReferenceId(referralReference);
+		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
+
+		return byggrIntegration.getRemisserByPersOrgNr(processedIdentifier).getGetRemisserByPersOrgNrResult()
+			.getRemiss()
+			.stream()
+			.filter(remiss -> referralReferenceId == remiss.getRemissId())
+			.findFirst()
+			.map(apiResponseMapper::mapToWeight)
+			.orElseThrow(() -> createProblem(NOT_FOUND, ERROR_REMISS_NOT_FOUND.formatted(referralReference)));
+	}
+
 	@Cacheable("listNeighborhoodNotificationFilesCache")
 	public String listNeighborhoodNotificationFiles(final String municipalityId, final String identifier, final String caseNumber, final String referralReference) {
 		// Fetch errand from ByggR
 		final var result = byggrIntegration.getErrand(caseNumber);
 
-		// Extract referralReferenceId
-		final var pattern = Pattern.compile("\\[(\\d+)]");
-		final int referralReferenceId = Optional.ofNullable(referralReference)
-			.map(pattern::matcher)
-			.filter(Matcher::find)
-			.map(m -> Integer.parseInt(m.group(1)))
-			.orElse(0);
+		final var referralReferenceId = extractReferralReferenceId(referralReference);
 
 		// Prefix identifier if it contains organizations legal id and add hyphen to identifier as ByggR integration formats
 		// legal id that way
@@ -188,6 +198,14 @@ public class ByggrIntegratorService {
 				}));
 
 		return apiResponseMapper.mapToKeyValue(propertyDesignationAndRemissIdMap);
+	}
+
+	private static int extractReferralReferenceId(final String referralReference) {
+		return Optional.ofNullable(referralReference)
+			.map(REFERRAL_REFERENCE_ID_PATTERN::matcher)
+			.filter(Matcher::find)
+			.map(m -> Integer.parseInt(m.group(1)))
+			.orElse(0);
 	}
 
 	private String extractRecipientRole(final Remiss remiss) {

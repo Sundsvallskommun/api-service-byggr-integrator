@@ -1,15 +1,21 @@
 package se.sundsvall.byggrintegrator.service;
 
+import generated.se.sundsvall.arendeexport.v4.AbstractArendeIntressent;
+import generated.se.sundsvall.arendeexport.v4.ArrayOfString2;
+import generated.se.sundsvall.arendeexport.v4.Remiss;
 import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.stereotype.Component;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
+
+import static java.util.Collections.emptyList;
 
 @Component
 public class ApiResponseMapper {
@@ -37,6 +43,22 @@ public class ApiResponseMapper {
 	public Weight mapToWeight(final GetArendeResponse errand) {
 		return Weight.builder()
 			.withValue(CaseTypeEnum.translate(errand.getGetArendeResult().getArendetyp()))
+			.build();
+	}
+
+	public Weight mapToWeight(final Remiss remiss) {
+		final var weightValue = Optional.ofNullable(remiss.getMottagare())
+			.map(AbstractArendeIntressent::getRollLista)
+			.map(ArrayOfString2::getRoll)
+			.orElse(emptyList())
+			.stream()
+			.map(ReferralRoleEnum::translate)
+			.filter(w -> !ReferralRoleEnum.UNKNOWN_WEIGHT.equals(w))
+			.findFirst()
+			.orElse(ReferralRoleEnum.UNKNOWN_WEIGHT);
+
+		return Weight.builder()
+			.withValue(weightValue)
 			.build();
 	}
 
