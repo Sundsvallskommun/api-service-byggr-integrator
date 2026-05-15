@@ -362,7 +362,7 @@ class ByggrIntegratorServiceTest {
 			.satisfies(throwableProblem -> {
 				assertThat(throwableProblem.getStatus()).isEqualTo(NOT_FOUND);
 				assertThat(throwableProblem.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-				assertThat(throwableProblem.getDetail()).isEqualTo("No remiss with referralReference SILJE 2:65 [999999] was found");
+				assertThat(throwableProblem.getDetail()).isEqualTo("No referral with reference SILJE 2:65 [999999] was found");
 			});
 
 		verify(mockByggrIntegration).getRemisserByPersOrgNr(PROCESSED_PRIVATE_IDENTIFIER);
@@ -382,7 +382,7 @@ class ByggrIntegratorServiceTest {
 			.satisfies(throwableProblem -> {
 				assertThat(throwableProblem.getStatus()).isEqualTo(NOT_FOUND);
 				assertThat(throwableProblem.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
-				assertThat(throwableProblem.getDetail()).isEqualTo("No remiss with referralReference SILJE 2:65 – Lämna svar som fastighetsägare was found");
+				assertThat(throwableProblem.getDetail()).isEqualTo("No referral with reference SILJE 2:65 – Lämna svar som fastighetsägare was found");
 			});
 
 		verify(mockByggrIntegration).getRemisserByPersOrgNr(PROCESSED_PRIVATE_IDENTIFIER);

@@ -47,7 +47,7 @@ public class ByggrIntegratorService {
 	public static final String TEMPLATE_CONTENT_DISPOSITION_HEADER_VALUE = "attachment; filename=\"%s\"";
 	public static final String ERROR_ROLES_NOT_FOUND = "No roles found, cannot continue fetching neighborhood notifications";
 	public static final String ERROR_ERRAND_NOT_FOUND = "No errand with diary number %s was found";
-	public static final String ERROR_REMISS_NOT_FOUND = "No remiss with referralReference %s was found";
+	public static final String ERROR_REFERRAL_NOT_FOUND = "No referral with reference %s was found";
 	public static final String ERROR_FILE_NOT_FOUND = "No file with id %s was found";
 	public static final String ERROR_FILE_COULD_NOT_BE_READ = "Could not read file content for document data with id %s";
 
@@ -133,7 +133,7 @@ public class ByggrIntegratorService {
 			.filter(remiss -> referralReferenceId == remiss.getRemissId())
 			.findFirst()
 			.map(apiResponseMapper::mapToWeight)
-			.orElseThrow(() -> createProblem(NOT_FOUND, ERROR_REMISS_NOT_FOUND.formatted(referralReference)));
+			.orElseThrow(() -> createProblem(NOT_FOUND, ERROR_REFERRAL_NOT_FOUND.formatted(referralReference)));
 	}
 
 	@Cacheable("listNeighborhoodNotificationFilesCache")
