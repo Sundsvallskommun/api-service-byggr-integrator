@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+	<SOAP-ENV:Header />
+	<SOAP-ENV:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<GetRemisserByPersOrgNrResponse xmlns="www.tekis.se/ServiceContract">
+			<GetRemisserByPersOrgNrResult>
+				<Remiss utskickId="305903" remissId="305903">
+					<dnr xmlns="www.tekis.se/arende">BYGG 2024-000019</dnr>
+					<mottagare intressentId="132360" persOrgNr="19030405-6789" arForetag="false"
+					  intressentVersionId="215809" kundnr="132360" arInternKund="false"
+					  arAktiv="true" checksum="-562864465|1337238894"
+					  docSplitToken="132360"
+					  xmlns="www.tekis.se/arende">
+						<namn>testbolag 3</namn>
+						<rollLista>
+							<roll>FAG</roll>
+						</rollLista>
+					</mottagare>
+					<fnr xsi:nil="true" xmlns="www.tekis.se/arende" />
+					<fastighetsbeteckning xmlns="www.tekis.se/arende">SKÖNSMON 1:1</fastighetsbeteckning>
+					<erfordras xmlns="www.tekis.se/arende">false</erfordras>
+					<senastSvarDatum xmlns="www.tekis.se/arende">2024-09-25</senastSvarDatum>
+					<svarDatum xmlns="www.tekis.se/arende">2024-09-30T15:17:23.817</svarDatum>
+				</Remiss>
+			</GetRemisserByPersOrgNrResult>
+		</GetRemisserByPersOrgNrResponse>
+	</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

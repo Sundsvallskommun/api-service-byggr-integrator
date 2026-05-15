@@ -44,4 +44,15 @@ public class OpeneXmlResource {
 
 		return ok(byggrIntegratorService.getErrandType(caseNumber));
 	}
+
+	@GetMapping(path = "/referrals/type", produces = APPLICATION_XML_VALUE)
+	@Operation(summary = "Return xml structure with the referral recipient role weight for the matching referral",
+		responses = @ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true))
+	public ResponseEntity<Weight> getReferralTypeWithRequestParameter(
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @RequestParam final String identifier,
+		@Parameter(name = "referralReference", description = "Referral reference from ByggR to match", example = "SILJE 2:65 – Lämna svar som fastighetsägare [188115]") @NotBlank @RequestParam final String referralReference) {
+
+		return ok(byggrIntegratorService.getReferralType(identifier, referralReference));
+	}
 }

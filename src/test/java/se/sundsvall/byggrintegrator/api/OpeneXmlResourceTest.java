@@ -29,8 +29,11 @@ class OpeneXmlResourceTest {
 	private static final String INVALID_MUNICIPALITY_ID = "InvalidMunicipalityId";
 	private static final String VALID_MUNICIPALITY_ID = "2281";
 	private static final String CASE_NUMBER = "diaryNumber";
+	private static final String IDENTIFIER = "190102031234";
+	private static final String REFERRAL_REFERENCE = "SILJE 2:65 – Lämna svar som fastighetsägare [188115]";
 	private static final String VALUE = "value";
 	private static final String ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL = "/{municipalityId}/opene/cases/type";
+	private static final String REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL = "/{municipalityId}/opene/referrals/type";
 
 	@MockitoBean
 	private ByggrIntegratorService mockByggrIntegratorService;
@@ -72,6 +75,50 @@ class OpeneXmlResourceTest {
 			.getResponseBody();
 
 		assertThat(responseBody).isNotNull().contains("getErrandTypeWithRequestParameter.municipalityId: not a valid municipality ID");
+
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void testGetReferralTypeWithRequestParameter() {
+		final var weight = Weight.builder().withValue("2").build();
+
+		when(mockByggrIntegratorService.getReferralType(IDENTIFIER, REFERRAL_REFERENCE)).thenReturn(weight);
+
+		final var responseBody = webTestClient.get()
+			.uri(builder -> builder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
+				.queryParam("identifier", IDENTIFIER)
+				.queryParam("referralReference", REFERRAL_REFERENCE)
+				.build(VALID_MUNICIPALITY_ID))
+			.exchange()
+			.expectStatus().isOk()
+			.expectHeader()
+			.contentType(APPLICATION_XML)
+			.expectBody(String.class)
+			.returnResult()
+			.getResponseBody();
+
+		XmlAssert.assertThat(responseBody).isNotNull().and("<Weight>2</Weight>").normalizeWhitespace().areIdentical();
+
+		verify(mockByggrIntegratorService).getReferralType(IDENTIFIER, REFERRAL_REFERENCE);
+		verifyNoMoreInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void testGetReferralTypeWithRequestParameter_faultyMunicipalityId_shouldThrowException() {
+		final var responseBody = webTestClient.get()
+			.uri(builder -> builder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
+				.queryParam("identifier", IDENTIFIER)
+				.queryParam("referralReference", REFERRAL_REFERENCE)
+				.build(INVALID_MUNICIPALITY_ID))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_XML)
+			.expectBody(String.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull().contains("getReferralTypeWithRequestParameter.municipalityId: not a valid municipality ID");
 
 		verifyNoInteractions(mockByggrIntegratorService);
 	}

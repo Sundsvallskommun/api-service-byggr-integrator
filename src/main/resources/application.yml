@@ -38,6 +38,9 @@ cache:
     - name: getErrandTypeCache
       maximum-size: 100
       expire-after-write: PT5M
+    - name: getReferralTypeCache
+      maximum-size: 100
+      expire-after-write: PT5M
     - name: listNeighborhoodNotificationFilesCache
       maximum-size: 100
       expire-after-write: PT5M

@@ -323,6 +323,72 @@ class ByggrIntegratorServiceTest {
 		verifyNoMoreInterations();
 	}
 
+	private static Stream<Arguments> referralTypeProvider() {
+		return Stream.of(
+			Arguments.of(ORG_IDENTIFIER, PROCESSED_ORG_IDENTIFIER, "FAG", "2"),
+			Arguments.of(PRIVATE_IDENTIFIER, PROCESSED_PRIVATE_IDENTIFIER, "GRAN", "1"));
+	}
+
+	@ParameterizedTest
+	@MethodSource("referralTypeProvider")
+	void testGetReferralType(final String identifier, final String processedIdentifier, final String role, final String expectedWeight) {
+		final var referralReference = "SILJE 2:65 [188115]";
+		final var remiss = new Remiss()
+			.withRemissId(188115)
+			.withMottagare(new generated.se.sundsvall.arendeexport.v4.HandelseIntressent()
+				.withRollLista(new generated.se.sundsvall.arendeexport.v4.ArrayOfString2().withRoll(role)));
+
+		when(mockByggrIntegration.getRemisserByPersOrgNr(processedIdentifier)).thenReturn(new GetRemisserByPersOrgNrResponse()
+			.withGetRemisserByPersOrgNrResult(new ArrayOfRemiss().withRemiss(remiss)));
+		when(mockApiResponseMapper.mapToWeight(any(Remiss.class))).thenCallRealMethod();
+
+		final var weight = service.getReferralType(identifier, referralReference);
+
+		assertThat(weight.getValue()).isEqualTo(expectedWeight);
+		verify(mockByggrIntegration).getRemisserByPersOrgNr(processedIdentifier);
+		verify(mockApiResponseMapper).mapToWeight(any(Remiss.class));
+		verifyNoMoreInterations();
+	}
+
+	@Test
+	void testGetReferralType_remissNotFound_throws404() {
+		final var referralReference = "SILJE 2:65 [999999]";
+
+		when(mockByggrIntegration.getRemisserByPersOrgNr(PROCESSED_PRIVATE_IDENTIFIER)).thenReturn(new GetRemisserByPersOrgNrResponse()
+			.withGetRemisserByPersOrgNrResult(new ArrayOfRemiss()));
+
+		assertThatExceptionOfType(ThrowableProblem.class)
+			.isThrownBy(() -> service.getReferralType(PRIVATE_IDENTIFIER, referralReference))
+			.satisfies(throwableProblem -> {
+				assertThat(throwableProblem.getStatus()).isEqualTo(NOT_FOUND);
+				assertThat(throwableProblem.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
+				assertThat(throwableProblem.getDetail()).isEqualTo("No referral with reference SILJE 2:65 [999999] was found");
+			});
+
+		verify(mockByggrIntegration).getRemisserByPersOrgNr(PROCESSED_PRIVATE_IDENTIFIER);
+		verifyNoMoreInterations();
+	}
+
+	@Test
+	void testGetReferralType_referralReferenceWithoutBracketSuffix_throws404() {
+		final var referralReference = "SILJE 2:65 – Lämna svar som fastighetsägare";
+		final var remiss = new Remiss().withRemissId(188115);
+
+		when(mockByggrIntegration.getRemisserByPersOrgNr(PROCESSED_PRIVATE_IDENTIFIER)).thenReturn(new GetRemisserByPersOrgNrResponse()
+			.withGetRemisserByPersOrgNrResult(new ArrayOfRemiss().withRemiss(remiss)));
+
+		assertThatExceptionOfType(ThrowableProblem.class)
+			.isThrownBy(() -> service.getReferralType(PRIVATE_IDENTIFIER, referralReference))
+			.satisfies(throwableProblem -> {
+				assertThat(throwableProblem.getStatus()).isEqualTo(NOT_FOUND);
+				assertThat(throwableProblem.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
+				assertThat(throwableProblem.getDetail()).isEqualTo("No referral with reference SILJE 2:65 – Lämna svar som fastighetsägare was found");
+			});
+
+		verify(mockByggrIntegration).getRemisserByPersOrgNr(PROCESSED_PRIVATE_IDENTIFIER);
+		verifyNoMoreInterations();
+	}
+
 	@Test
 	void testReadFile() throws Exception {
 		// Arrange
