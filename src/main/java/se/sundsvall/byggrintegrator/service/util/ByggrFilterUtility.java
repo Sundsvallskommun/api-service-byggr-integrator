@@ -36,7 +36,7 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
  * notifications. If an errand contains an event with event type matching one of the defined value(s), the errand is
  * filtered out from the
  * returned response. If property is not set, then no filtering is made. Observe that filtering is always done regarding
- * that the errand must have a valid event type/subtype pair (GRANHO/GRAUTS or KOMFAST/KOMFASVA) to be returned in the
+ * that the errand must have a valid event type/subtype pair (GRANHO/GRAUTS or KOMFAST/KOMFASUTS) to be returned in the
  * response.
  * <p>
  * The third setting (document-types unwanted-document-types) is used to filter documents when fetching a
@@ -51,7 +51,7 @@ public class ByggrFilterUtility {
 
 	private static final Map<String, String> WANTED_TYPE_SUBTYPE_PAIRS = Map.of(
 		"GRANHO", "GRAUTS",
-		"KOMFAST", "KOMFASVA");
+		"KOMFAST", "KOMFASUTS");
 
 	private final List<String> applicantRoles;
 	private final List<String> unwantedSubtypes;

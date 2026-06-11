@@ -39,10 +39,10 @@ class ByggrFilterUtilityTest {
 			Arguments.of(createEvent("granho", "grauts"), true),
 			Arguments.of(createEvent("GRANHO", "GRAUTS"), true),
 			Arguments.of(createEvent("KOMFAST", null), false),
-			Arguments.of(createEvent(null, "KOMFASVA"), false),
-			Arguments.of(createEvent("komfast", "komfasva"), true),
-			Arguments.of(createEvent("KOMFAST", "KOMFASVA"), true),
-			Arguments.of(createEvent("GRANHO", "KOMFASVA"), false),
+			Arguments.of(createEvent(null, "KOMFASUTS"), false),
+			Arguments.of(createEvent("komfast", "komfasuts"), true),
+			Arguments.of(createEvent("KOMFAST", "KOMFASUTS"), true),
+			Arguments.of(createEvent("GRANHO", "KOMFASUTS"), false),
 			Arguments.of(createEvent("KOMFAST", "GRAUTS"), false));
 	}
 
@@ -58,14 +58,14 @@ class ByggrFilterUtilityTest {
 			Arguments.of(List.of(
 				createEvent("granho", "grauts", LocalDate.now()),
 				createEvent("granho", "grauts", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 2),
-			Arguments.of(List.of(createEvent(null, "KOMFASVA", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent(null, "KOMFASUTS", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
 			Arguments.of(List.of(createEvent("KOMFAST", null, LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASVA", LocalDate.now())), "otherId", 0, 0),
-			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASVA", LocalDate.now().minusDays(61))), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASVA", LocalDate.now().minusDays(30))), STAKEHOLDER_LEGAL_ID, 1, 1),
-			Arguments.of(List.of(createEvent("komfast", "komfasva", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 1),
+			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASUTS", LocalDate.now())), "otherId", 0, 0),
+			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASUTS", LocalDate.now().minusDays(61))), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASUTS", LocalDate.now().minusDays(30))), STAKEHOLDER_LEGAL_ID, 1, 1),
+			Arguments.of(List.of(createEvent("komfast", "komfasuts", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 1),
 			Arguments.of(List.of(
-				createEvent("KOMFAST", "KOMFASVA", LocalDate.now()),
+				createEvent("KOMFAST", "KOMFASUTS", LocalDate.now()),
 				createEvent("GRANHO", "GRAUTS", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 2));
 	}
 
@@ -145,7 +145,7 @@ class ByggrFilterUtilityTest {
 		setField(byggrFilterUtility, "unwantedSubtypes", List.of("GRASVA"));
 
 		final var errands = List.of(ByggrErrandDto.builder()
-			.withEvents(List.of(createEvent("KOMFAST", "KOMFASVA"), createEvent("KOMFAST", "GRASVA")))
+			.withEvents(List.of(createEvent("KOMFAST", "KOMFASUTS"), createEvent("KOMFAST", "GRASVA")))
 			.build());
 
 		// Act and assert

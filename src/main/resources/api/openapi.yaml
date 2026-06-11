@@ -267,7 +267,7 @@ paths:
       summary: Lists all neighborhood notifications where the provided identifier
         is a stakeholder
       description: "Returns errands filtered by: valid GRANHO events with subtype\
-        \ GRAUTS or KOMFAST events with subtype KOMFASVA, excluding configured unwanted\
+        \ GRAUTS or KOMFAST events with subtype KOMFASUTS, excluding configured unwanted\
         \ event types, matching the identifier as a stakeholder in events not older\
         \ than 60 days"
       operationId: findNeighborhoodNotifications
