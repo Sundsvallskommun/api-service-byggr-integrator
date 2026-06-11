@@ -1,7 +1,6 @@
 package se.sundsvall.byggrintegrator.service.util;
 
 import generated.se.sundsvall.arendeexport.v8.HandelseHandling;
-import java.time.Clock;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +56,6 @@ public class ByggrFilterUtility {
 	private final List<String> applicantRoles;
 	private final List<String> unwantedSubtypes;
 	private final List<String> unwantedDocumentTypes;
-	private final Clock clock = Clock.systemDefaultZone();
 
 	public ByggrFilterUtility(final ByggrFilterProperties byggrProperties) {
 		this.applicantRoles = ofNullable(byggrProperties)
@@ -146,7 +144,7 @@ public class ByggrFilterUtility {
 
 		final var filteredEvents = errand.getEvents().stream()
 			.filter(event -> isWantedTypePair(event.getEventType(), event.getEventSubtype()))
-			.filter(event -> ofNullable(event.getEventDate()).map(eventDate -> eventDate.isAfter(now(clock).minusDays(61))).orElse(false)) // Events must have a date and not be older than 60 days to be included
+			.filter(event -> ofNullable(event.getEventDate()).map(eventDate -> eventDate.isAfter(now().minusDays(61))).orElse(false)) // Events must have a date and not be older than 60 days to be included
 			.filter(event -> event.getStakeholders().stream().anyMatch(stakeholder -> LegalIdUtility.isEqual(stakeholder.getLegalId(), identifier)))
 			.toList();
 

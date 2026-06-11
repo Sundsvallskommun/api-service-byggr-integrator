@@ -1,11 +1,8 @@
 package se.sundsvall.byggrintegrator.service.util;
 
-import java.time.Clock;
 import java.time.LocalDate;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,24 +16,20 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mockStatic;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @ExtendWith(MockitoExtension.class)
 class ByggrFilterUtilityTest {
 	private static final String STAKEHOLDER_LEGAL_ID = "stakeholderLegalId";
-	private static final LocalDate FIXED_DATE = LocalDate.of(2026, 6, 11);
-	private static final Clock FIXED_CLOCK = Clock.fixed(FIXED_DATE.atStartOfDay(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC);
+	private static final LocalDate FIXED_TODAY = LocalDate.of(2026, 6, 11);
 
 	@Mock
 	private ByggrFilterProperties byggrFilterPropertiesMock;
 
 	@InjectMocks
 	private ByggrFilterUtility byggrFilterUtility;
-
-	@BeforeEach
-	void setUp() {
-		setField(byggrFilterUtility, "clock", FIXED_CLOCK);
-	}
 
 	private static Stream<Arguments> validEventArgumentProvider() {
 		return Stream.of(
@@ -57,25 +50,25 @@ class ByggrFilterUtilityTest {
 
 	private static Stream<Arguments> filterNeighborhoodNotificationsArgumentProvider() {
 		return Stream.of(
-			Arguments.of(List.of(createEvent(null, "GRAUTS", FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("GRANHO", null, FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", FIXED_DATE)), "otherId", 0, 0),
-			Arguments.of(List.of(createEvent("type", "subtype", FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", FIXED_DATE.minusDays(61))), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", FIXED_DATE.minusDays(30))), STAKEHOLDER_LEGAL_ID, 1, 1),
-			Arguments.of(List.of(createEvent("granho", "grauts", FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 1, 1),
+			Arguments.of(List.of(createEvent(null, "GRAUTS", FIXED_TODAY)), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("GRANHO", null, FIXED_TODAY)), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", FIXED_TODAY)), "otherId", 0, 0),
+			Arguments.of(List.of(createEvent("type", "subtype", FIXED_TODAY)), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", FIXED_TODAY.minusDays(61))), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", FIXED_TODAY.minusDays(30))), STAKEHOLDER_LEGAL_ID, 1, 1),
+			Arguments.of(List.of(createEvent("granho", "grauts", FIXED_TODAY)), STAKEHOLDER_LEGAL_ID, 1, 1),
 			Arguments.of(List.of(
-				createEvent("granho", "grauts", FIXED_DATE),
-				createEvent("granho", "grauts", FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 1, 2),
-			Arguments.of(List.of(createEvent(null, "KOMFASUTS", FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("KOMFAST", null, FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASUTS", FIXED_DATE)), "otherId", 0, 0),
-			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASUTS", FIXED_DATE.minusDays(61))), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASUTS", FIXED_DATE.minusDays(30))), STAKEHOLDER_LEGAL_ID, 1, 1),
-			Arguments.of(List.of(createEvent("komfast", "komfasuts", FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 1, 1),
+				createEvent("granho", "grauts", FIXED_TODAY),
+				createEvent("granho", "grauts", FIXED_TODAY)), STAKEHOLDER_LEGAL_ID, 1, 2),
+			Arguments.of(List.of(createEvent(null, "KOMFASUTS", FIXED_TODAY)), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("KOMFAST", null, FIXED_TODAY)), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASUTS", FIXED_TODAY)), "otherId", 0, 0),
+			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASUTS", FIXED_TODAY.minusDays(61))), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASUTS", FIXED_TODAY.minusDays(30))), STAKEHOLDER_LEGAL_ID, 1, 1),
+			Arguments.of(List.of(createEvent("komfast", "komfasuts", FIXED_TODAY)), STAKEHOLDER_LEGAL_ID, 1, 1),
 			Arguments.of(List.of(
-				createEvent("KOMFAST", "KOMFASUTS", FIXED_DATE),
-				createEvent("GRANHO", "GRAUTS", FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 1, 2));
+				createEvent("KOMFAST", "KOMFASUTS", FIXED_TODAY),
+				createEvent("GRANHO", "GRAUTS", FIXED_TODAY)), STAKEHOLDER_LEGAL_ID, 1, 2));
 	}
 
 	private static Stream<Arguments> filterErrandsForApplicantArgumentProvider() {
@@ -122,16 +115,20 @@ class ByggrFilterUtilityTest {
 	@ParameterizedTest
 	@MethodSource("filterNeighborhoodNotificationsArgumentProvider")
 	void filterNeighborhoodNotifications(final List<Event> events, final String identifier, final int expectedErrandsSize, final int expectedEventsSize) {
-		// Act
-		final var errands = byggrFilterUtility.filterNeighborhoodNotifications(List.of(
-			ByggrErrandDto.builder()
-				.withEvents(events)
-				.build()), identifier);
+		// Act - pin the clock so the 60-day cutoff in the filter is deterministic
+		try (final var localDateMock = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
+			localDateMock.when(LocalDate::now).thenReturn(FIXED_TODAY);
 
-		// Assert
-		assertThat(errands).hasSize(expectedErrandsSize);
-		if (expectedErrandsSize > 0) {
-			assertThat(errands.getFirst().getEvents()).hasSize(expectedEventsSize);
+			final var errands = byggrFilterUtility.filterNeighborhoodNotifications(List.of(
+				ByggrErrandDto.builder()
+					.withEvents(events)
+					.build()), identifier);
+
+			// Assert
+			assertThat(errands).hasSize(expectedErrandsSize);
+			if (expectedErrandsSize > 0) {
+				assertThat(errands.getFirst().getEvents()).hasSize(expectedEventsSize);
+			}
 		}
 	}
 
