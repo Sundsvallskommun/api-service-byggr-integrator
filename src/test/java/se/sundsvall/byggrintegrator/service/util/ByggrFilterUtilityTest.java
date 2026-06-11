@@ -1,9 +1,12 @@
 package se.sundsvall.byggrintegrator.service.util;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,12 +25,19 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 @ExtendWith(MockitoExtension.class)
 class ByggrFilterUtilityTest {
 	private static final String STAKEHOLDER_LEGAL_ID = "stakeholderLegalId";
+	private static final LocalDate FIXED_DATE = LocalDate.of(2026, 6, 11);
+	private static final Clock FIXED_CLOCK = Clock.fixed(FIXED_DATE.atStartOfDay(ZoneOffset.UTC).toInstant(), ZoneOffset.UTC);
 
 	@Mock
 	private ByggrFilterProperties byggrFilterPropertiesMock;
 
 	@InjectMocks
 	private ByggrFilterUtility byggrFilterUtility;
+
+	@BeforeEach
+	void setUp() {
+		setField(byggrFilterUtility, "clock", FIXED_CLOCK);
+	}
 
 	private static Stream<Arguments> validEventArgumentProvider() {
 		return Stream.of(
@@ -48,25 +58,25 @@ class ByggrFilterUtilityTest {
 
 	private static Stream<Arguments> filterNeighborhoodNotificationsArgumentProvider() {
 		return Stream.of(
-			Arguments.of(List.of(createEvent(null, "GRAUTS", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("GRANHO", null, LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", LocalDate.now())), "otherId", 0, 0),
-			Arguments.of(List.of(createEvent("type", "subtype", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", LocalDate.now().minusDays(61))), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", LocalDate.now().minusDays(30))), STAKEHOLDER_LEGAL_ID, 1, 1),
-			Arguments.of(List.of(createEvent("granho", "grauts", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 1),
+			Arguments.of(List.of(createEvent(null, "GRAUTS", FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("GRANHO", null, FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", FIXED_DATE)), "otherId", 0, 0),
+			Arguments.of(List.of(createEvent("type", "subtype", FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", FIXED_DATE.minusDays(61))), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("GRANHO", "GRAUTS", FIXED_DATE.minusDays(30))), STAKEHOLDER_LEGAL_ID, 1, 1),
+			Arguments.of(List.of(createEvent("granho", "grauts", FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 1, 1),
 			Arguments.of(List.of(
-				createEvent("granho", "grauts", LocalDate.now()),
-				createEvent("granho", "grauts", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 2),
-			Arguments.of(List.of(createEvent(null, "KOMFASUTS", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("KOMFAST", null, LocalDate.now())), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASUTS", LocalDate.now())), "otherId", 0, 0),
-			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASUTS", LocalDate.now().minusDays(61))), STAKEHOLDER_LEGAL_ID, 0, 0),
-			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASUTS", LocalDate.now().minusDays(30))), STAKEHOLDER_LEGAL_ID, 1, 1),
-			Arguments.of(List.of(createEvent("komfast", "komfasuts", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 1),
+				createEvent("granho", "grauts", FIXED_DATE),
+				createEvent("granho", "grauts", FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 1, 2),
+			Arguments.of(List.of(createEvent(null, "KOMFASUTS", FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("KOMFAST", null, FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASUTS", FIXED_DATE)), "otherId", 0, 0),
+			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASUTS", FIXED_DATE.minusDays(61))), STAKEHOLDER_LEGAL_ID, 0, 0),
+			Arguments.of(List.of(createEvent("KOMFAST", "KOMFASUTS", FIXED_DATE.minusDays(30))), STAKEHOLDER_LEGAL_ID, 1, 1),
+			Arguments.of(List.of(createEvent("komfast", "komfasuts", FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 1, 1),
 			Arguments.of(List.of(
-				createEvent("KOMFAST", "KOMFASUTS", LocalDate.now()),
-				createEvent("GRANHO", "GRAUTS", LocalDate.now())), STAKEHOLDER_LEGAL_ID, 1, 2));
+				createEvent("KOMFAST", "KOMFASUTS", FIXED_DATE),
+				createEvent("GRANHO", "GRAUTS", FIXED_DATE)), STAKEHOLDER_LEGAL_ID, 1, 2));
 	}
 
 	private static Stream<Arguments> filterErrandsForApplicantArgumentProvider() {
