@@ -1,6 +1,7 @@
 package se.sundsvall.byggrintegrator.service.util;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -24,7 +25,7 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 @ExtendWith(MockitoExtension.class)
 class ByggrFilterUtilityTest {
 	private static final String STAKEHOLDER_LEGAL_ID = "stakeholderLegalId";
-	private static final LocalDate FIXED_TODAY = LocalDate.of(2026, 6, 11);
+	private static final LocalDate FIXED_TODAY = LocalDate.of(2026, Month.JUNE, 11);
 
 	@Mock
 	private ByggrFilterProperties byggrFilterPropertiesMock;
