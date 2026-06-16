@@ -41,6 +41,7 @@ paths:
           required: true
           schema:
             type: string
+            minLength: 1
           example: 190102031234
         - name: caseNumber
           in: query

@@ -25,6 +25,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 
@@ -273,4 +274,120 @@ class NeighborhoodNotificationResourceTest {
 		verify(mockByggrIntegratorService).getNeighborhoodNotificationFacilities(VALID_IDENTIFIER, VALID_CASE_NUMBER);
 		verifyNoMoreInteractions(mockByggrIntegratorService);
 	}
+
+	@Test
+	void findNeighborhoodNotificationFacilitiesWithRequestParameters_faultyMunicipalityIdAndInvalidIdentifierAndBlankCaseNumber_shouldThrowException() {
+		final var responseBody = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FACILITIES_REQUEST_PARAMETERS_URL)
+				.queryParams(MultiValueMap.fromSingleValue(Map.of("identifier", INVALID_IDENTIFIER, "caseNumber", INVALID_CASE_NUMBER)))
+				.build(INVALID_MUNICIPALITY_ID))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody.getViolations()).extracting(Violation::field, Violation::message)
+			.containsExactlyInAnyOrder(
+				tuple("findNeighborhoodNotificationFacilitiesWithRequestParameters.municipalityId", "not a valid municipality ID"),
+				tuple("findNeighborhoodNotificationFacilitiesWithRequestParameters.identifier", "Invalid personal or organization number"),
+				tuple("findNeighborhoodNotificationFacilitiesWithRequestParameters.caseNumber", "must not be blank"));
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void findNeighborhoodNotificationFacilitiesWithRequestParameters_missingIdentifier_shouldThrowException() {
+		final var responseBody = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FACILITIES_REQUEST_PARAMETERS_URL)
+				.queryParams(MultiValueMap.fromSingleValue(Map.of("caseNumber", VALID_CASE_NUMBER)))
+				.build(VALID_MUNICIPALITY_ID))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(Problem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getTitle()).isEqualTo("Bad Request");
+		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(responseBody.getDetail()).contains("identifier", "not present");
+
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void findNeighborhoodNotificationFacilitiesWithRequestParameters_missingCaseNumber_shouldThrowException() {
+		final var responseBody = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FACILITIES_REQUEST_PARAMETERS_URL)
+				.queryParams(MultiValueMap.fromSingleValue(Map.of("identifier", VALID_IDENTIFIER)))
+				.build(VALID_MUNICIPALITY_ID))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(Problem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(responseBody.getTitle()).isEqualTo("Bad Request");
+		assertThat(responseBody.getDetail()).contains("caseNumber", "not present");
+
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void findNeighborhoodNotificationFacilitiesWithRequestParameters_blankIdentifier_shouldThrowException() {
+		final var responseBody = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FACILITIES_REQUEST_PARAMETERS_URL)
+				.queryParams(MultiValueMap.fromSingleValue(Map.of("identifier", "", "caseNumber", VALID_CASE_NUMBER)))
+				.build(VALID_MUNICIPALITY_ID))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
+		assertThat(responseBody.getViolations()).extracting(Violation::field, Violation::message)
+			.containsExactlyInAnyOrder(
+				tuple("findNeighborhoodNotificationFacilitiesWithRequestParameters.identifier", "must not be blank"),
+				tuple("findNeighborhoodNotificationFacilitiesWithRequestParameters.identifier", "Invalid personal or organization number"));
+
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void testFindNeighborhoodNotificationFacilitiesWithRequestParameters_serviceThrows500() {
+		when(mockByggrIntegratorService.getNeighborhoodNotificationFacilities(VALID_IDENTIFIER, VALID_CASE_NUMBER)).thenThrow(Problem.builder()
+			.withTitle("500 Title")
+			.withStatus(INTERNAL_SERVER_ERROR)
+			.withDetail("500 Detail")
+			.build());
+
+		final var responseBody = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FACILITIES_REQUEST_PARAMETERS_URL)
+				.queryParams(MultiValueMap.fromSingleValue(Map.of("identifier", VALID_IDENTIFIER, "caseNumber", VALID_CASE_NUMBER)))
+				.build(VALID_MUNICIPALITY_ID))
+			.exchange()
+			.expectStatus().is5xxServerError()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(Problem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getTitle()).isEqualTo("500 Title");
+		assertThat(responseBody.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
+		assertThat(responseBody.getDetail()).isEqualTo("500 Detail");
+
+		verify(mockByggrIntegratorService).getNeighborhoodNotificationFacilities(VALID_IDENTIFIER, VALID_CASE_NUMBER);
+		verifyNoMoreInteractions(mockByggrIntegratorService);
+	}
+
 }
