@@ -11,6 +11,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
+import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.dept44.problem.violations.Violation;
 
@@ -22,7 +23,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 
 @ActiveProfiles("junit")
@@ -123,5 +126,51 @@ class ApplicantResourceTest {
 				tuple("findApplicantErrands.municipalityId", "not a valid municipality ID"));
 
 		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void testFindApplicantErrands_serviceThrowsException() {
+		when(mockByggrIntegratorService.findApplicantErrands(VALID_IDENTIFIER)).thenThrow(new RuntimeException("Service failed"));
+
+		final var responseBody = webTestClient.get()
+			.uri(APPLICANT_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
+			.exchange()
+			.expectStatus().is5xxServerError()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(Problem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
+		assertThat(responseBody.getDetail()).contains("Service failed");
+		verify(mockByggrIntegratorService).findApplicantErrands(VALID_IDENTIFIER);
+		verifyNoMoreInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void testFindApplicantErrand_serviceThrowsProblem() {
+		when(mockByggrIntegratorService.findApplicantErrands(anyString())).thenThrow(Problem.builder()
+			.withTitle("502 Title")
+			.withStatus(BAD_GATEWAY)
+			.withDetail("502 Detail")
+			.build());
+
+		final var responseBody = webTestClient.get()
+			.uri(APPLICANT_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
+			.exchange()
+			.expectStatus().is5xxServerError()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(Problem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getStatus()).isEqualTo(BAD_GATEWAY);
+		assertThat(responseBody.getTitle()).isEqualTo("502 Title");
+		assertThat(responseBody.getDetail()).isEqualTo("502 Detail");
+
+		verify(mockByggrIntegratorService).findApplicantErrands(VALID_IDENTIFIER);
+		verifyNoMoreInteractions(mockByggrIntegratorService);
 	}
 }
