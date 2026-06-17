@@ -74,4 +74,22 @@ class LegalIdUtilityTest {
 			Arguments.of("123456789012", "12345678-9012"),
 			Arguments.of("1234567890123", "123456789-0123"));
 	}
+
+	@ParameterizedTest
+	@MethodSource("legalIdProvider")
+	void testIsEqual(
+		final String legalIdToMatch,
+		final String evaluatedLegalId,
+		final boolean expectedResult) {
+
+		assertThat(LegalIdUtility.isEqual(legalIdToMatch, evaluatedLegalId)).isEqualTo(expectedResult);
+	}
+
+	private static Stream<Arguments> legalIdProvider() {
+		return Stream.of(
+			Arguments.of("1234567890", "1234567890", true),
+			Arguments.of("1234567890", "161234567890", true),
+			Arguments.of("1234567890", "5555555555", false),
+			Arguments.of("1234567890", "161616161616", false));
+	}
 }

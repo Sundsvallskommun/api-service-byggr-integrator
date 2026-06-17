@@ -13,6 +13,7 @@ import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 
+import static generated.se.sundsvall.arendeexport.v4.RemissStatusFilter.EJ_BESVARAD;
 import static org.assertj.core.api.Assertions.assertThat;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.APPLICANT_ROLE;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.BYGGR_ARENDE_NR_1;
@@ -183,5 +184,22 @@ class ByggrIntegrationMapperTest {
 		// Assert that all files are of the wanted type
 		assertThat(fileList.stream().map(Map.Entry::getKey)).allMatch(WANTED_DOCUMENT_ID::equals);
 		assertThat(fileList.stream().map(Map.Entry::getValue)).allMatch(wantedDocumentNameAndType::equals);
+	}
+
+	@Test
+	void testCreateGetHandlingTyperRequest() {
+		var request = mapper.createGetHandlingTyperRequest();
+
+		assertThat(request.getStatusfilter()).isEqualTo(StatusFilter.NONE);
+	}
+
+	@Test
+	void testToGetRemisserByPersOrgNrRequest() {
+		var identifier = "160001011234";
+
+		var request = mapper.toGetRemisserByPersOrgNrRequest(identifier);
+
+		assertThat(request.getPersOrgNr()).isEqualTo(identifier);
+		assertThat(request.getStatusFilter()).isEqualTo(EJ_BESVARAD);
 	}
 }

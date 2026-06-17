@@ -281,4 +281,31 @@ class ByggrIntegrationTest {
 		assertThat(result).isEqualTo(response);
 	}
 
+	@Test
+	void getsHandlingTyper() {
+		// arrange
+		final var request = OBJECT_FACTORY.createGetHandlingTyper();
+
+		final var handling1 = OBJECT_FACTORY.createHandlingTyp().withTyp("Type 1").withBeskrivning("Handling of type 1");
+		final var handling2 = OBJECT_FACTORY.createHandlingTyp().withTyp("Type 2").withBeskrivning("Handling of type 2");
+
+		final var response = OBJECT_FACTORY.createGetHandlingTyperResponse()
+			.withGetHandlingTyperResult(OBJECT_FACTORY
+				.createArrayOfHandlingTyp()
+				.withHandlingTyp(handling1, handling2));
+
+		when(mockByggrIntegrationMapper.createGetHandlingTyperRequest()).thenReturn(request);
+		when(mockByggrClient.getHandlingTyper(request)).thenReturn(response);
+
+		// act
+		final var result = integration.getHandlingTyper();
+		// assert
+		assertThat(result).hasSize(2)
+			.containsEntry("Type 1", "Handling of type 1")
+			.containsEntry("Type 2", "Handling of type 2");
+
+		verify(mockByggrIntegrationMapper).createGetHandlingTyperRequest();
+		verify(mockByggrClient).getHandlingTyper(request);
+	}
+
 }
