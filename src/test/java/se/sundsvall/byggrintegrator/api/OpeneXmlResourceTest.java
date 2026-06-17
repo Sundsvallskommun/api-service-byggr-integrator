@@ -53,7 +53,7 @@ class OpeneXmlResourceTest {
 		when(mockByggrIntegratorService.getErrandType(CASE_NUMBER)).thenReturn(weight);
 
 		final var responseBody = webTestClient.get()
-			.uri(builder -> builder.path(ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL).queryParam("caseNumber", CASE_NUMBER).build(VALID_MUNICIPALITY_ID))
+			.uri(uriBuilder -> uriBuilder.path(ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL).queryParam("caseNumber", CASE_NUMBER).build(VALID_MUNICIPALITY_ID))
 			.exchange()
 			.expectStatus().isOk()
 			.expectHeader()
@@ -71,7 +71,7 @@ class OpeneXmlResourceTest {
 	@Test
 	void testGetErrandTypeWithRequestParameter_faultyMunicipalityId_shouldThrowException() {
 		final var responseBody = webTestClient.get()
-			.uri(builder -> builder.path(ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL).queryParam("caseNumber", CASE_NUMBER).build(INVALID_MUNICIPALITY_ID))
+			.uri(uriBuilder -> uriBuilder.path(ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL).queryParam("caseNumber", CASE_NUMBER).build(INVALID_MUNICIPALITY_ID))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_XML)
@@ -87,7 +87,7 @@ class OpeneXmlResourceTest {
 	@Test
 	void testGetErrandTypeWithRequestParameter_blankCaseNumber() {
 		final var responseBody = webTestClient.get()
-			.uri(builder -> builder.path(ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL).queryParam("caseNumber", BLANK_CASE_NUMBER).build(VALID_MUNICIPALITY_ID))
+			.uri(uriBuilder -> uriBuilder.path(ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL).queryParam("caseNumber", BLANK_CASE_NUMBER).build(VALID_MUNICIPALITY_ID))
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_XML)
@@ -103,7 +103,7 @@ class OpeneXmlResourceTest {
 	@Test
 	void testGetErrandTypeWithRequestParameter_missingCaseNumber() {
 		final var responseBody = webTestClient.get()
-			.uri(builder -> builder.path(ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL)
+			.uri(uriBuilder -> uriBuilder.path(ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL)
 				.build(VALID_MUNICIPALITY_ID))
 			.exchange()
 			.expectStatus().is5xxServerError()
@@ -125,7 +125,7 @@ class OpeneXmlResourceTest {
 			.withDetail("404 Detail")
 			.build());
 		final var responseBody = webTestClient.get()
-			.uri(builder -> builder.path(ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL)
+			.uri(uriBuilder -> uriBuilder.path(ERRAND_TYPE_WITH_REQUEST_PARAMETER_URL)
 				.queryParam("caseNumber", CASE_NUMBER).build(VALID_MUNICIPALITY_ID))
 			.exchange()
 			.expectStatus().is4xxClientError()
@@ -148,7 +148,7 @@ class OpeneXmlResourceTest {
 		when(mockByggrIntegratorService.getReferralType(IDENTIFIER, REFERRAL_REFERENCE)).thenReturn(weight);
 
 		final var responseBody = webTestClient.get()
-			.uri(builder -> builder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
+			.uri(uriBuilder -> uriBuilder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
 				.queryParam("identifier", IDENTIFIER)
 				.queryParam("referralReference", REFERRAL_REFERENCE)
 				.build(VALID_MUNICIPALITY_ID))
@@ -169,7 +169,7 @@ class OpeneXmlResourceTest {
 	@Test
 	void testGetReferralTypeWithRequestParameter_faultyMunicipalityId_shouldThrowException() {
 		final var responseBody = webTestClient.get()
-			.uri(builder -> builder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
+			.uri(uriBuilder -> uriBuilder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
 				.queryParam("identifier", IDENTIFIER)
 				.queryParam("referralReference", REFERRAL_REFERENCE)
 				.build(INVALID_MUNICIPALITY_ID))
@@ -188,7 +188,7 @@ class OpeneXmlResourceTest {
 	@Test
 	void testGetReferralTypeWithRequestParameter_blankIdentifier() {
 		final var responseBody = webTestClient.get()
-			.uri(builder -> builder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
+			.uri(uriBuilder -> uriBuilder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
 				.queryParam("identifier", BLANK_IDENTIFIER)
 				.queryParam("referralReference", REFERRAL_REFERENCE)
 				.build(VALID_MUNICIPALITY_ID))
@@ -207,7 +207,7 @@ class OpeneXmlResourceTest {
 	@Test
 	void testGetReferralTypeWithRequestParameter_missingIdentifier() {
 		final var responseBody = webTestClient.get()
-			.uri(builder -> builder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
+			.uri(uriBuilder -> uriBuilder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
 				.queryParam("referralReference", REFERRAL_REFERENCE)
 				.build(VALID_MUNICIPALITY_ID))
 			.exchange()
@@ -225,7 +225,7 @@ class OpeneXmlResourceTest {
 	@Test
 	void testGetReferralTypeWithRequestParameter_blankReferral() {
 		final var responseBody = webTestClient.get()
-			.uri(builder -> builder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
+			.uri(uriBuilder -> uriBuilder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
 				.queryParam("identifier", IDENTIFIER)
 				.queryParam("referralReference", BLANK_REFERRAL_REFERENCE)
 				.build(VALID_MUNICIPALITY_ID))
@@ -244,7 +244,7 @@ class OpeneXmlResourceTest {
 	@Test
 	void testGetReferralTypeWithRequestParameter_missingReferral() {
 		final var responseBody = webTestClient.get()
-			.uri(builder -> builder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
+			.uri(uriBuilder -> uriBuilder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
 				.queryParam("identifier", IDENTIFIER)
 				.build(VALID_MUNICIPALITY_ID))
 			.exchange()
@@ -262,7 +262,7 @@ class OpeneXmlResourceTest {
 	@Test
 	void testGetReferralTypeWithRequestParameter_faultyMunicipalityIdAndBlankIdentifierAndReferral_shouldThrowException() {
 		final var responseBody = webTestClient.get()
-			.uri(builder -> builder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
+			.uri(uriBuilder -> uriBuilder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
 				.queryParam("identifier", BLANK_IDENTIFIER)
 				.queryParam("referralReference", BLANK_REFERRAL_REFERENCE)
 				.build(INVALID_MUNICIPALITY_ID))
@@ -289,7 +289,7 @@ class OpeneXmlResourceTest {
 			.build());
 
 		final var responseBody = webTestClient.get()
-			.uri(builder -> builder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
+			.uri(uriBuilder -> uriBuilder.path(REFERRAL_TYPE_WITH_REQUEST_PARAMETER_URL)
 				.queryParam("identifier", IDENTIFIER)
 				.queryParam("referralReference", REFERRAL_REFERENCE)
 				.build(VALID_MUNICIPALITY_ID))

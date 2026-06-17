@@ -49,7 +49,7 @@ class OpeneHtmlResourceTest {
 		when(mockByggrIntegratorService.listNeighborhoodNotificationFiles(MUNICIPALITY_ID, IDENTIFIER, CASE_NUMBER, REFERRAL_REFERENCE)).thenReturn("<html></html>");
 
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
 				.queryParam("identifier", IDENTIFIER)
 				.queryParam("caseNumber", CASE_NUMBER)
 				.queryParam("referralReference", REFERRAL_REFERENCE)
@@ -73,7 +73,7 @@ class OpeneHtmlResourceTest {
 	@Test
 	void testFindNeighborhoodNotificationFilesWithRequestParameter_faultyMunicipalityId() {
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
 				.queryParam("identifier", IDENTIFIER)
 				.queryParam("caseNumber", CASE_NUMBER)
 				.queryParam("referralReference", REFERRAL_REFERENCE)
@@ -108,7 +108,7 @@ class OpeneHtmlResourceTest {
 		when(mockByggrIntegratorService.listNeighborhoodNotificationFiles(MUNICIPALITY_ID, IDENTIFIER, CASE_NUMBER, REFERRAL_REFERENCE)).thenThrow(new RuntimeException("Service failed"));
 
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
 				.queryParam("identifier", IDENTIFIER)
 				.queryParam("caseNumber", CASE_NUMBER)
 				.queryParam("referralReference", REFERRAL_REFERENCE)
@@ -148,7 +148,7 @@ class OpeneHtmlResourceTest {
 			.build());
 
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
 				.queryParam("identifier", IDENTIFIER)
 				.queryParam("caseNumber", CASE_NUMBER)
 				.queryParam("referralReference", REFERRAL_REFERENCE)
@@ -182,7 +182,7 @@ class OpeneHtmlResourceTest {
 	@Test
 	void testFindNeighborhoodNotificationFilesWithRequestParameter_withBlankCaseNumber() {
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
 				.queryParam("identifier", IDENTIFIER)
 				.queryParam("caseNumber", " ")
 				.queryParam("referralReference", REFERRAL_REFERENCE)
@@ -215,7 +215,7 @@ class OpeneHtmlResourceTest {
 	@Test
 	void testFindNeighborhoodNotificationFilesWithRequestParameter_withMissingCaseNumber() {
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
 				.queryParam("identifier", IDENTIFIER)
 				.queryParam("referralReference", REFERRAL_REFERENCE)
 				.build(MUNICIPALITY_ID))
@@ -247,7 +247,7 @@ class OpeneHtmlResourceTest {
 	@Test
 	void testFindNeighborhoodNotificationFilesWithRequestParameter_withBlankIdentifier() {
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
 				.queryParam("caseNumber", CASE_NUMBER)
 				.queryParam("identifier", " ")
 				.queryParam("referralReference", REFERRAL_REFERENCE)
@@ -280,7 +280,7 @@ class OpeneHtmlResourceTest {
 	@Test
 	void testFindNeighborhoodNotificationFilesWithRequestParameter_withMissingIdentifier() {
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
 				.queryParam("caseNumber", CASE_NUMBER)
 				.queryParam("referralReference", REFERRAL_REFERENCE)
 				.build(MUNICIPALITY_ID))
@@ -312,7 +312,7 @@ class OpeneHtmlResourceTest {
 	@Test
 	void testFindNeighborhoodNotificationFilesWithRequestParameter_withBlankReferralReference() {
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
 				.queryParam("identifier", IDENTIFIER)
 				.queryParam("caseNumber", CASE_NUMBER)
 				.queryParam("referralReference", " ")
@@ -345,7 +345,7 @@ class OpeneHtmlResourceTest {
 	@Test
 	void testFindNeighborhoodNotificationFilesWithRequestParameter_withMissingReferralReference() {
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
 				.queryParam("identifier", IDENTIFIER)
 				.queryParam("caseNumber", CASE_NUMBER)
 				.build(MUNICIPALITY_ID))
@@ -379,7 +379,7 @@ class OpeneHtmlResourceTest {
 		when(mockByggrIntegratorService.getPropertyDesignation(CASE_NUMBER)).thenReturn("<html></html>");
 
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PROPERTY_DESIGNATION_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(PROPERTY_DESIGNATION_WITH_REQUEST_PARAMETER_PATH)
 				.queryParam("caseNumber", CASE_NUMBER).build(MUNICIPALITY_ID)).exchange()
 			.expectStatus().isOk()
 			.expectHeader().valueEquals(INFO_QUERY_RESPONSE_HEADER, INFO_QUERY_RESPONSE_HEADER_VALUE)
@@ -404,7 +404,7 @@ class OpeneHtmlResourceTest {
 			.build());
 
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PROPERTY_DESIGNATION_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(PROPERTY_DESIGNATION_WITH_REQUEST_PARAMETER_PATH)
 				.queryParam("caseNumber", CASE_NUMBER).build(MUNICIPALITY_ID))
 			.exchange()
 			.expectStatus().is4xxClientError()
@@ -426,7 +426,7 @@ class OpeneHtmlResourceTest {
 		when(mockByggrIntegratorService.getPropertyDesignation(CASE_NUMBER)).thenThrow(new RuntimeException("Service failed"));
 
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PROPERTY_DESIGNATION_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(PROPERTY_DESIGNATION_WITH_REQUEST_PARAMETER_PATH)
 				.queryParam("caseNumber", CASE_NUMBER).build(MUNICIPALITY_ID)).exchange()
 			.expectStatus().is5xxServerError()
 			.expectHeader().contentType(TEXT_HTML_VALUE)
@@ -444,7 +444,7 @@ class OpeneHtmlResourceTest {
 	@Test
 	void testFindPropertyDesignationWithRequestParameter_withFaultyMunicipalID() {
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PROPERTY_DESIGNATION_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(PROPERTY_DESIGNATION_WITH_REQUEST_PARAMETER_PATH)
 				.queryParam("caseNumber", CASE_NUMBER).build(FAULTY_MUNICIPALITY_ID)).exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(TEXT_HTML_VALUE)
@@ -469,7 +469,7 @@ class OpeneHtmlResourceTest {
 	@Test
 	void testFindPropertyDesignationWithRequestParameter_withBlankCaseNumber() {
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PROPERTY_DESIGNATION_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(PROPERTY_DESIGNATION_WITH_REQUEST_PARAMETER_PATH)
 				.queryParam("caseNumber", " ").build(MUNICIPALITY_ID)).exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(TEXT_HTML_VALUE)
@@ -494,7 +494,7 @@ class OpeneHtmlResourceTest {
 	@Test
 	void testFindPropertyDesignationWithRequestParameter_withMissingCaseNumber() {
 		final var response = webTestClient.get()
-			.uri(builder -> builder.path(PROPERTY_DESIGNATION_WITH_REQUEST_PARAMETER_PATH)
+			.uri(uriBuilder -> uriBuilder.path(PROPERTY_DESIGNATION_WITH_REQUEST_PARAMETER_PATH)
 				.build(MUNICIPALITY_ID)).exchange()
 			.expectStatus().is5xxServerError()
 			.expectHeader().contentType(TEXT_HTML_VALUE)
