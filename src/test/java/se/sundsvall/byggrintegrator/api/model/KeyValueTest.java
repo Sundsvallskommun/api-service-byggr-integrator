@@ -16,4 +16,20 @@ class KeyValueTest {
 		assertThat(keyValue.key()).isEqualTo(key);
 		assertThat(keyValue.value()).isEqualTo(value);
 	}
+
+	@Test
+	void testToString() {
+		final var keyValue = new KeyValue("key", "value");
+		assertThat(keyValue.toString())
+			.contains("key=key")
+			.contains("value=value");
+	}
+
+	@Test
+	void testWithNullValues() {
+		final var keyValue = new KeyValue(null, null);
+		assertThat(keyValue.key()).isNull();
+		assertThat(keyValue.value()).isNull();
+		assertThat(keyValue).isEqualTo(new KeyValue(null, null));
+	}
 }
