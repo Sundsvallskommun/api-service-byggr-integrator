@@ -38,7 +38,7 @@ class TemplateMapperTest {
 	private FileAccessTokenService mockFileAccessTokenService;
 
 	@Autowired
-	private TemplateMapper templateMapper;
+	private TemplateService templateService;
 
 	private static ByggrErrandDto createByggrErrandDto(final String identifier) {
 		return ByggrErrandDto.builder()
@@ -93,7 +93,7 @@ class TemplateMapperTest {
 		when(mockProperties.subDirectory()).thenReturn("/files/");
 		when(mockFileAccessTokenService.createToken(eq("1234"), anyString())).thenReturn(TOKEN);
 
-		final var html = templateMapper.generateFileList(
+		final var html = templateService.generateFileList(
 			"1234",
 			createByggrErrandDto(identifier),
 			Map.of("SKR", "Skrivelse", "PLAN", "Planer", "RIT", "Ritningar"),
@@ -120,7 +120,7 @@ class TemplateMapperTest {
 
 	@Test
 	void getDescriptionAndPropertyDesignationInHtml() {
-		final var html = templateMapper.getDescriptionAndPropertyDesignation(createByggrErrandDto("190102034567"));
+		final var html = templateService.getDescriptionAndPropertyDesignation(createByggrErrandDto("190102034567"));
 
 		assertThat(html).isEqualTo("<p>Bygglov för tillbyggnad av fritidshus (RUNSVIK 1:22)</p>");
 		verifyNoInteractions(mockProperties);
