@@ -1,11 +1,16 @@
 package se.sundsvall.byggrintegrator.integration.byggr.decoder;
 
 import feign.Response;
+import generated.se.sundsvall.arendeexport.v8.ArendeIntressent;
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRoleResponse;
+import generated.se.sundsvall.arendeexport.v8.ObjectFactory;
+import jakarta.xml.bind.JAXBElement;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +23,7 @@ import se.sundsvall.dept44.test.annotation.resource.Load;
 import se.sundsvall.dept44.test.extension.ResourceLoaderExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -88,6 +94,27 @@ class SOAPJAXBDecoderTest {
 	}
 
 	@Test
+	void testDecodeJAXBElementBody() throws IOException {
+		var xml = """
+			<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+				<soap:Body>
+					<arendeIntressent xmlns="www.tekis.se/arende"/>
+				</soap:Body>
+			</soap:Envelope>
+			""";
+		var inputStream = new ByteArrayInputStream(xml.getBytes());
+		when(mockResponseBody.asInputStream()).thenReturn(inputStream);
+
+		var result = decoder.decode(mockResponse, ObjectFactory.class);
+
+		assertThat(result).isInstanceOf(ArendeIntressent.class)
+			.isNotInstanceOf(JAXBElement.class);
+		verify(mockResponse).body();
+		verify(mockResponseBody).asInputStream();
+		verifyNoMoreInteractions(mockResponse, mockResponseBody);
+	}
+
+	@Test
 	void testdecodeParameterizedType_shouldThrowProblem(@Load(as = Load.ResourceType.STRING, value = "soap/junit-soap-byggr-get-related-errands-by-legal-id-response.xml") String xml) throws IOException {
 		var inputStream = new ByteArrayInputStream(xml.getBytes());
 		when(mockResponseBody.asInputStream()).thenReturn(inputStream);
@@ -122,4 +149,19 @@ class SOAPJAXBDecoderTest {
 		verify(mockResponseBody).asInputStream();
 		verifyNoMoreInteractions(mockResponse, mockResponseBody);
 	}
+
+	@Test
+	void resolveRawType_withParameterizedType() {
+		final var type = mock(ParameterizedType.class);
+		when(type.getRawType()).thenReturn(List.class);
+
+		mockResponse.body();
+
+		final var result = decoder.resolveRawType(type);
+
+		assertThat(result).isEqualTo(List.class);
+		verify(mockResponse).body();
+		verifyNoMoreInteractions(mockResponse, mockResponseBody);
+	}
+
 }

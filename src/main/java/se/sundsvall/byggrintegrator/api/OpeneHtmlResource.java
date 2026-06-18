@@ -39,7 +39,7 @@ public class OpeneHtmlResource {
 		responses = @ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true))
 	public ResponseEntity<String> findNeighborhoodNotificationFilesWithRequestParameter(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @RequestParam final String identifier,
+		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @RequestParam final String identifier,
 		@Parameter(name = "caseNumber", description = "Case number from ByggR to match", example = "BYGG 2001-123456") @NotBlank @RequestParam final String caseNumber,
 		@Parameter(name = "referralReference", description = "Referral reference from ByggR to match", example = "EXAMPLE 1:1 - ej besvarad [167334]") @NotBlank @RequestParam final String referralReference) {
 

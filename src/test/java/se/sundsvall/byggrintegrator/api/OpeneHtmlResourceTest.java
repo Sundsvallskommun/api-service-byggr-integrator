@@ -245,39 +245,6 @@ class OpeneHtmlResourceTest {
 	}
 
 	@Test
-	void testFindNeighborhoodNotificationFilesWithRequestParameter_withBlankIdentifier() {
-		final var response = webTestClient.get()
-			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
-				.queryParam("caseNumber", CASE_NUMBER)
-				.queryParam("identifier", " ")
-				.queryParam("referralReference", REFERRAL_REFERENCE)
-				.build(MUNICIPALITY_ID))
-			.exchange()
-			.expectStatus().isBadRequest()
-			.expectHeader().contentType(TEXT_HTML_VALUE)
-			.expectHeader().valueEquals(INFO_QUERY_RESPONSE_HEADER, INFO_QUERY_RESPONSE_HEADER_VALUE)
-			.expectBody(String.class)
-			.returnResult();
-
-		final var responseBody = response.getResponseBody();
-		final var requestId = response.getResponseHeaders().get("x-request-id").getFirst();
-
-		assertThat(responseBody)
-			.isNotNull()
-			.isNotEmpty()
-			.containsIgnoringWhitespaces("""
-				<ul>
-					<li>
-						<span >Validation error: findNeighborhoodNotificationFilesWithRequestParameter.identifier: must not be blank.</span>
-						<span>Please refer to this requestId in any conversation:</span>
-						<span>%s</span>
-					</li>
-				</ul>""".formatted(requestId));
-
-		verifyNoInteractions(mockByggrIntegratorService);
-	}
-
-	@Test
 	void testFindNeighborhoodNotificationFilesWithRequestParameter_withMissingIdentifier() {
 		final var response = webTestClient.get()
 			.uri(uriBuilder -> uriBuilder.path(NEIGHBORHOOD_NOTIFICATION_FILES_WITH_REQUEST_PARAMETER_PATH)
