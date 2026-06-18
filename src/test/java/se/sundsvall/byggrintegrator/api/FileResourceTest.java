@@ -23,7 +23,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.GONE;
@@ -38,7 +37,7 @@ class FileResourceTest {
 
 	private static final String VALID_MUNICIPALITY_ID = "2281";
 	private static final String INVALID_MUNICIPALITY_ID = "invalid municipality";
-	private static final String APPLICANT_URL = "/{municipalityId}/files/{fileId}?token={token}";
+	private static final String FILE_URL = "/{municipalityId}/files/{fileId}?token={token}";
 
 	@MockitoBean
 	private ByggrIntegratorService mockByggrIntegratorService;
@@ -52,7 +51,7 @@ class FileResourceTest {
 		final var token = randomUUID().toString();
 
 		webTestClient.get()
-			.uri(APPLICANT_URL, VALID_MUNICIPALITY_ID, fileId, token)
+			.uri(FILE_URL, VALID_MUNICIPALITY_ID, fileId, token)
 			.exchange()
 			.expectStatus().isOk()
 			.expectBody()
@@ -68,7 +67,7 @@ class FileResourceTest {
 		final var token = randomUUID().toString();
 
 		final var responseBody = webTestClient.get()
-			.uri(APPLICANT_URL, INVALID_MUNICIPALITY_ID, fileId, token)
+			.uri(FILE_URL, INVALID_MUNICIPALITY_ID, fileId, token)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -96,7 +95,7 @@ class FileResourceTest {
 			.when(mockByggrIntegratorService).readFile(eq(VALID_MUNICIPALITY_ID), eq(fileId), eq(token), any(HttpServletResponse.class));
 
 		final var responseBody = webTestClient.get()
-			.uri(APPLICANT_URL, VALID_MUNICIPALITY_ID, fileId, token)
+			.uri(FILE_URL, VALID_MUNICIPALITY_ID, fileId, token)
 			.exchange()
 			.expectStatus().isNotFound()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -124,7 +123,7 @@ class FileResourceTest {
 			.withDetail("Access token has expired").build())
 			.when(mockByggrIntegratorService).readFile(eq(VALID_MUNICIPALITY_ID), eq(fileId), eq(token), any(HttpServletResponse.class));
 
-		final var responseBody = webTestClient.get().uri(APPLICANT_URL, VALID_MUNICIPALITY_ID, fileId, token)
+		final var responseBody = webTestClient.get().uri(FILE_URL, VALID_MUNICIPALITY_ID, fileId, token)
 			.exchange()
 			.expectStatus().isEqualTo(GONE)
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -169,7 +168,7 @@ class FileResourceTest {
 			.withDetail("500 Detail").build())
 			.when(mockByggrIntegratorService).readFile(eq(VALID_MUNICIPALITY_ID), eq(fileId), eq(token), any(HttpServletResponse.class));
 
-		final var responseBody = webTestClient.get().uri(APPLICANT_URL, VALID_MUNICIPALITY_ID, fileId, token)
+		final var responseBody = webTestClient.get().uri(FILE_URL, VALID_MUNICIPALITY_ID, fileId, token)
 			.exchange()
 			.expectStatus().is5xxServerError()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -194,7 +193,7 @@ class FileResourceTest {
 			.when(mockByggrIntegratorService).readFile(eq(VALID_MUNICIPALITY_ID), eq(fileId), eq(token), any(HttpServletResponse.class));
 
 		final var responseBody = webTestClient.get()
-			.uri(APPLICANT_URL, VALID_MUNICIPALITY_ID, fileId, token)
+			.uri(FILE_URL, VALID_MUNICIPALITY_ID, fileId, token)
 			.exchange()
 			.expectStatus().is5xxServerError()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)

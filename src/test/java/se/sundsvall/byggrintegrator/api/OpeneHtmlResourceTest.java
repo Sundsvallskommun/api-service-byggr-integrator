@@ -10,7 +10,6 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
 import se.sundsvall.dept44.problem.Problem;
-import tools.jackson.dataformat.xml.XmlMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -41,8 +40,6 @@ class OpeneHtmlResourceTest {
 
 	@Autowired
 	private WebTestClient webTestClient;
-	@Autowired
-	private XmlMapper.Builder builder;
 
 	@Test
 	void testFindNeighborhoodNotificationFilesWithRequestParameter() {

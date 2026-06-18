@@ -37,7 +37,7 @@ class ApplicantResourceTest {
 	private static final String VALID_MUNICIPALITY_ID = "2281";
 	private static final String INVALID_MUNICIPALITY_ID = "invalid municipality";
 	private static final String INVALID_IDENTIFIER = "invalid identifier";
-	private static final String APPLICANT_URL = "/{municipalityId}/applicants/{identifier}/errands";
+	private static final String FIND_ERRAND_URL = "/{municipalityId}/applicants/{identifier}/errands";
 
 	@MockitoBean
 	private ByggrIntegratorService mockByggrIntegratorService;
@@ -50,7 +50,7 @@ class ApplicantResourceTest {
 		when(mockByggrIntegratorService.findApplicantErrands(anyString())).thenReturn(List.of(new KeyValue("key", "value")));
 
 		final var responseBody = webTestClient.get()
-			.uri(APPLICANT_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
+			.uri(FIND_ERRAND_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
 			.exchange()
 			.expectStatus().isOk()
 			.expectBodyList(KeyValue.class)
@@ -69,7 +69,7 @@ class ApplicantResourceTest {
 	@Test
 	void testFindApplicantErrands_faultyMunicipalityId_shouldThrowException() {
 		final var responseBody = webTestClient.get()
-			.uri(APPLICANT_URL, INVALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
+			.uri(FIND_ERRAND_URL, INVALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -89,7 +89,7 @@ class ApplicantResourceTest {
 	@Test
 	void testFindApplicantErrands_faultyIdentifier_shouldThrowException() {
 		final var responseBody = webTestClient.get()
-			.uri(APPLICANT_URL, VALID_MUNICIPALITY_ID, INVALID_IDENTIFIER)
+			.uri(FIND_ERRAND_URL, VALID_MUNICIPALITY_ID, INVALID_IDENTIFIER)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -109,7 +109,7 @@ class ApplicantResourceTest {
 	@Test
 	void testFindApplicantErrands_faultyMunicipalityIdAndIdentifier_shouldThrowException() {
 		final var responseBody = webTestClient.get()
-			.uri(APPLICANT_URL, INVALID_MUNICIPALITY_ID, INVALID_IDENTIFIER)
+			.uri(FIND_ERRAND_URL, INVALID_MUNICIPALITY_ID, INVALID_IDENTIFIER)
 			.exchange()
 			.expectStatus().isBadRequest()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -133,7 +133,7 @@ class ApplicantResourceTest {
 		when(mockByggrIntegratorService.findApplicantErrands(VALID_IDENTIFIER)).thenThrow(new RuntimeException("Service failed"));
 
 		final var responseBody = webTestClient.get()
-			.uri(APPLICANT_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
+			.uri(FIND_ERRAND_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
 			.exchange()
 			.expectStatus().is5xxServerError()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
@@ -157,7 +157,7 @@ class ApplicantResourceTest {
 			.build());
 
 		final var responseBody = webTestClient.get()
-			.uri(APPLICANT_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
+			.uri(FIND_ERRAND_URL, VALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
 			.exchange()
 			.expectStatus().is5xxServerError()
 			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
