@@ -2,6 +2,7 @@ package se.sundsvall.byggrintegrator.service.util;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -159,6 +160,37 @@ class ByggrFilterUtilityTest {
 		assertThat(byggrFilterUtility.filterNeighborhoodNotifications(errands, null)).isEmpty();
 	}
 
+	// with null list
+	@Test
+	void filterNeighborhoodNotificationsWithNullEvent() {
+		final List<Event> events = new ArrayList<>();
+		events.add(null);
+
+		// Prepare list of unwanted subtype
+		setField(byggrFilterUtility, "unwantedSubtypes", List.of("GRASVA"));
+
+		final var errands = List.of(ByggrErrandDto.builder()
+			.withEvents(events)
+			.build());
+
+		// Act and assert
+		assertThat(byggrFilterUtility.filterNeighborhoodNotifications(errands, null)).isEmpty();
+	}
+
+	// unwated not ganho or komfast
+	@Test
+	void filterNeighborhoodNotificationsWithTypeNotWanted() {
+		// Prepare list of unwanted subtype
+		setField(byggrFilterUtility, "unwantedSubtypes", List.of("KOMFASVA"));
+
+		final var errands = List.of(ByggrErrandDto.builder()
+			.withEvents(List.of(createEvent("GRANHO", "GRAUTS"), createEvent("Unwanted", "KOMFASVA")))
+			.build());
+
+		// Act and assert
+		assertThat(byggrFilterUtility.filterNeighborhoodNotifications(errands, null)).isEmpty();
+	}
+
 	@ParameterizedTest
 	@MethodSource("filterErrandsForApplicantArgumentProvider")
 	void filterErrandsForApplicant(final ByggrErrandDto errand, final int expetedErrandSize) {
@@ -167,5 +199,14 @@ class ByggrFilterUtilityTest {
 
 		// Act and assert
 		assertThat(byggrFilterUtility.filterCasesForApplicant(List.of(errand), STAKEHOLDER_LEGAL_ID)).hasSize(expetedErrandSize);
+	}
+
+	@Test
+	void filterEvents_errandIsNull() {
+		final var identifier = "190102034567";
+
+		final var result = byggrFilterUtility.filterEvents(identifier, null);
+
+		assertThat(result).isNull();
 	}
 }

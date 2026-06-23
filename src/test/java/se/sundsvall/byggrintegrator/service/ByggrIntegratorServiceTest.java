@@ -2,8 +2,10 @@ package se.sundsvall.byggrintegrator.service;
 
 import generated.se.sundsvall.arendeexport.v4.ArrayOfHandelseHandling;
 import generated.se.sundsvall.arendeexport.v4.ArrayOfRemiss;
+import generated.se.sundsvall.arendeexport.v4.ArrayOfString2;
 import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
 import generated.se.sundsvall.arendeexport.v4.HandelseHandling;
+import generated.se.sundsvall.arendeexport.v4.HandelseIntressent;
 import generated.se.sundsvall.arendeexport.v4.Remiss;
 import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.v8.ObjectFactory;
@@ -11,6 +13,7 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +21,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -25,7 +29,7 @@ import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
-import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
+import se.sundsvall.byggrintegrator.service.template.TemplateService;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 import se.sundsvall.dept44.problem.ThrowableProblem;
 
@@ -67,6 +71,7 @@ class ByggrIntegratorServiceTest {
 	private static final String PROCESSED_PRIVATE_IDENTIFIER = "12345678-9012";
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String REFERRAL_REFERENCE = "1234567890";
+	private static final String CASE_NUMBER = "caseNumber";
 
 	@Mock
 	private ByggrIntegrationMapper mockByggrIntegrationMapper;
@@ -78,7 +83,7 @@ class ByggrIntegratorServiceTest {
 	private ApiResponseMapper mockApiResponseMapper;
 
 	@Mock
-	private TemplateMapper mockTemplateMapper;
+	private TemplateService mockTemplateService;
 
 	@Mock
 	private HttpServletResponse mockHttpServletResponse;
@@ -134,7 +139,7 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrFilterUtility).filterNeighborhoodNotifications(anyList(), eq(processedIdentifier));
 		verify(mockByggrFilterUtility, times(8)).hasValidDocumentType(any());
 		verify(mockApiResponseMapper).mapToKeyValueResponseList(anyList());
-		verifyNoMoreInterations();
+		verifyNoMoreInteractionsWithMocks();
 	}
 
 	@ParameterizedTest
@@ -159,7 +164,7 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDtos(response);
 		verify(mockByggrFilterUtility).filterNeighborhoodNotifications(anyList(), eq(processedIdentifier));
 		verify(mockApiResponseMapper).mapToKeyValueResponseList(emptyList());
-		verifyNoMoreInterations();
+		verifyNoMoreInteractionsWithMocks();
 	}
 
 	@ParameterizedTest
@@ -190,7 +195,7 @@ class ByggrIntegratorServiceTest {
 		when(mockByggrIntegration.getErrand(BYGGR_ERRAND_NUMBER)).thenReturn(OBJECT_FACTORY.createGetArendeResponse());
 		when(mockByggrIntegrationMapper.mapToByggrErrandDto(any())).thenReturn(ByggrErrandDto.builder().build());
 		when(mockByggrFilterUtility.filterEvents(eq(processedIdentifier), any(ByggrErrandDto.class))).thenReturn(ByggrErrandDto.builder().build());
-		when(mockTemplateMapper.generateFileList(anyString(), any(ByggrErrandDto.class), any(), any())).thenReturn("html");
+		when(mockTemplateService.generateFileList(anyString(), any(ByggrErrandDto.class), any(), any())).thenReturn("html");
 		when(mockByggrIntegration.getRemisserByPersOrgNr(any())).thenReturn(
 			new GetRemisserByPersOrgNrResponse().withGetRemisserByPersOrgNrResult(new ArrayOfRemiss().withRemiss(new Remiss().withUtskicksHandlingar(new ArrayOfHandelseHandling().withHandling(new HandelseHandling())))));
 		final var html = service.listNeighborhoodNotificationFiles(MUNICIPALITY_ID, identifier, BYGGR_ERRAND_NUMBER, REFERRAL_REFERENCE);
@@ -199,7 +204,7 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegration).getErrand(BYGGR_ERRAND_NUMBER);
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(any(GetArendeResponse.class));
 		verify(mockByggrFilterUtility).filterEvents(eq(processedIdentifier), any(ByggrErrandDto.class));
-		verify(mockTemplateMapper).generateFileList(eq(MUNICIPALITY_ID), any(ByggrErrandDto.class), any(), any());
+		verify(mockTemplateService).generateFileList(eq(MUNICIPALITY_ID), any(ByggrErrandDto.class), any(), any());
 		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrFilterUtility, mockApiResponseMapper, mockApiResponseMapper);
 		verifyNoInteractions(mockApiResponseMapper);
 	}
@@ -216,7 +221,7 @@ class ByggrIntegratorServiceTest {
 		when(mockByggrIntegration.getErrand(BYGGR_ERRAND_NUMBER)).thenReturn(OBJECT_FACTORY.createGetArendeResponse());
 		when(mockByggrIntegrationMapper.mapToByggrErrandDto(any())).thenReturn(ByggrErrandDto.builder().build());
 		when(mockByggrFilterUtility.filterEvents(eq(processedIdentifier), any(ByggrErrandDto.class))).thenReturn(ByggrErrandDto.builder().build());
-		when(mockTemplateMapper.generateFileList(anyString(), any(ByggrErrandDto.class), any(), any())).thenReturn("html");
+		when(mockTemplateService.generateFileList(anyString(), any(ByggrErrandDto.class), any(), any())).thenReturn("html");
 		when(mockByggrIntegration.getRemisserByPersOrgNr(any())).thenReturn(
 			new GetRemisserByPersOrgNrResponse().withGetRemisserByPersOrgNrResult(new ArrayOfRemiss().withRemiss(new Remiss()
 				.withUtskicksHandlingar(new ArrayOfHandelseHandling().withHandling(keepHandling, graHandling, remissHandling, undutHandling)))));
@@ -225,7 +230,7 @@ class ByggrIntegratorServiceTest {
 
 		@SuppressWarnings("unchecked")
 		final var captor = org.mockito.ArgumentCaptor.forClass(List.class);
-		verify(mockTemplateMapper).generateFileList(eq(MUNICIPALITY_ID), any(ByggrErrandDto.class), any(), captor.capture());
+		verify(mockTemplateService).generateFileList(eq(MUNICIPALITY_ID), any(ByggrErrandDto.class), any(), captor.capture());
 		assertThat(captor.getValue())
 			.extracting(handling -> ((HandelseHandling) handling).getTyp())
 			.containsExactly("BIL");
@@ -263,7 +268,7 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrFilterUtility).filterCasesForApplicant(anyList(), eq(processedIdentifier));
 		verify(mockApiResponseMapper).mapToKeyValueResponseList(anyList());
 		verify(mockByggrFilterUtility, times(8)).hasValidDocumentType(any());
-		verifyNoMoreInterations();
+		verifyNoMoreInteractionsWithMocks();
 	}
 
 	@Test
@@ -275,16 +280,16 @@ class ByggrIntegratorServiceTest {
 
 		when(mockByggrIntegration.getErrand(dnr)).thenReturn(generateArendeResponse(dnr));
 		when(mockByggrIntegrationMapper.mapToByggrErrandDto(any())).thenReturn(byggrErrandDto);
-		when(mockTemplateMapper.getDescriptionAndPropertyDesignation(any(ByggrErrandDto.class))).thenReturn("RUNSVIK 1:22");
+		when(mockTemplateService.getDescriptionAndPropertyDesignation(any(ByggrErrandDto.class))).thenReturn("RUNSVIK 1:22");
 
 		final var propertyDesignation = service.getPropertyDesignation(dnr);
 
 		assertThat(propertyDesignation).isNotNull().isEqualTo("RUNSVIK 1:22");
 		verify(mockByggrIntegration).getErrand(dnr);
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(any(GetArendeResponse.class));
-		verify(mockTemplateMapper).getDescriptionAndPropertyDesignation(any(ByggrErrandDto.class));
+		verify(mockTemplateService).getDescriptionAndPropertyDesignation(any(ByggrErrandDto.class));
 
-		verifyNoMoreInterations();
+		verifyNoMoreInteractionsWithMocks();
 	}
 
 	@Test
@@ -302,7 +307,7 @@ class ByggrIntegratorServiceTest {
 
 		verify(mockByggrIntegration).getErrand(dnr);
 		verify(mockApiResponseMapper).mapToWeight(any(GetArendeResponse.class));
-		verifyNoMoreInterations();
+		verifyNoMoreInteractionsWithMocks();
 	}
 
 	@Test
@@ -320,7 +325,7 @@ class ByggrIntegratorServiceTest {
 			});
 
 		verify(mockByggrIntegration).getErrand(dnr);
-		verifyNoMoreInterations();
+		verifyNoMoreInteractionsWithMocks();
 	}
 
 	private static Stream<Arguments> referralTypeProvider() {
@@ -347,7 +352,7 @@ class ByggrIntegratorServiceTest {
 		assertThat(weight.getValue()).isEqualTo(expectedWeight);
 		verify(mockByggrIntegration).getRemisserByPersOrgNr(processedIdentifier);
 		verify(mockApiResponseMapper).mapToWeight(any(Remiss.class));
-		verifyNoMoreInterations();
+		verifyNoMoreInteractionsWithMocks();
 	}
 
 	@Test
@@ -366,7 +371,7 @@ class ByggrIntegratorServiceTest {
 			});
 
 		verify(mockByggrIntegration).getRemisserByPersOrgNr(PROCESSED_PRIVATE_IDENTIFIER);
-		verifyNoMoreInterations();
+		verifyNoMoreInteractionsWithMocks();
 	}
 
 	@Test
@@ -386,7 +391,7 @@ class ByggrIntegratorServiceTest {
 			});
 
 		verify(mockByggrIntegration).getRemisserByPersOrgNr(PROCESSED_PRIVATE_IDENTIFIER);
-		verifyNoMoreInterations();
+		verifyNoMoreInteractionsWithMocks();
 	}
 
 	@Test
@@ -407,7 +412,7 @@ class ByggrIntegratorServiceTest {
 		verify(mockHttpServletResponse).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"random.txt\"");
 		verify(mockHttpServletResponse).setContentLength(DOCUMENT_CONTENT.length);
 		verify(mockHttpServletResponse).getOutputStream();
-		verifyNoMoreInterations();
+		verifyNoMoreInteractionsWithMocks();
 	}
 
 	/**
@@ -437,7 +442,7 @@ class ByggrIntegratorServiceTest {
 		verify(mockHttpServletResponse).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"random-name.pdf\"");
 		verify(mockHttpServletResponse).setContentLength(DOCUMENT_CONTENT.length);
 		verify(mockHttpServletResponse).getOutputStream();
-		verifyNoMoreInterations();
+		verifyNoMoreInteractionsWithMocks();
 	}
 
 	@Test
@@ -457,7 +462,7 @@ class ByggrIntegratorServiceTest {
 
 		verify(mockFileAccessTokenService).validateToken(MUNICIPALITY_ID, fileId, token);
 		verify(mockByggrIntegration).getDocument(fileId);
-		verifyNoMoreInterations();
+		verifyNoMoreInteractionsWithMocks();
 	}
 
 	@Test
@@ -482,7 +487,34 @@ class ByggrIntegratorServiceTest {
 		verify(mockHttpServletResponse).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"random.txt\"");
 		verify(mockHttpServletResponse).setContentLength(DOCUMENT_CONTENT.length);
 		verify(mockHttpServletResponse).getOutputStream();
-		verifyNoMoreInterations();
+		verifyNoMoreInteractionsWithMocks();
+	}
+
+	@Test
+	void testReadFile_fileNameAlreadyHasExtension() throws IOException {
+		final var fileId = "FileId";
+		final var token = "valid-token";
+
+		final var dokument = OBJECT_FACTORY.createDokument()
+			.withDokId(fileId)
+			.withNamn("fil.txt").withFil(OBJECT_FACTORY.createDokumentFil()
+				.withFilAndelse("TXT")
+				.withFilBuffer(DOCUMENT_CONTENT));
+
+		when(mockByggrIntegration.getDocument(fileId))
+			.thenReturn(OBJECT_FACTORY.createGetDocumentResponse().withGetDocumentResult(dokument));
+
+		when(mockHttpServletResponse.getOutputStream()).thenReturn(mockServletOutputStream);
+
+		service.readFile(MUNICIPALITY_ID, fileId, token, mockHttpServletResponse);
+
+		verify(mockFileAccessTokenService).validateToken(MUNICIPALITY_ID, fileId, token);
+		verify(mockByggrIntegration).getDocument(fileId);
+		verify(mockHttpServletResponse).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"fil.txt\"");
+		verify(mockHttpServletResponse).addHeader(CONTENT_TYPE, "text/plain");
+		verify(mockHttpServletResponse).setContentLength(DOCUMENT_CONTENT.length);
+		verify(mockHttpServletResponse).getOutputStream();
+		verifyNoMoreInteractionsWithMocks();
 	}
 
 	@ParameterizedTest
@@ -525,7 +557,182 @@ class ByggrIntegratorServiceTest {
 			tuple("3", "propertyDesignation2 – Lämna svar som granne [789]"));
 	}
 
-	private void verifyNoMoreInterations() {
+	@Test
+	void testListNeighborhoodNotificationFiles_remissNotFound() {
+		when(mockByggrIntegration.getErrand(BYGGR_ERRAND_NUMBER))
+			.thenReturn(OBJECT_FACTORY.createGetArendeResponse());
+		when(mockByggrIntegration.getRemisserByPersOrgNr(PROCESSED_PRIVATE_IDENTIFIER))
+			.thenReturn(new GetRemisserByPersOrgNrResponse()
+				.withGetRemisserByPersOrgNrResult(new ArrayOfRemiss().withRemiss(new Remiss().withRemissId(123))));
+
+		assertThatExceptionOfType(ThrowableProblem.class)
+			.isThrownBy(() -> service.listNeighborhoodNotificationFiles(MUNICIPALITY_ID, PRIVATE_IDENTIFIER, BYGGR_ERRAND_NUMBER, REFERRAL_REFERENCE))
+			.satisfies(problem -> {
+				assertThat(problem.getStatus()).isEqualTo(NOT_FOUND);
+				assertThat(problem.getDetail()).isEqualTo("Remiss not found");
+			});
+	}
+
+	@Test
+	void testListNeighborhoodNotificationFacilities_withNullFastighetsBeteckningAndDifferentCaseId() {
+		final var propertyDesignation1 = "propertyDesignation1";
+		final var propertyDesignation2 = "propertyDesignation2";
+
+		when(mockByggrIntegration.getRemisserByPersOrgNr(PROCESSED_PRIVATE_IDENTIFIER))
+			.thenReturn(new GetRemisserByPersOrgNrResponse()
+				.withGetRemisserByPersOrgNrResult(new ArrayOfRemiss()
+					.withRemiss(new Remiss()
+						.withDnr(CASE_NUMBER)
+						.withFastighetsbeteckning(propertyDesignation1)
+						.withMottagare(new HandelseIntressent()
+							.withRollLista(new ArrayOfString2().withRoll(ApiResponseMapper.ROLE_PROPERTY_OWNER)))
+						.withRemissId(1),
+						new Remiss()
+							.withDnr("OTHER_CASE")
+							.withFastighetsbeteckning(propertyDesignation2)
+							.withRemissId(2),
+						new Remiss()
+							.withDnr(CASE_NUMBER)
+							.withFastighetsbeteckning(null)
+							.withRemissId(3))));
+
+		when(mockApiResponseMapper.mapToKeyValue(any())).thenCallRealMethod();
+
+		final var result = service.getNeighborhoodNotificationFacilities(PRIVATE_IDENTIFIER, CASE_NUMBER);
+
+		assertThat(result).hasSize(1)
+			.extracting(KeyValue::value)
+			.containsExactly("propertyDesignation1 – Lämna svar som fastighetsägare [1]");
+
+		verifyNoMoreInteractionsWithMocks();
+	}
+
+	@Test
+	void testExtractRecipientRole_emptyRollerLista() {
+		when(mockByggrIntegration.getRemisserByPersOrgNr(PROCESSED_PRIVATE_IDENTIFIER))
+			.thenReturn(new GetRemisserByPersOrgNrResponse()
+				.withGetRemisserByPersOrgNrResult(new ArrayOfRemiss()
+					.withRemiss(new Remiss()
+						.withDnr(CASE_NUMBER)
+						.withFastighetsbeteckning("SILJE 2:65 [999999]")
+						.withMottagare(new HandelseIntressent()
+							.withRollLista(new ArrayOfString2()))
+						.withRemissId(123))));
+		when(mockApiResponseMapper.mapToKeyValue(any())).thenCallRealMethod();
+
+		service.getNeighborhoodNotificationFacilities(PRIVATE_IDENTIFIER, CASE_NUMBER);
+
+		final ArgumentCaptor<Map<String, Map<Integer, String>>> captor = ArgumentCaptor.forClass(Map.class);
+
+		verify(mockApiResponseMapper).mapToKeyValue(captor.capture());
+		assertThat(captor.getValue())
+			.containsEntry("SILJE 2:65 [999999]", Map.of(123, ""));
+		verifyNoMoreInteractionsWithMocks();
+	}
+
+	@Test
+	void testExtractRecipientRole_rollerListaContainsPropertyOwner() {
+		when(mockByggrIntegration.getRemisserByPersOrgNr(PROCESSED_PRIVATE_IDENTIFIER))
+			.thenReturn(new GetRemisserByPersOrgNrResponse()
+				.withGetRemisserByPersOrgNrResult(new ArrayOfRemiss()
+					.withRemiss(new Remiss()
+						.withDnr(CASE_NUMBER)
+						.withFastighetsbeteckning("SILJE 2:65 [999999]")
+						.withMottagare(new HandelseIntressent()
+							.withRollLista(new ArrayOfString2().withRoll(ApiResponseMapper.ROLE_PROPERTY_OWNER)))
+						.withRemissId(123))));
+
+		when(mockApiResponseMapper.mapToKeyValue(any())).thenCallRealMethod();
+
+		service.getNeighborhoodNotificationFacilities(PRIVATE_IDENTIFIER, CASE_NUMBER);
+
+		final ArgumentCaptor<Map<String, Map<Integer, String>>> captor = ArgumentCaptor.forClass(Map.class);
+
+		verify(mockApiResponseMapper).mapToKeyValue(captor.capture());
+		assertThat(captor.getValue())
+			.containsEntry("SILJE 2:65 [999999]", Map.of(123, ApiResponseMapper.ROLE_PROPERTY_OWNER));
+		verifyNoMoreInteractionsWithMocks();
+	}
+
+	@Test
+	void testExtractRecipientRole_rollerListaContainsNeighbour() {
+		when(mockByggrIntegration.getRemisserByPersOrgNr(PROCESSED_PRIVATE_IDENTIFIER))
+			.thenReturn(new GetRemisserByPersOrgNrResponse()
+				.withGetRemisserByPersOrgNrResult(new ArrayOfRemiss()
+					.withRemiss(new Remiss()
+						.withDnr(CASE_NUMBER)
+						.withFastighetsbeteckning("SILJE 2:65 [999999]")
+						.withMottagare(new HandelseIntressent()
+							.withRollLista(new ArrayOfString2().withRoll(ApiResponseMapper.ROLE_NEIGHBOUR)))
+						.withRemissId(123))));
+
+		when(mockApiResponseMapper.mapToKeyValue(any())).thenCallRealMethod();
+
+		service.getNeighborhoodNotificationFacilities(PRIVATE_IDENTIFIER, CASE_NUMBER);
+
+		final ArgumentCaptor<Map<String, Map<Integer, String>>> captor = ArgumentCaptor.forClass(Map.class);
+		verify(mockApiResponseMapper).mapToKeyValue(captor.capture());
+
+		assertThat(captor.getValue())
+			.containsEntry("SILJE 2:65 [999999]", Map.of(123, ApiResponseMapper.ROLE_NEIGHBOUR));
+		verifyNoMoreInteractionsWithMocks();
+	}
+
+	@Test
+	void testExtractRecipientRole_unknownRole_returnFirst() {
+		when(mockByggrIntegration.getRemisserByPersOrgNr(PROCESSED_PRIVATE_IDENTIFIER))
+			.thenReturn(new GetRemisserByPersOrgNrResponse()
+				.withGetRemisserByPersOrgNrResult(new ArrayOfRemiss()
+					.withRemiss(new Remiss()
+						.withDnr(CASE_NUMBER)
+						.withFastighetsbeteckning("SILJE 2:65 [999999]")
+						.withMottagare(new HandelseIntressent()
+							.withRollLista(new ArrayOfString2().withRoll("UNKNOWN ROLE")))
+						.withRemissId(123))));
+
+		when(mockApiResponseMapper.mapToKeyValue(any())).thenCallRealMethod();
+
+		service.getNeighborhoodNotificationFacilities(PRIVATE_IDENTIFIER, CASE_NUMBER);
+
+		final ArgumentCaptor<Map<String, Map<Integer, String>>> captor = ArgumentCaptor.forClass(Map.class);
+		verify(mockApiResponseMapper).mapToKeyValue(captor.capture());
+
+		assertThat(captor.getValue())
+			.containsEntry("SILJE 2:65 [999999]", Map.of(123, "UNKNOWN ROLE"));
+		verifyNoMoreInteractionsWithMocks();
+	}
+
+	@Test
+	void testReadFile_differentFilAndelse() throws IOException {
+
+		final var token = "valid-token";
+		final var fileId = "fileId";
+
+		final var dokument = OBJECT_FACTORY.createDokument()
+			.withDokId(fileId)
+			.withNamn("random.txt")
+			.withFil(OBJECT_FACTORY
+				.createDokumentFil()
+				.withFilAndelse("pdf")
+				.withFilBuffer(DOCUMENT_CONTENT));
+
+		when(mockByggrIntegration.getDocument(fileId))
+			.thenReturn(OBJECT_FACTORY.createGetDocumentResponse()
+				.withGetDocumentResult(dokument));
+		when(mockHttpServletResponse.getOutputStream())
+			.thenReturn(mockServletOutputStream);
+
+		service.readFile(MUNICIPALITY_ID, fileId, token, mockHttpServletResponse);
+
+		verify(mockFileAccessTokenService).validateToken(MUNICIPALITY_ID, fileId, token);
+		verify(mockByggrIntegration).getDocument(fileId);
+		verify(mockHttpServletResponse).addHeader(CONTENT_DISPOSITION, "attachment; filename=\"random.txt.pdf\"");
+		verify(mockHttpServletResponse).addHeader(CONTENT_TYPE, "application/pdf");
+		verify(mockHttpServletResponse).setContentLength(DOCUMENT_CONTENT.length);
+		verify(mockHttpServletResponse).getOutputStream();
+	}
+
+	private void verifyNoMoreInteractionsWithMocks() {
 		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockByggrFilterUtility, mockApiResponseMapper, mockHttpServletResponse, mockFileAccessTokenService);
 	}
 }

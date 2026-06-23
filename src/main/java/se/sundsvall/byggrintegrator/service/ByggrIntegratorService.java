@@ -24,7 +24,7 @@ import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
-import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
+import se.sundsvall.byggrintegrator.service.template.TemplateService;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.problem.ThrowableProblem;
@@ -57,16 +57,16 @@ public class ByggrIntegratorService {
 	private final ByggrIntegrationMapper byggrIntegrationMapper;
 	private final ByggrIntegration byggrIntegration;
 	private final ApiResponseMapper apiResponseMapper;
-	private final TemplateMapper templateMapper;
+	private final TemplateService templateService;
 	private final ByggrFilterUtility filterUtility;
 	private final FileAccessTokenService fileAccessTokenService;
 
-	public ByggrIntegratorService(final ByggrIntegrationMapper byggrIntegrationMapper, final ByggrIntegration byggrIntegration, final ApiResponseMapper apiResponseMapper, final TemplateMapper templateMapper, final ByggrFilterUtility filterUtility,
+	public ByggrIntegratorService(final ByggrIntegrationMapper byggrIntegrationMapper, final ByggrIntegration byggrIntegration, final ApiResponseMapper apiResponseMapper, TemplateService templateService, final ByggrFilterUtility filterUtility,
 		final FileAccessTokenService fileAccessTokenService) {
 		this.byggrIntegrationMapper = byggrIntegrationMapper;
 		this.byggrIntegration = byggrIntegration;
 		this.apiResponseMapper = apiResponseMapper;
-		this.templateMapper = templateMapper;
+		this.templateService = templateService;
 		this.filterUtility = filterUtility;
 		this.fileAccessTokenService = fileAccessTokenService;
 	}
@@ -110,7 +110,7 @@ public class ByggrIntegratorService {
 
 		final var byggrErrand = byggrIntegrationMapper.mapToByggrErrandDto(errand);
 
-		return templateMapper.getDescriptionAndPropertyDesignation(byggrErrand);
+		return templateService.getDescriptionAndPropertyDesignation(byggrErrand);
 	}
 
 	@Cacheable("getErrandTypeCache")
@@ -167,7 +167,7 @@ public class ByggrIntegratorService {
 		final var handlingtyper = byggrIntegration.getHandlingTyper();
 
 		// Map to API response
-		return templateMapper.generateFileList(municipalityId, match, handlingtyper, filteredHandelseHandlingList);
+		return templateService.generateFileList(municipalityId, match, handlingtyper, filteredHandelseHandlingList);
 	}
 
 	public void readFile(final String municipalityId, final String fileId, final String token, final HttpServletResponse response) {

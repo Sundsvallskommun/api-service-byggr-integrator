@@ -24,7 +24,7 @@ import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
-import se.sundsvall.byggrintegrator.service.template.TemplateMapper;
+import se.sundsvall.byggrintegrator.service.template.TemplateService;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -56,7 +56,7 @@ class ByggrIntegratorServiceCacheTest {
 	private ApiResponseMapper mockApiResponseMapper;
 
 	@MockitoBean
-	private TemplateMapper mockTemplateMapper;
+	private TemplateService mockTemplateService;
 
 	@MockitoBean
 	private ByggrFilterUtility mockFilterUtility;
@@ -94,7 +94,7 @@ class ByggrIntegratorServiceCacheTest {
 
 		assertThat(result).isEqualTo(response);
 
-		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper, mockTemplateMapper, mockFilterUtility);
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper, mockTemplateService, mockFilterUtility);
 	}
 
 	@Test
@@ -129,7 +129,7 @@ class ByggrIntegratorServiceCacheTest {
 
 		assertThat(result).isEqualTo(response);
 
-		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper, mockTemplateMapper, mockFilterUtility);
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper, mockTemplateService, mockFilterUtility);
 	}
 
 	@Test
@@ -145,7 +145,7 @@ class ByggrIntegratorServiceCacheTest {
 
 		when(mockByggrIntegration.getErrand(caseNumber)).thenReturn(errand);
 		when(mockByggrIntegrationMapper.mapToByggrErrandDto(errand)).thenCallRealMethod();
-		when(mockTemplateMapper.getDescriptionAndPropertyDesignation(any())).thenReturn(response);
+		when(mockTemplateService.getDescriptionAndPropertyDesignation(any())).thenReturn(response);
 
 		// First call - should hit the service
 		var result = byggrIntegratorService.getPropertyDesignation(caseNumber);
@@ -153,7 +153,7 @@ class ByggrIntegratorServiceCacheTest {
 		// Mocks should only be called first time
 		verify(mockByggrIntegration).getErrand(caseNumber);
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(errand);
-		verify(mockTemplateMapper).getDescriptionAndPropertyDesignation(any());
+		verify(mockTemplateService).getDescriptionAndPropertyDesignation(any());
 
 		assertThat(result).isEqualTo(response);
 
@@ -162,7 +162,7 @@ class ByggrIntegratorServiceCacheTest {
 
 		assertThat(result).isEqualTo(response);
 
-		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper, mockTemplateMapper, mockFilterUtility);
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper, mockTemplateService, mockFilterUtility);
 	}
 
 	@Test
@@ -193,7 +193,7 @@ class ByggrIntegratorServiceCacheTest {
 
 		assertThat(result).isEqualTo(weight);
 
-		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper, mockTemplateMapper, mockFilterUtility);
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper, mockTemplateService, mockFilterUtility);
 	}
 
 	@Test
@@ -215,7 +215,7 @@ class ByggrIntegratorServiceCacheTest {
 		when(mockByggrIntegration.getRemisserByPersOrgNr(identifier)).thenReturn(remissResult);
 		when(mockByggrIntegrationMapper.mapToByggrErrandDto(errand)).thenCallRealMethod();
 		when(mockFilterUtility.filterEvents(eq(identifier), any())).thenAnswer(invocation -> invocation.getArgument(1));
-		when(mockTemplateMapper.generateFileList(eq(municipalityId), any(), any(), any())).thenReturn(response);
+		when(mockTemplateService.generateFileList(eq(municipalityId), any(), any(), any())).thenReturn(response);
 
 		// First call - should hit the service
 		var result = byggrIntegratorService.listNeighborhoodNotificationFiles(municipalityId, identifier, caseNumber, referralReference);
@@ -225,7 +225,7 @@ class ByggrIntegratorServiceCacheTest {
 		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(errand);
 		verify(mockByggrIntegration).getHandlingTyper();
 		verify(mockFilterUtility).filterEvents(eq(identifier), any());
-		verify(mockTemplateMapper).generateFileList(eq(municipalityId), any(), any(), any());
+		verify(mockTemplateService).generateFileList(eq(municipalityId), any(), any(), any());
 		verify(mockByggrIntegration).getRemisserByPersOrgNr(identifier);
 
 		assertThat(result).isEqualTo(response);
@@ -235,7 +235,7 @@ class ByggrIntegratorServiceCacheTest {
 
 		assertThat(result).isEqualTo(response);
 
-		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper, mockTemplateMapper, mockFilterUtility);
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper, mockTemplateService, mockFilterUtility);
 	}
 
 	@Test
