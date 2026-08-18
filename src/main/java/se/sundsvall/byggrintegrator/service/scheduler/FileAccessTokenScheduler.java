@@ -1,6 +1,7 @@
 package se.sundsvall.byggrintegrator.service.scheduler;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,7 @@ public class FileAccessTokenScheduler {
 	@Transactional
 	public void execute() {
 		LOG.info("Starting cleanup of expired file access tokens");
-		repository.deleteByExpiresAtBefore(OffsetDateTime.now());
+		repository.deleteByExpiresAtBefore(OffsetDateTime.now(ZoneId.systemDefault()));
 		LOG.info("Cleanup of expired file access tokens completed");
 	}
 }
