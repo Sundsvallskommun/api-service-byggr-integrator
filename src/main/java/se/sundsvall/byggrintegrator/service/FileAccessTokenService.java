@@ -1,6 +1,7 @@
 package se.sundsvall.byggrintegrator.service;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import org.springframework.stereotype.Service;
 import se.sundsvall.byggrintegrator.configuration.FileAccessTokenProperties;
 import se.sundsvall.byggrintegrator.integration.db.FileAccessTokenRepository;
@@ -29,7 +30,7 @@ public class FileAccessTokenService {
 		final var entity = FileAccessTokenEntity.create()
 			.withMunicipalityId(municipalityId)
 			.withFileId(fileId)
-			.withExpiresAt(OffsetDateTime.now().plus(properties.expiration()));
+			.withExpiresAt(OffsetDateTime.now(ZoneId.systemDefault()).plus(properties.expiration()));
 
 		return repository.save(entity).getId();
 	}
@@ -43,7 +44,7 @@ public class FileAccessTokenService {
 				.withDetail(ERROR_TOKEN_NOT_FOUND)
 				.build());
 
-		if (entity.getExpiresAt().isBefore(OffsetDateTime.now())) {
+		if (entity.getExpiresAt().isBefore(OffsetDateTime.now(ZoneId.systemDefault()))) {
 			throw Problem.builder()
 				.withStatus(GONE)
 				.withTitle(GONE.getReasonPhrase())

@@ -2,6 +2,7 @@ package se.sundsvall.byggrintegrator.service.util;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -119,7 +120,7 @@ class ByggrFilterUtilityTest {
 	void filterNeighborhoodNotifications(final List<Event> events, final String identifier, final int expectedErrandsSize, final int expectedEventsSize) {
 		// Act - pin the clock so the 60-day cutoff in the filter is deterministic
 		try (final var localDateMock = mockStatic(LocalDate.class, CALLS_REAL_METHODS)) {
-			localDateMock.when(LocalDate::now).thenReturn(FIXED_TODAY);
+			localDateMock.when(() -> LocalDate.now(ZoneId.systemDefault())).thenReturn(FIXED_TODAY);
 
 			final var errands = byggrFilterUtility.filterNeighborhoodNotifications(List.of(
 				ByggrErrandDto.builder()
