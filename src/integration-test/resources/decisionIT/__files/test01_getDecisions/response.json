@@ -1,0 +1,47 @@
+{
+	"caseNumber": "BYGG 2024-000666",
+	"description": "Dispens Nybyggnad garage",
+	"propertyDesignation": "SUNDSVALL 2:55",
+	"decisions": [
+		{
+			"id": 292453,
+			"decisionNumber": "ST 2024-000002",
+			"heading": "Strandskyddsdispens, Beviljas",
+			"decisionDate": "2024-09-02",
+			"outcome": "BEV",
+			"mainDecision": true,
+			"instanceType": "DelgSTA",
+			"documents": [
+				{
+					"id": "470583",
+					"name": "2024 Strandskyddsdispens.docx",
+					"description": "Beslut",
+					"type": "@BESLUT",
+					"documentDate": "2024-09-03",
+					"url": "http://localhost/2.5/2281/files/470583?token=b9d310c5-a7b1-4c45-9cbb-402b4c5c8de0"
+				}
+			]
+		},
+		{
+			"id": 292472,
+			"decisionNumber": "ST 2024-000001",
+			"heading": "Äldre beslut",
+			"decisionDate": "2024-08-01",
+			"outcome": "BEV",
+			"mainDecision": false,
+			"instanceType": "DelgSTA",
+			"validUntil": "2026-08-01",
+			"documents": [
+				{
+					"id": "470592",
+					"name": "aldre-beslut.pdf",
+					"description": "Beslut",
+					"type": "BESLUT",
+					"typeDescription": "Beslut",
+					"documentDate": "2024-08-01",
+					"url": "http://localhost/2.5/2281/files/470592?token=b9d310c5-a7b1-4c45-9cbb-402b4c5c8de0"
+				}
+			]
+		}
+	]
+}

@@ -1,4 +1,4 @@
-package se.sundsvall.byggrintegrator.configuration;
+package se.sundsvall.byggrintegrator.api;
 
 import jakarta.validation.ValidationException;
 import java.util.Locale;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.thymeleaf.ITemplateEngine;
 import org.thymeleaf.context.Context;
-import se.sundsvall.byggrintegrator.api.OpeneHtmlResource;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.problem.ThrowableProblem;
 import se.sundsvall.dept44.requestid.RequestId;

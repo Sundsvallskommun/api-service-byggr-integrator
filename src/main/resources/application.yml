@@ -11,6 +11,9 @@ service:
     filter-util:
       applicant:
         roles: SOK
+      decisions:
+        event-types: BESLUT
+        document-types: BESLUT
 
 neighborhood-notification-template:
   byggr-files:
@@ -47,6 +50,9 @@ cache:
     - name: getHandlingTyperCache
       maximum-size: 250
       expire-after-write: PT24H
+    - name: getDecisionsCache
+      maximum-size: 100
+      expire-after-write: PT5M
 
 logging:
   level:

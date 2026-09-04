@@ -25,6 +25,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.sundsvall.byggrintegrator.api.model.ErrandDecisions;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
@@ -56,6 +57,7 @@ import static se.sundsvall.byggrintegrator.TestObjectFactory.CASE_APPLICANT;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.DOCUMENT_CONTENT;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.NEIGHBORHOOD_NOTIFICATION_STAKEHOLDER;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeResponse;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.generateArendeResponseWithDecisions;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateDocumentResponse;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.generateRelateradeArendenResponse;
 
@@ -96,6 +98,9 @@ class ByggrIntegratorServiceTest {
 
 	@Mock
 	private ServletOutputStream mockServletOutputStream;
+
+	@Mock
+	private DecisionMapper mockDecisionMapper;
 
 	@InjectMocks
 	private ByggrIntegratorService service;
@@ -275,8 +280,7 @@ class ByggrIntegratorServiceTest {
 	void getPropertyDesignation() throws Exception {
 		setField(mockByggrIntegrationMapper, "filterUtility", mockByggrFilterUtility);
 		final var dnr = "BYGG 2024-000123";
-		final var byggrErrandDto = ByggrErrandDto.builder()
-			.build();
+		final var byggrErrandDto = ByggrErrandDto.builder().build();
 
 		when(mockByggrIntegration.getErrand(dnr)).thenReturn(generateArendeResponse(dnr));
 		when(mockByggrIntegrationMapper.mapToByggrErrandDto(any())).thenReturn(byggrErrandDto);
@@ -733,6 +737,97 @@ class ByggrIntegratorServiceTest {
 	}
 
 	private void verifyNoMoreInteractionsWithMocks() {
-		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockByggrFilterUtility, mockApiResponseMapper, mockHttpServletResponse, mockFileAccessTokenService);
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockByggrFilterUtility, mockApiResponseMapper, mockHttpServletResponse, mockFileAccessTokenService, mockDecisionMapper);
+	}
+
+	@ParameterizedTest
+	@MethodSource("identifierProvider")
+	void testGetDecisions(final String identifier, final String processedIdentifier) throws Exception {
+		// Arrange
+		setField(mockByggrFilterUtility, "applicantRoles", List.of(APPLICANT_ROLE));
+		setField(mockByggrIntegrationMapper, "filterUtility", mockByggrFilterUtility);
+		setField(mockByggrFilterUtility, "unwantedDocumentTypes", List.of("GRA", "UNDUT"));
+		setField(mockByggrFilterUtility, "decisionEventTypes", List.of("BESLUT"));
+
+		final var response = generateArendeResponseWithDecisions(BYGGR_ERRAND_NUMBER);
+		response.getGetArendeResult().getIntressentLista().getIntressent().getFirst().setPersOrgNr(processedIdentifier);
+		final var handlingtyper = Map.of("BESLUT", "Beslut");
+		final var errandDecisions = new ErrandDecisions(BYGGR_ERRAND_NUMBER, null, null, List.of());
+
+		when(mockByggrIntegration.getErrand(BYGGR_ERRAND_NUMBER)).thenReturn(response);
+		when(mockByggrIntegrationMapper.mapToByggrErrandDto(response)).thenCallRealMethod();
+		when(mockByggrFilterUtility.filterCasesForApplicant(anyList(), eq(processedIdentifier))).thenCallRealMethod();
+		when(mockByggrFilterUtility.filterDecisionEvents(response.getGetArendeResult())).thenCallRealMethod();
+		when(mockByggrIntegration.getHandlingTyper()).thenReturn(handlingtyper);
+		when(mockDecisionMapper.toErrandDecisions(eq(MUNICIPALITY_ID), eq(response.getGetArendeResult()), anyList(), eq(handlingtyper))).thenReturn(errandDecisions);
+
+		// Act
+		final var result = service.getDecisions(MUNICIPALITY_ID, identifier, BYGGR_ERRAND_NUMBER);
+
+		// Assert
+		assertThat(result).isSameAs(errandDecisions);
+
+		verify(mockByggrIntegration).getErrand(BYGGR_ERRAND_NUMBER);
+		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(response);
+		verify(mockByggrFilterUtility).filterCasesForApplicant(anyList(), eq(processedIdentifier));
+		verify(mockByggrFilterUtility, times(14)).hasValidDocumentType(any());
+		verify(mockByggrFilterUtility).filterDecisionEvents(response.getGetArendeResult());
+		verify(mockByggrIntegration).getHandlingTyper();
+
+		@SuppressWarnings("unchecked")
+		final var eventsCaptor = ArgumentCaptor.forClass(List.class);
+		verify(mockDecisionMapper).toErrandDecisions(eq(MUNICIPALITY_ID), eq(response.getGetArendeResult()), eventsCaptor.capture(), eq(handlingtyper));
+		assertThat(eventsCaptor.getValue()).hasSize(3); // Cancelled and secret decision events are filtered out
+		verifyNoMoreInteractionsWithMocks();
+	}
+
+	@Test
+	void testGetDecisions_errandNotFound_throws404() {
+		// Arrange
+		when(mockByggrIntegration.getErrand(BYGGR_ERRAND_NUMBER)).thenReturn(null);
+		when(mockByggrIntegrationMapper.mapToByggrErrandDto(null)).thenCallRealMethod();
+
+		// Act and assert
+		assertThatExceptionOfType(ThrowableProblem.class)
+			.isThrownBy(() -> service.getDecisions(MUNICIPALITY_ID, PRIVATE_IDENTIFIER, BYGGR_ERRAND_NUMBER))
+			.satisfies(throwableProblem -> {
+				assertThat(throwableProblem.getStatus()).isEqualTo(NOT_FOUND);
+				assertThat(throwableProblem.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
+				assertThat(throwableProblem.getDetail()).isEqualTo("No errand with diary number BYGG 2024-000123 was found");
+			});
+
+		verify(mockByggrIntegration).getErrand(BYGGR_ERRAND_NUMBER);
+		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(null);
+		verifyNoMoreInteractionsWithMocks();
+	}
+
+	@Test
+	void testGetDecisions_identifierNotApplicant_throws404() throws Exception {
+		// Arrange
+		setField(mockByggrFilterUtility, "applicantRoles", List.of(APPLICANT_ROLE));
+		setField(mockByggrIntegrationMapper, "filterUtility", mockByggrFilterUtility);
+		setField(mockByggrFilterUtility, "unwantedDocumentTypes", List.of("GRA", "UNDUT"));
+
+		final var response = generateArendeResponse(BYGGR_ERRAND_NUMBER); // Applicant on errand is CASE_APPLICANT, not the identifier
+
+		when(mockByggrIntegration.getErrand(BYGGR_ERRAND_NUMBER)).thenReturn(response);
+		when(mockByggrIntegrationMapper.mapToByggrErrandDto(response)).thenCallRealMethod();
+		when(mockByggrFilterUtility.filterCasesForApplicant(anyList(), eq(PROCESSED_PRIVATE_IDENTIFIER))).thenCallRealMethod();
+
+		// Act and assert
+		assertThatExceptionOfType(ThrowableProblem.class)
+			.isThrownBy(() -> service.getDecisions(MUNICIPALITY_ID, PRIVATE_IDENTIFIER, BYGGR_ERRAND_NUMBER))
+			.satisfies(throwableProblem -> {
+				assertThat(throwableProblem.getStatus()).isEqualTo(NOT_FOUND);
+				assertThat(throwableProblem.getTitle()).isEqualTo(NOT_FOUND.getReasonPhrase());
+				assertThat(throwableProblem.getDetail()).isEqualTo("No errand with diary number BYGG 2024-000123 was found");
+			});
+
+		verify(mockByggrIntegration).getErrand(BYGGR_ERRAND_NUMBER);
+		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(response);
+		verify(mockByggrFilterUtility).filterCasesForApplicant(anyList(), eq(PROCESSED_PRIVATE_IDENTIFIER));
+		verify(mockByggrFilterUtility, times(4)).hasValidDocumentType(any());
+		verifyNoMoreInteractionsWithMocks();
+		verifyNoInteractions(mockDecisionMapper);
 	}
 }

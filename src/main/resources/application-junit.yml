@@ -51,6 +51,12 @@ service:
           - GRA
           - REMISS
           - UNDUT
+      decisions:
+        event-types:
+          - BESLUT
+        document-types:
+          - BESLUT
+          - "@BESLUT"
 neighborhood-notification-template:
   byggr-files:
     domain: http://somewhere.com/

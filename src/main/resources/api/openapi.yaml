@@ -5,7 +5,7 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "2.4"
+  version: "2.5"
 servers:
   - url: http://localhost:57665
     description: Generated server url
@@ -500,6 +500,70 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+  /{municipalityId}/applicants/{identifier}/errands/decisions:
+    get:
+      tags:
+        - Applicant
+      summary: Lists all decisions with decision documents for the errand matching the provided case number where the provided identifier is applicant
+      description: "Returns decisions filtered by: events with configured decision event types that are neither cancelled nor secret, containing documents with configured decision document types. Document urls are valid for a limited time"
+      operationId: findApplicantErrandDecisions
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: identifier
+          in: path
+          description: Personal or organization number
+          required: true
+          schema:
+            type: string
+            minLength: 1
+          example: 190102031234
+        - name: caseNumber
+          in: query
+          description: Case number from ByggR to match
+          required: true
+          schema:
+            type: string
+            minLength: 1
+          example: BYGG 2024-000559
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrandDecisions"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server Error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
   /api-docs:
     get:
       tags:
@@ -594,4 +658,120 @@ components:
         value:
           type: string
           description: The value of the key-value pair
+    ErrandDecisions:
+      type: object
+      description: Decisions with decision documents for a ByggR errand
+      properties:
+        caseNumber:
+          type: string
+          description: ByggR case number (diary number) that the decisions belong to
+          examples:
+            - BYGG 2024-000666
+        description:
+          type: string
+          description: Description of the errand
+          examples:
+            - Nybyggnad av garage
+        propertyDesignation:
+          type: string
+          description: Property designation of the errand
+          examples:
+            - SUNDSVALL 2:55
+        decisions:
+          type: array
+          description: "Decisions on the errand, newest first"
+          items:
+            $ref: "#/components/schemas/Decision"
+    Decision:
+      type: object
+      description: Decision on a ByggR errand
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: ByggR event id of the decision
+          examples:
+            - 292453
+        decisionNumber:
+          type: string
+          description: Decision number
+          examples:
+            - ST 2024-000002
+        heading:
+          type: string
+          description: Heading of the decision
+          examples:
+            - "Strandskyddsdispens, Beviljas"
+        decisionDate:
+          type: string
+          format: date
+          description: Date of the decision
+          examples:
+            - 2024-09-02
+        outcome:
+          type: string
+          description: Outcome code of the decision
+          examples:
+            - BEV
+        mainDecision:
+          type: boolean
+          description: Whether the decision is the main decision of the errand
+          examples:
+            - true
+        instanceType:
+          type: string
+          description: Instance type of the decision
+          examples:
+            - DelgSTA
+        validUntil:
+          type: string
+          format: date
+          description: Date until the decision is valid
+          examples:
+            - 2029-09-02
+        documents:
+          type: array
+          description: Documents classified as decision documents
+          items:
+            $ref: "#/components/schemas/DecisionDocument"
+    DecisionDocument:
+      type: object
+      description: Decision document on a ByggR errand
+      properties:
+        id:
+          type: string
+          description: ByggR document id
+          examples:
+            - "470583"
+        name:
+          type: string
+          description: File name of the document
+          examples:
+            - Beslut strandskyddsdispens.pdf
+        description:
+          type: string
+          description: Description of the document
+          examples:
+            - Beslut
+        type:
+          type: string
+          description: ByggR document type code
+          examples:
+            - BESLUT
+        typeDescription:
+          type: string
+          description: Description of the document type
+          examples:
+            - Beslut
+        documentDate:
+          type: string
+          format: date
+          description: Date of the document
+          examples:
+            - 2024-09-03
+        url:
+          type: string
+          description: Url for downloading the document. The url is valid for a limited time
+          examples:
+            - https://api.sundsvall.se/byggr-integrator/2.5/2281/files/470583
   securitySchemes: { }

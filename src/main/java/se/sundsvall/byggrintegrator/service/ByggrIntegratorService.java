@@ -20,6 +20,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import se.sundsvall.byggrintegrator.api.model.ErrandDecisions;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
@@ -60,15 +61,17 @@ public class ByggrIntegratorService {
 	private final TemplateService templateService;
 	private final ByggrFilterUtility filterUtility;
 	private final FileAccessTokenService fileAccessTokenService;
+	private final DecisionMapper decisionMapper;
 
 	public ByggrIntegratorService(final ByggrIntegrationMapper byggrIntegrationMapper, final ByggrIntegration byggrIntegration, final ApiResponseMapper apiResponseMapper, TemplateService templateService, final ByggrFilterUtility filterUtility,
-		final FileAccessTokenService fileAccessTokenService) {
+		final FileAccessTokenService fileAccessTokenService, final DecisionMapper decisionMapper) {
 		this.byggrIntegrationMapper = byggrIntegrationMapper;
 		this.byggrIntegration = byggrIntegration;
 		this.apiResponseMapper = apiResponseMapper;
 		this.templateService = templateService;
 		this.filterUtility = filterUtility;
 		this.fileAccessTokenService = fileAccessTokenService;
+		this.decisionMapper = decisionMapper;
 	}
 
 	@Cacheable("findNeighborhoodNotificationsCache")
@@ -102,6 +105,32 @@ public class ByggrIntegratorService {
 
 		// Map to API response
 		return apiResponseMapper.mapToKeyValueResponseList(matches);
+	}
+
+	@Cacheable("getDecisionsCache")
+	public ErrandDecisions getDecisions(final String municipalityId, final String identifier, final String caseNumber) {
+		// Prefix identifier if it contains organisation legal id and add hyphen to identifier as ByggR integration formats
+		// legal id that way
+		final var processedIdentifier = addHyphen(prefixOrgnbr(identifier));
+		// Fetch errand from ByggR
+		final var response = byggrIntegration.getErrand(caseNumber);
+
+		// Verify that identifier is applicant on the errand. Respond with not found otherwise, to not reveal existence of
+		// errands the identifier is not applicant on
+		final var applicantErrands = ofNullable(byggrIntegrationMapper.mapToByggrErrandDto(response))
+			.map(List::of)
+			.map(errands -> filterUtility.filterCasesForApplicant(errands, processedIdentifier))
+			.orElse(emptyList());
+
+		if (applicantErrands.isEmpty()) {
+			throw createProblem(NOT_FOUND, ERROR_ERRAND_NOT_FOUND.formatted(caseNumber));
+		}
+
+		final var errand = response.getGetArendeResult();
+		final var decisionEvents = filterUtility.filterDecisionEvents(errand);
+
+		// Map to API response
+		return decisionMapper.toErrandDecisions(municipalityId, errand, decisionEvents, byggrIntegration.getHandlingTyper());
 	}
 
 	@Cacheable("getPropertyDesignationCache")

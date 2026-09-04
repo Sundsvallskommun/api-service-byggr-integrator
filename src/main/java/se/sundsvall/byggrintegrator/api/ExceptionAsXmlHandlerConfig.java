@@ -1,4 +1,4 @@
-package se.sundsvall.byggrintegrator.configuration;
+package se.sundsvall.byggrintegrator.api;
 
 import jakarta.validation.ValidationException;
 import java.util.Optional;
@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import se.sundsvall.byggrintegrator.api.OpeneXmlResource;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.problem.ThrowableProblem;
 

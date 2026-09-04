@@ -1,4 +1,4 @@
-package se.sundsvall.byggrintegrator.configuration;
+package se.sundsvall.byggrintegrator.api;
 
 import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.Test;
