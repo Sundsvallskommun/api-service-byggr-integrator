@@ -113,7 +113,7 @@ public class ByggrIntegrationMapper {
 			.build();
 	}
 
-	private String toPropertyDesignation(final Arende arende) {
+	public static String toPropertyDesignation(final Arende arende) {
 		return ofNullable(arende)
 			.map(Arende::getObjektLista)
 			.map(ArrayOfAbstractArendeObjekt2::getAbstractArendeObjekt)

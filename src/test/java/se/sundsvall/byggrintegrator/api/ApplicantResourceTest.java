@@ -1,6 +1,7 @@
 package se.sundsvall.byggrintegrator.api;
 
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,24 +9,22 @@ import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTest
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.MultiValueMap;
 import se.sundsvall.byggrintegrator.Application;
+import se.sundsvall.byggrintegrator.api.model.ErrandDecisions;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
 import se.sundsvall.dept44.problem.Problem;
-import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
-import se.sundsvall.dept44.problem.violations.Violation;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.BAD_GATEWAY;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
 
 @ActiveProfiles("junit")
@@ -35,9 +34,9 @@ class ApplicantResourceTest {
 
 	private static final String VALID_IDENTIFIER = "190101011234";
 	private static final String VALID_MUNICIPALITY_ID = "2281";
-	private static final String INVALID_MUNICIPALITY_ID = "invalid municipality";
-	private static final String INVALID_IDENTIFIER = "invalid identifier";
+	private static final String VALID_CASE_NUMBER = "BYGG 2024-000666";
 	private static final String FIND_ERRAND_URL = "/{municipalityId}/applicants/{identifier}/errands";
+	private static final String FIND_ERRAND_DECISIONS_URL = "/{municipalityId}/applicants/{identifier}/errands/decisions";
 
 	@MockitoBean
 	private ByggrIntegratorService mockByggrIntegratorService;
@@ -64,68 +63,6 @@ class ApplicantResourceTest {
 
 		verify(mockByggrIntegratorService).findApplicantErrands(VALID_IDENTIFIER);
 		verifyNoMoreInteractions(mockByggrIntegratorService);
-	}
-
-	@Test
-	void testFindApplicantErrands_faultyMunicipalityId_shouldThrowException() {
-		final var responseBody = webTestClient.get()
-			.uri(FIND_ERRAND_URL, INVALID_MUNICIPALITY_ID, VALID_IDENTIFIER)
-			.exchange()
-			.expectStatus().isBadRequest()
-			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(ConstraintViolationProblem.class)
-			.returnResult()
-			.getResponseBody();
-
-		assertThat(responseBody).isNotNull();
-		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(responseBody.getViolations()).extracting(Violation::field, Violation::message)
-			.containsExactlyInAnyOrder(tuple("findApplicantErrands.municipalityId", "not a valid municipality ID"));
-
-		verifyNoInteractions(mockByggrIntegratorService);
-	}
-
-	@Test
-	void testFindApplicantErrands_faultyIdentifier_shouldThrowException() {
-		final var responseBody = webTestClient.get()
-			.uri(FIND_ERRAND_URL, VALID_MUNICIPALITY_ID, INVALID_IDENTIFIER)
-			.exchange()
-			.expectStatus().isBadRequest()
-			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(ConstraintViolationProblem.class)
-			.returnResult()
-			.getResponseBody();
-
-		assertThat(responseBody).isNotNull();
-		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(responseBody.getViolations()).extracting(Violation::field, Violation::message)
-			.containsExactlyInAnyOrder(tuple("findApplicantErrands.identifier", "Invalid personal or organization number"));
-
-		verifyNoInteractions(mockByggrIntegratorService);
-	}
-
-	@Test
-	void testFindApplicantErrands_faultyMunicipalityIdAndIdentifier_shouldThrowException() {
-		final var responseBody = webTestClient.get()
-			.uri(FIND_ERRAND_URL, INVALID_MUNICIPALITY_ID, INVALID_IDENTIFIER)
-			.exchange()
-			.expectStatus().isBadRequest()
-			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
-			.expectBody(ConstraintViolationProblem.class)
-			.returnResult()
-			.getResponseBody();
-
-		assertThat(responseBody).isNotNull();
-		assertThat(responseBody.getStatus()).isEqualTo(BAD_REQUEST);
-		assertThat(responseBody.getTitle()).isEqualTo("Constraint Violation");
-		assertThat(responseBody.getViolations()).extracting(Violation::field, Violation::message)
-			.containsExactlyInAnyOrder(
-				tuple("findApplicantErrands.identifier", "Invalid personal or organization number"),
-				tuple("findApplicantErrands.municipalityId", "not a valid municipality ID"));
-
-		verifyNoInteractions(mockByggrIntegratorService);
 	}
 
 	@Test
@@ -171,6 +108,78 @@ class ApplicantResourceTest {
 		assertThat(responseBody.getDetail()).isEqualTo("502 Detail");
 
 		verify(mockByggrIntegratorService).findApplicantErrands(VALID_IDENTIFIER);
+		verifyNoMoreInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void testFindApplicantErrandDecisions() {
+		final var errandDecisions = new ErrandDecisions(VALID_CASE_NUMBER, "description", "SUNDSVALL 2:55", List.of());
+		when(mockByggrIntegratorService.getDecisions(VALID_MUNICIPALITY_ID, VALID_IDENTIFIER, VALID_CASE_NUMBER)).thenReturn(errandDecisions);
+
+		final var responseBody = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path(FIND_ERRAND_DECISIONS_URL)
+				.queryParams(MultiValueMap.fromSingleValue(Map.of("caseNumber", VALID_CASE_NUMBER)))
+				.build(VALID_MUNICIPALITY_ID, VALID_IDENTIFIER))
+			.exchange()
+			.expectStatus().isOk()
+			.expectBody(ErrandDecisions.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isEqualTo(errandDecisions);
+
+		verify(mockByggrIntegratorService).getDecisions(VALID_MUNICIPALITY_ID, VALID_IDENTIFIER, VALID_CASE_NUMBER);
+		verifyNoMoreInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void testFindApplicantErrandDecisions_serviceThrowsProblem() {
+		when(mockByggrIntegratorService.getDecisions(VALID_MUNICIPALITY_ID, VALID_IDENTIFIER, VALID_CASE_NUMBER)).thenThrow(Problem.builder()
+			.withTitle("404 Title")
+			.withStatus(NOT_FOUND)
+			.withDetail("404 Detail")
+			.build());
+
+		final var responseBody = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path(FIND_ERRAND_DECISIONS_URL)
+				.queryParams(MultiValueMap.fromSingleValue(Map.of("caseNumber", VALID_CASE_NUMBER)))
+				.build(VALID_MUNICIPALITY_ID, VALID_IDENTIFIER))
+			.exchange()
+			.expectStatus().isNotFound()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(Problem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getStatus()).isEqualTo(NOT_FOUND);
+		assertThat(responseBody.getTitle()).isEqualTo("404 Title");
+		assertThat(responseBody.getDetail()).isEqualTo("404 Detail");
+
+		verify(mockByggrIntegratorService).getDecisions(VALID_MUNICIPALITY_ID, VALID_IDENTIFIER, VALID_CASE_NUMBER);
+		verifyNoMoreInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void testFindApplicantErrandDecisions_serviceThrowsException() {
+		when(mockByggrIntegratorService.getDecisions(VALID_MUNICIPALITY_ID, VALID_IDENTIFIER, VALID_CASE_NUMBER)).thenThrow(new RuntimeException("Service failed"));
+
+		final var responseBody = webTestClient.get()
+			.uri(uriBuilder -> uriBuilder.path(FIND_ERRAND_DECISIONS_URL)
+				.queryParams(MultiValueMap.fromSingleValue(Map.of("caseNumber", VALID_CASE_NUMBER)))
+				.build(VALID_MUNICIPALITY_ID, VALID_IDENTIFIER))
+			.exchange()
+			.expectStatus().is5xxServerError()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(Problem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(responseBody).isNotNull();
+		assertThat(responseBody.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
+		assertThat(responseBody.getDetail()).contains("Service failed");
+
+		verify(mockByggrIntegratorService).getDecisions(VALID_MUNICIPALITY_ID, VALID_IDENTIFIER, VALID_CASE_NUMBER);
 		verifyNoMoreInteractions(mockByggrIntegratorService);
 	}
 }

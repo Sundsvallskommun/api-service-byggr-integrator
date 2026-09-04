@@ -1,11 +1,16 @@
 package se.sundsvall.byggrintegrator.service.util;
 
+import generated.se.sundsvall.arendeexport.v8.Arende;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfHandelse;
+import generated.se.sundsvall.arendeexport.v8.Dokument;
+import generated.se.sundsvall.arendeexport.v8.Handelse;
 import generated.se.sundsvall.arendeexport.v8.HandelseHandling;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -13,19 +18,22 @@ import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.ApplicantProperties;
+import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.DecisionProperties;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.DocumentProperties;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterProperties.NotificationProperties;
 
 import static java.time.LocalDate.now;
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 /**
- * The filter utility has three configurable settings:
+ * The filter utility has four configurable settings:
  * <p>
  * <code>
- * service: byggr: filter-utility: applicant: roles: - Example - Example2 notifications: unwanted-event-types: - Example - Example2 - Example3 document-types: unwanted-document-types: - Example - Example2
+ * service: byggr: filter-utility: applicant: roles: - Example - Example2 notifications: unwanted-event-types: - Example - Example2 - Example3 document-types: unwanted-document-types: - Example - Example2 decisions: event-types: - BESLUT document-types: - BESLUT
  * </code>
  * <p>
  * The first setting (applicant roles) contains the list of the roles that will be matched against to establish if the
@@ -44,6 +52,12 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
  * neighborhood-notification. There is some documents that should not be included in the response and this setting is
  * used to filter out those documents.
  * If property is not set, then no filtering is made.
+ * <p>
+ * The fourth setting (decisions) is used when collecting decision documents for an errand. Only events with an
+ * event type matching one of the values in event-types are interpreted as decisions, and only documents in those
+ * events with a document type matching one of the values in document-types are interpreted as decision documents.
+ * Cancelled events and documents, as well as secret events, are always filtered out. If the properties are not set,
+ * no decisions are returned.
  */
 @Component
 public class ByggrFilterUtility {
@@ -57,6 +71,8 @@ public class ByggrFilterUtility {
 	private final List<String> applicantRoles;
 	private final List<String> unwantedSubtypes;
 	private final List<String> unwantedDocumentTypes;
+	private final List<String> decisionEventTypes;
+	private final List<String> decisionDocumentTypes;
 
 	public ByggrFilterUtility(final ByggrFilterProperties byggrProperties) {
 		this.applicantRoles = ofNullable(byggrProperties)
@@ -71,6 +87,14 @@ public class ByggrFilterUtility {
 			.map(ByggrFilterProperties::documentTypes)
 			.map(DocumentProperties::unwantedDocumentTypes)
 			.orElse(null);
+		this.decisionEventTypes = ofNullable(byggrProperties)
+			.map(ByggrFilterProperties::decisions)
+			.map(DecisionProperties::eventTypes)
+			.orElse(emptyList());
+		this.decisionDocumentTypes = ofNullable(byggrProperties)
+			.map(ByggrFilterProperties::decisions)
+			.map(DecisionProperties::documentTypes)
+			.orElse(emptyList());
 	}
 
 	public static boolean isValidEvent(final Event event) {
@@ -158,6 +182,47 @@ public class ByggrFilterUtility {
 			.map(HandelseHandling::getTyp)
 			.map(type -> !unwantedDocumentTypes.contains(type))
 			.orElse(true);
+	}
+
+	/**
+	 * Filters the events of the errand to the events that are to be interpreted as decisions, i.e. events that are not
+	 * cancelled, not secret and have an event type matching one of the configured decision event types
+	 *
+	 * @param  errand The errand as returned from ByggR
+	 * @return        A list containing the decision events of the errand
+	 */
+	public List<Handelse> filterDecisionEvents(final Arende errand) {
+		return ofNullable(errand)
+			.map(Arende::getHandelseLista)
+			.map(ArrayOfHandelse::getHandelse)
+			.orElse(emptyList())
+			.stream()
+			.filter(Objects::nonNull)
+			.filter(event -> !event.isMakulerad())
+			.filter(event -> !event.isSekretess())
+			.filter(event -> containsIgnoreCase(decisionEventTypes, event.getHandelsetyp()))
+			.toList();
+	}
+
+	/**
+	 * Evaluates if the document is to be interpreted as a decision document, i.e. it is not cancelled, has a document
+	 * type matching one of the configured decision document types and refers to a document with an id
+	 *
+	 * @param  handling The document as returned from ByggR
+	 * @return          true if the document is a decision document, false otherwise
+	 */
+	public boolean isDecisionDocument(final HandelseHandling handling) {
+		return ofNullable(handling)
+			.filter(document -> !document.isMakulerad())
+			.filter(document -> containsIgnoreCase(decisionDocumentTypes, document.getTyp()))
+			.map(HandelseHandling::getDokument)
+			.map(Dokument::getDokId)
+			.filter(StringUtils::isNotBlank)
+			.isPresent();
+	}
+
+	private static boolean containsIgnoreCase(final List<String> values, final String value) {
+		return nonNull(value) && values.stream().anyMatch(value::equalsIgnoreCase);
 	}
 
 	/**

@@ -5,9 +5,11 @@ import generated.se.sundsvall.arendeexport.v4.ArrayOfRemiss;
 import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
 import generated.se.sundsvall.arendeexport.v4.HandelseHandling;
 import generated.se.sundsvall.arendeexport.v4.Remiss;
+import generated.se.sundsvall.arendeexport.v8.Arende;
 import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -19,6 +21,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import se.sundsvall.byggrintegrator.Application;
+import se.sundsvall.byggrintegrator.api.model.ErrandDecisions;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
@@ -37,7 +40,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @SpringBootTest(classes = Application.class, webEnvironment = RANDOM_PORT, properties = {
 	"spring.cache.type=SIMPLE",
-	"spring.cache.cache-names=findNeighborhoodNotificationsCache, findApplicantErrandsCache, getPropertyDesignationCache, getErrandTypeCache, listNeighborhoodNotificationFilesCache, getHandlingTyperCache"
+	"spring.cache.cache-names=findNeighborhoodNotificationsCache, findApplicantErrandsCache, getPropertyDesignationCache, getErrandTypeCache, listNeighborhoodNotificationFilesCache, getHandlingTyperCache, getDecisionsCache"
 })
 @ActiveProfiles("junit")
 @ExtendWith(MockitoExtension.class)
@@ -60,6 +63,9 @@ class ByggrIntegratorServiceCacheTest {
 
 	@MockitoBean
 	private ByggrFilterUtility mockFilterUtility;
+
+	@MockitoBean
+	private DecisionMapper mockDecisionMapper;
 
 	@Captor
 	private ArgumentCaptor<List<ByggrErrandDto>> byggrErrandDtosCaptor;
@@ -243,4 +249,46 @@ class ByggrIntegratorServiceCacheTest {
 		assertThat(ByggrIntegratorService.class.getMethod("listNeighborhoodNotificationFiles", String.class, String.class, String.class, String.class).getAnnotation(Cacheable.class).value()).containsExactly("listNeighborhoodNotificationFilesCache");
 	}
 
+	@Test
+	void testGetDecisionsCaching() {
+		final var municipalityId = "2281";
+		final var identifier = "16123456-7890";
+		final var caseNumber = "caseNumber";
+		final var arende = new Arende().withDnr(caseNumber);
+		final var errand = new GetArendeResponse().withGetArendeResult(arende);
+		final var handlingtyper = Map.of("BESLUT", "Beslut");
+		final var response = new ErrandDecisions(caseNumber, null, null, List.of());
+
+		when(mockByggrIntegration.getErrand(caseNumber)).thenReturn(errand);
+		when(mockByggrIntegrationMapper.mapToByggrErrandDto(errand)).thenCallRealMethod();
+		when(mockFilterUtility.filterCasesForApplicant(any(), any())).thenAnswer(invocation -> invocation.getArgument(0));
+		when(mockFilterUtility.filterDecisionEvents(arende)).thenReturn(List.of());
+		when(mockByggrIntegration.getHandlingTyper()).thenReturn(handlingtyper);
+		when(mockDecisionMapper.toErrandDecisions(municipalityId, arende, List.of(), handlingtyper)).thenReturn(response);
+
+		// First call - should hit the service
+		var result = byggrIntegratorService.getDecisions(municipalityId, identifier, caseNumber);
+
+		// Mocks should only be called first time
+		verify(mockByggrIntegration).getErrand(caseNumber);
+		verify(mockByggrIntegrationMapper).mapToByggrErrandDto(errand);
+		verify(mockFilterUtility).filterCasesForApplicant(byggrErrandDtosCaptor.capture(), eq(identifier));
+		verify(mockFilterUtility).filterDecisionEvents(arende);
+		verify(mockByggrIntegration).getHandlingTyper();
+		verify(mockDecisionMapper).toErrandDecisions(municipalityId, arende, List.of(), handlingtyper);
+
+		assertThat(result).isEqualTo(response);
+
+		// Second call - should hit the cache
+		result = byggrIntegratorService.getDecisions(municipalityId, identifier, caseNumber);
+
+		assertThat(result).isEqualTo(response);
+
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockApiResponseMapper, mockTemplateService, mockFilterUtility, mockDecisionMapper);
+	}
+
+	@Test
+	void testGetDecisionsHasCorrectCacheAnnotation() throws NoSuchMethodException {
+		assertThat(ByggrIntegratorService.class.getMethod("getDecisions", String.class, String.class, String.class).getAnnotation(Cacheable.class).value()).containsExactly("getDecisionsCache");
+	}
 }

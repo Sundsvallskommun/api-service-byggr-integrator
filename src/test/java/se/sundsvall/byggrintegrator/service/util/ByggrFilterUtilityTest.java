@@ -1,5 +1,10 @@
 package se.sundsvall.byggrintegrator.service.util;
 
+import generated.se.sundsvall.arendeexport.v8.Arende;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfHandelse;
+import generated.se.sundsvall.arendeexport.v8.Dokument;
+import generated.se.sundsvall.arendeexport.v8.Handelse;
+import generated.se.sundsvall.arendeexport.v8.HandelseHandling;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.ZoneId;
@@ -11,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -209,5 +215,116 @@ class ByggrFilterUtilityTest {
 		final var result = byggrFilterUtility.filterEvents(identifier, null);
 
 		assertThat(result).isNull();
+	}
+
+	private static Stream<Arguments> decisionEventArgumentProvider() {
+		return Stream.of(
+			Arguments.of(createDecisionEvent(1, "BESLUT", false, false), true),
+			Arguments.of(createDecisionEvent(2, "beslut", false, false), true),
+			Arguments.of(createDecisionEvent(3, "BESLUT", true, false), false),
+			Arguments.of(createDecisionEvent(4, "BESLUT", false, true), false),
+			Arguments.of(createDecisionEvent(5, "HANDLING", false, false), false),
+			Arguments.of(createDecisionEvent(6, null, false, false), false));
+	}
+
+	private static Stream<Arguments> decisionDocumentArgumentProvider() {
+		return Stream.of(
+			Arguments.of(createDecisionDocument("BESLUT", "123", false), true),
+			Arguments.of(createDecisionDocument("beslut", "123", false), true),
+			Arguments.of(createDecisionDocument("BESLUT", "123", true), false),
+			Arguments.of(createDecisionDocument("ANSS", "123", false), false),
+			Arguments.of(createDecisionDocument(null, "123", false), false),
+			Arguments.of(createDecisionDocument("BESLUT", " ", false), false),
+			Arguments.of(createDecisionDocument("BESLUT", null, false), false),
+			Arguments.of(new HandelseHandling().withTyp("BESLUT"), false));
+	}
+
+	private static Handelse createDecisionEvent(final int id, final String type, final boolean cancelled, final boolean secret) {
+		return new Handelse()
+			.withHandelseId(id)
+			.withHandelsetyp(type)
+			.withMakulerad(cancelled)
+			.withSekretess(secret);
+	}
+
+	private static HandelseHandling createDecisionDocument(final String type, final String documentId, final boolean cancelled) {
+		return new HandelseHandling()
+			.withTyp(type)
+			.withMakulerad(cancelled)
+			.withDokument(new Dokument().withDokId(documentId));
+	}
+
+	@ParameterizedTest
+	@MethodSource("decisionEventArgumentProvider")
+	void filterDecisionEvents(final Handelse event, final boolean expectedToBeKept) {
+		// Prepare list of decision event types
+		setField(byggrFilterUtility, "decisionEventTypes", List.of("BESLUT"));
+
+		final var errand = new Arende().withHandelseLista(new ArrayOfHandelse().withHandelse(event));
+
+		// Act
+		final var result = byggrFilterUtility.filterDecisionEvents(errand);
+
+		// Assert
+		if (expectedToBeKept) {
+			assertThat(result).containsExactly(event);
+		} else {
+			assertThat(result).isEmpty();
+		}
+	}
+
+	@Test
+	void filterDecisionEventsWithNullEvent() {
+		setField(byggrFilterUtility, "decisionEventTypes", List.of("BESLUT"));
+
+		final List<Handelse> events = new ArrayList<>();
+		events.add(null);
+		final var errand = new Arende().withHandelseLista(new ArrayOfHandelse().withHandelse(events));
+
+		assertThat(byggrFilterUtility.filterDecisionEvents(errand)).isEmpty();
+	}
+
+	@Test
+	void filterDecisionEventsWhenNoDecisionEventTypesAreConfigured() {
+		final var errand = new Arende().withHandelseLista(new ArrayOfHandelse().withHandelse(createDecisionEvent(1, "BESLUT", false, false)));
+
+		assertThat(byggrFilterUtility.filterDecisionEvents(errand)).isEmpty();
+	}
+
+	@ParameterizedTest
+	@NullSource
+	@MethodSource("errandWithoutEventsProvider")
+	void filterDecisionEventsWithoutEvents(final Arende errand) {
+		setField(byggrFilterUtility, "decisionEventTypes", List.of("BESLUT"));
+
+		assertThat(byggrFilterUtility.filterDecisionEvents(errand)).isEmpty();
+	}
+
+	private static Stream<Arguments> errandWithoutEventsProvider() {
+		return Stream.of(
+			Arguments.of(new Arende()),
+			Arguments.of(new Arende().withHandelseLista(new ArrayOfHandelse())));
+	}
+
+	@ParameterizedTest
+	@MethodSource("decisionDocumentArgumentProvider")
+	void isDecisionDocument(final HandelseHandling document, final boolean expectedResult) {
+		// Prepare list of decision document types
+		setField(byggrFilterUtility, "decisionDocumentTypes", List.of("BESLUT"));
+
+		// Act and assert
+		assertThat(byggrFilterUtility.isDecisionDocument(document)).isEqualTo(expectedResult);
+	}
+
+	@Test
+	void isDecisionDocumentWithNullDocument() {
+		setField(byggrFilterUtility, "decisionDocumentTypes", List.of("BESLUT"));
+
+		assertThat(byggrFilterUtility.isDecisionDocument(null)).isFalse();
+	}
+
+	@Test
+	void isDecisionDocumentWhenNoDecisionDocumentTypesAreConfigured() {
+		assertThat(byggrFilterUtility.isDecisionDocument(createDecisionDocument("BESLUT", "123", false))).isFalse();
 	}
 }

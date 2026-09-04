@@ -26,11 +26,11 @@ import static org.springframework.http.ResponseEntity.ok;
 @ApiResponse(responseCode = "404", description = "Not Found", useReturnTypeSchema = true)
 @ApiResponse(responseCode = "500", description = "Internal Server Error", useReturnTypeSchema = true)
 @ApiResponse(responseCode = "502", description = "Bad Gateway", useReturnTypeSchema = true)
-public class OpeneHtmlResource {
+class OpeneHtmlResource {
 
 	private final ByggrIntegratorService byggrIntegratorService;
 
-	public OpeneHtmlResource(final ByggrIntegratorService byggrIntegratorService) {
+	OpeneHtmlResource(final ByggrIntegratorService byggrIntegratorService) {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 

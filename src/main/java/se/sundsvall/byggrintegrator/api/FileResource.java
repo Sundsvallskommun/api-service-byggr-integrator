@@ -32,11 +32,11 @@ import static org.springframework.http.ResponseEntity.ok;
 })))
 @ApiResponse(responseCode = "500", description = "Internal Server error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-public class FileResource {
+class FileResource {
 
 	private final ByggrIntegratorService byggrIntegratorService;
 
-	public FileResource(final ByggrIntegratorService byggrIntegratorService) {
+	FileResource(final ByggrIntegratorService byggrIntegratorService) {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 

@@ -13,7 +13,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import se.sundsvall.byggrintegrator.api.model.ErrandDecisions;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.api.validation.ValidPersonalOrOrgNumber;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
@@ -34,11 +36,11 @@ import static org.springframework.http.ResponseEntity.ok;
 })))
 @ApiResponse(responseCode = "500", description = "Internal Server Error", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 @ApiResponse(responseCode = "502", description = "Bad Gateway", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
-public class ApplicantResource {
+class ApplicantResource {
 
 	private final ByggrIntegratorService byggrIntegratorService;
 
-	public ApplicantResource(final ByggrIntegratorService byggrIntegratorService) {
+	ApplicantResource(final ByggrIntegratorService byggrIntegratorService) {
 		this.byggrIntegratorService = byggrIntegratorService;
 	}
 
@@ -51,5 +53,20 @@ public class ApplicantResource {
 		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @ValidPersonalOrOrgNumber @PathVariable final String identifier) {
 
 		return ok(byggrIntegratorService.findApplicantErrands(identifier));
+	}
+
+	@GetMapping(path = "/applicants/{identifier}/errands/decisions", produces = APPLICATION_JSON_VALUE)
+	@Operation(summary = "Lists all decisions with decision documents for the errand matching the provided case number where the provided identifier is applicant",
+		description = "Returns decisions filtered by: events with configured decision event types that are neither cancelled nor secret, containing documents with configured decision document types. Document urls are valid for a limited time",
+		responses = {
+			@ApiResponse(responseCode = "200", description = "Successful Operation", useReturnTypeSchema = true),
+			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
+		})
+	public ResponseEntity<ErrandDecisions> findApplicantErrandDecisions(
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "identifier", description = "Personal or organization number", example = "190102031234") @NotBlank @ValidPersonalOrOrgNumber @PathVariable final String identifier,
+		@Parameter(name = "caseNumber", description = "Case number from ByggR to match", example = "BYGG 2024-000559") @NotBlank @RequestParam final String caseNumber) {
+
+		return ok(byggrIntegratorService.getDecisions(municipalityId, identifier, caseNumber));
 	}
 }

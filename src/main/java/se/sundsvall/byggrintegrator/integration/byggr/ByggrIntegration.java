@@ -21,7 +21,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toMap;
 
 @Component
@@ -61,7 +60,9 @@ public class ByggrIntegration {
 	}
 
 	private ArrayOfString rolesToArrayOfString(final List<String> roles) {
-		return isNull(roles) ? null : new ArrayOfString().withString(roles);
+		return Optional.ofNullable(roles)
+			.map(list -> new ArrayOfString().withString(list))
+			.orElse(null);
 	}
 
 	@Cacheable("getRolesCache")

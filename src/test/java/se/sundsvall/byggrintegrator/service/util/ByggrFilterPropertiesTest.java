@@ -21,5 +21,7 @@ class ByggrFilterPropertiesTest {
 		assertThat(properties.applicant().roles()).containsExactly("SOK", "MSOK", "KPER", "OMB", "KOA");
 		assertThat(properties.notifications().unwantedEventTypes()).containsExactly("UNWANTED1", "UNWANTED2");
 		assertThat(properties.documentTypes().unwantedDocumentTypes()).containsExactly("GRA", "REMISS", "UNDUT");
+		assertThat(properties.decisions().eventTypes()).containsExactly("BESLUT");
+		assertThat(properties.decisions().documentTypes()).containsExactly("BESLUT", "@BESLUT");
 	}
 }
