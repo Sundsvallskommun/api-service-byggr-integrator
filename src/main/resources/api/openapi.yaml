@@ -773,5 +773,5 @@ components:
           type: string
           description: Url for downloading the document. The url is valid for a limited time
           examples:
-            - https://api.sundsvall.se/byggr-integrator/2.5/2281/files/470583?token=b9d310c5-a7b1-4c45-9cbb-402b4c5c8de0
+            - https://api.sundsvall.se/byggr-integrator/2.5/2281/files/470583
   securitySchemes: { }
