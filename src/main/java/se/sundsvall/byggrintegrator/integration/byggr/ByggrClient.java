@@ -8,6 +8,8 @@ import generated.se.sundsvall.arendeexport.v8.GetDocument;
 import generated.se.sundsvall.arendeexport.v8.GetDocumentResponse;
 import generated.se.sundsvall.arendeexport.v8.GetHandlingTyper;
 import generated.se.sundsvall.arendeexport.v8.GetHandlingTyperResponse;
+import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByFastighet;
+import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByFastighetResponse;
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRole;
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.v8.GetRoller;
@@ -57,4 +59,8 @@ public interface ByggrClient {
 	})
 	GetRemisserByPersOrgNrResponse getRemisserByPersOrgNr(GetRemisserByPersOrgNr getRemisserByPersOrgNr);
 
+	@PostMapping(consumes = TEXT_XML_UTF8, headers = {
+			VERSION_8 + "GetRelateradeArendenByFastighet"
+	})
+	GetRelateradeArendenByFastighetResponse getRelateradeArendenByFastighet(GetRelateradeArendenByFastighet request);
 }

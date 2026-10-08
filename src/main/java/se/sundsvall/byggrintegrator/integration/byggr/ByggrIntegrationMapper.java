@@ -14,6 +14,8 @@ import generated.se.sundsvall.arendeexport.v8.GetArende;
 import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.v8.GetDocument;
 import generated.se.sundsvall.arendeexport.v8.GetHandlingTyper;
+import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByFastighet;
+import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByFastighetResponse;
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRole;
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.v8.GetRoller;
@@ -31,15 +33,18 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
+import se.sundsvall.dept44.problem.Problem;
 
 import static generated.se.sundsvall.arendeexport.v4.RemissStatusFilter.EJ_BESVARAD;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 /**
  * Mapper for handling mappings between ByggR responses and the internal dto class used in the service layer
@@ -65,6 +70,23 @@ public class ByggrIntegrationMapper {
 			.withPersOrgNr(id);
 	}
 
+	public GetRelateradeArendenByFastighet mapToGetRelateradeArendenByFastighetRequest(final String propertyDesignation){
+		final var indexOfSpace = propertyDesignation.indexOf(" ");
+		if (indexOfSpace < 1){
+			throw Problem.valueOf(BAD_REQUEST,"Invalid property designation: %s".formatted(propertyDesignation));
+		}
+		final var area = propertyDesignation.substring(0, indexOfSpace).trim();
+		final var propertyId = propertyDesignation.substring(indexOfSpace + 1).trim();
+
+		return OBJECT_FACTORY.createGetRelateradeArendenByFastighet()
+				.withTrakt(area)
+				.withFBetNr(propertyId)
+				.withFnr(null)
+				.withArHuvudObjekt(null)
+				.withStatusFilter(StatusFilter.NONE);
+
+	}
+
 	public GetArende mapToGetArendeRequest(final String dnr) {
 		return OBJECT_FACTORY.createGetArende()
 			.withDnr(dnr);
@@ -88,6 +110,17 @@ public class ByggrIntegrationMapper {
 			.map(this::toByggrErrandDto)
 			.toList();
 	}
+
+	public List<ByggrErrandDto> mapRelatedErrandsByFastighetToByggrErrandDtos(final GetRelateradeArendenByFastighetResponse response){
+		return ofNullable(response)
+				.map(GetRelateradeArendenByFastighetResponse::getGetRelateradeArendenByFastighetResult)
+				.map(result -> ofNullable(result.getArende()).orElse(emptyList()))
+				.orElse(emptyList())
+				.stream()
+				.map(this::toByggrErrandDto)
+				.toList();
+	}
+
 
 	public ByggrErrandDto mapToByggrErrandDto(final GetArendeResponse response) {
 		return ofNullable(response)
