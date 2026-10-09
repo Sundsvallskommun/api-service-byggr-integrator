@@ -37,7 +37,7 @@ class PropertyResourceTest {
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String OVK_URL = "/{municipalityId}/properties/{propertyDesignation}/errands/ovk";
 	private static final String OVK_LATEST_URL = OVK_URL + "/latest";
-	private static final String FILE_URL = "http://test.se/2.5/2281/files/1234567?token=abc";
+	private static final String FILE_URL = "http://test.se/2.6/2281/files/1234567?token=abc";
 	private static final String NO_OVK_FOUND = "No OVK was found for :" + PROPERTY_DESIGNATION;
 
 	@Test
