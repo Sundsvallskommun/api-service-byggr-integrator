@@ -20,5 +20,5 @@
 		"bodyFileName": "common/responses/api-byggr-get-handlingtyper-response.xml",
 		"status": 200
 	},
-	"name": "api-byggr-read-errand"
+	"name": "api-byggr-get-handlingtyper"
 }
