@@ -14,6 +14,7 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -846,13 +847,13 @@ class ByggrIntegratorServiceTest {
 		final var response = new GetRelateradeArendenByFastighetResponse();
 		final var errands = List.of(
 			ovkErrand("BYGG 2025-111111", "Bygglov",
-				ovkEvent(LocalDate.of(2022, 4, 19), Map.of(
+				ovkEvent(LocalDate.of(2022, Month.APRIL, 19), Map.of(
 					"3456789", ovkDocument("OVK_Luftflöden", "OVK"),
 					"111", ovkDocument("Ritning", "RITNING"))),                       // not OVK, should be filtered out
-				ovkEvent(LocalDate.of(2023, 1, 1), Map.of(
+				ovkEvent(LocalDate.of(2023, Month.JANUARY, 1), Map.of(
 					"3456789", ovkDocument("OVK_Luftflöden", "OVK")))),                 // same file in a later event, should be deduplicated
 			ovkErrand("OVK 2026-222222", "Funktionskontroll",
-				ovkEvent(LocalDate.of(2022, 4, 5), Map.of(
+				ovkEvent(LocalDate.of(2022, Month.APRIL, 5), Map.of(
 					"1234567", ovkDocument("Testön 1.123 - luft", "OVK")))));
 
 		when(mockByggrIntegration.getErrandByAreaAndPropertyId(PROPERTY_DESIGNATION)).thenReturn(response);
@@ -865,8 +866,8 @@ class ByggrIntegratorServiceTest {
 
 		// Assert
 		assertThat(result).containsExactly(
-			new OVKProtocol("BYGG 2025-111111", "Bygglov", LocalDate.of(2022, 4, 19), "OVK_Luftflöden", "3456789", "url-3456789"),
-			new OVKProtocol("OVK 2026-222222", "Funktionskontroll", LocalDate.of(2022, 4, 5), "Testön 1.123 - luft", "1234567", "url-1234567"));
+			new OVKProtocol("BYGG 2025-111111", "Bygglov", LocalDate.of(2022, Month.APRIL, 19), "OVK_Luftflöden", "3456789", "url-3456789"),
+			new OVKProtocol("OVK 2026-222222", "Funktionskontroll", LocalDate.of(2022, Month.APRIL, 5), "Testön 1.123 - luft", "1234567", "url-1234567"));
 
 		verify(mockByggrIntegration).getErrandByAreaAndPropertyId(PROPERTY_DESIGNATION);
 		verify(mockByggrIntegrationMapper).mapRelateradeArendenByFastighetToByggrErrandDtos(response);
@@ -881,8 +882,8 @@ class ByggrIntegratorServiceTest {
 		final var response = new GetRelateradeArendenByFastighetResponse();
 		when(mockByggrIntegration.getErrandByAreaAndPropertyId(PROPERTY_DESIGNATION)).thenReturn(response);
 		when(mockByggrIntegrationMapper.mapRelateradeArendenByFastighetToByggrErrandDtos(response)).thenReturn(List.of(
-			ovkErrand("OVK 2025-111111", "Old", ovkEvent(LocalDate.of(2020, 1, 1), Map.of("1", ovkDocument("Old", "OVK")))),
-			ovkErrand("OVK 2026-222222", "New", ovkEvent(LocalDate.of(2024, 1, 1), Map.of("2", ovkDocument("New", "OVK"))))));
+			ovkErrand("OVK 2025-111111", "Old", ovkEvent(LocalDate.of(2020, Month.JANUARY, 1), Map.of("1", ovkDocument("Old", "OVK")))),
+			ovkErrand("OVK 2026-222222", "New", ovkEvent(LocalDate.of(2024, Month.JANUARY, 1), Map.of("2", ovkDocument("New", "OVK"))))));
 		when(mockFileUrlService.parseFileUrl(MUNICIPALITY_ID, 2)).thenReturn("url-2");
 
 		// Act
@@ -903,8 +904,8 @@ class ByggrIntegratorServiceTest {
 		final var response = new GetRelateradeArendenByFastighetResponse();
 		final var errands = List.of(
 			ovkErrand("OVK 2026-222222", "Funktionskontroll",
-				ovkEvent(LocalDate.of(2026, 6, 1), Map.of("1234567", ovkDocument("OVK-protokoll", "OVK"))),
-				ovkEvent(LocalDate.of(2026, 2, 5), Map.of("1234567", ovkDocument("OVK-protokoll", "OVK")))));
+				ovkEvent(LocalDate.of(2026, Month.JUNE, 1), Map.of("1234567", ovkDocument("OVK-protokoll", "OVK"))),
+				ovkEvent(LocalDate.of(2026, Month.FEBRUARY, 5), Map.of("1234567", ovkDocument("OVK-protokoll", "OVK")))));
 
 		when(mockByggrIntegration.getErrandByAreaAndPropertyId(PROPERTY_DESIGNATION)).thenReturn(response);
 		when(mockByggrIntegrationMapper.mapRelateradeArendenByFastighetToByggrErrandDtos(response)).thenReturn(errands);
@@ -915,7 +916,7 @@ class ByggrIntegratorServiceTest {
 
 		// Assert
 		assertThat(result).containsExactly(
-			new OVKProtocol("OVK 2026-222222", "Funktionskontroll", LocalDate.of(2026, 2, 5), "OVK-protokoll", "1234567", "url-1234567"));
+			new OVKProtocol("OVK 2026-222222", "Funktionskontroll", LocalDate.of(2026, Month.FEBRUARY, 5), "OVK-protokoll", "1234567", "url-1234567"));
 
 		verify(mockByggrIntegration).getErrandByAreaAndPropertyId(PROPERTY_DESIGNATION);
 		verify(mockByggrIntegrationMapper).mapRelateradeArendenByFastighetToByggrErrandDtos(response);
