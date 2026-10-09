@@ -19,6 +19,7 @@ import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static generated.se.sundsvall.arendeexport.v4.RemissStatusFilter.EJ_BESVARAD;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.APPLICANT_ROLE;
@@ -69,6 +70,7 @@ class ByggrIntegrationMapperTest {
 	void testMapToByggrErrandDtos() throws Exception {
 		// Arrange
 		var response = List.of(generateRelateradeArendenResponse());
+		final var wantedFiles = Map.of("wantedDocumentId", new Event.DocumentNameAndType("wantedDocumentName", "WANTED"));
 
 		// Act
 		var byggErrandDtos = mapper.mapToByggrErrandDtos(response);
@@ -76,40 +78,20 @@ class ByggrIntegrationMapperTest {
 		// Assert
 		assertThat(byggErrandDtos).hasSize(2).satisfiesExactlyInAnyOrder(errand -> {
 			assertErrandValues(errand, BYGGR_ARENDE_NR_1);
-
-			assertThat(errand.getEvents()).hasSize(2).satisfiesExactlyInAnyOrder(event -> {
-				assertThat(event.getId()).isEqualTo(1);
-				assertThat(event.getEventType()).isEqualTo(HANDELSETYP_GRANHO);
-				assertThat(event.getEventSubtype()).isEqualTo(HANDELSESLAG_GRAUTS);
-				assertThat(event.getEventDate()).isEqualTo(LocalDate.now());
-				assertThat(event.getFiles()).isNotEmpty().containsExactlyInAnyOrderEntriesOf(Map.of("wantedDocumentId", new Event.DocumentNameAndType("wantedDocumentName", "WANTED")));
-				assertEventStakeholders(event);
-			}, event -> {
-				assertThat(event.getId()).isEqualTo(2);
-				assertThat(event.getEventType()).isEqualTo(HANDELSETYP_GRANHO);
-				assertThat(event.getEventSubtype()).isEqualTo(HANDELSESLAG_GRAUTS);
-				assertThat(event.getEventDate()).isEqualTo(LocalDate.now());
-				assertThat(event.getFiles()).isEmpty();
-				assertEventStakeholders(event);
-			});
+			assertThat(errand.getEvents())
+				.extracting(Event::getId, Event::getEventType, Event::getEventSubtype, Event::getEventDate, Event::getFiles)
+				.containsExactlyInAnyOrder(
+					tuple(1, HANDELSETYP_GRANHO, HANDELSESLAG_GRAUTS, LocalDate.now(), wantedFiles),
+					tuple(2, HANDELSETYP_GRANHO, HANDELSESLAG_GRAUTS, LocalDate.now(), Map.of()));
+			errand.getEvents().forEach(this::assertEventStakeholders);
 		}, errand -> {
 			assertErrandValues(errand, BYGGR_ARENDE_NR_2);
-
-			assertThat(errand.getEvents()).hasSize(2).satisfiesExactlyInAnyOrder(event -> {
-				assertThat(event.getId()).isEqualTo(1);
-				assertThat(event.getEventType()).isEqualTo(HANDELSETYP_GRANHO);
-				assertThat(event.getEventSubtype()).isEqualTo(HANDELSESLAG_GRASVA);
-				assertThat(event.getEventDate()).isEqualTo(LocalDate.now());
-				assertThat(event.getFiles()).isNotEmpty().containsExactlyInAnyOrderEntriesOf(Map.of("wantedDocumentId", new Event.DocumentNameAndType("wantedDocumentName", "WANTED")));
-				assertEventStakeholders(event);
-			}, event -> {
-				assertThat(event.getId()).isEqualTo(2);
-				assertThat(event.getEventType()).isEqualTo(HANDELSETYP_GRANHO);
-				assertThat(event.getEventSubtype()).isEqualTo(HANDELSESLAG_GRAUTS);
-				assertThat(event.getEventDate()).isEqualTo(LocalDate.now());
-				assertThat(event.getFiles()).isEmpty();
-				assertEventStakeholders(event);
-			});
+			assertThat(errand.getEvents())
+				.extracting(Event::getId, Event::getEventType, Event::getEventSubtype, Event::getEventDate, Event::getFiles)
+				.containsExactlyInAnyOrder(
+					tuple(1, HANDELSETYP_GRANHO, HANDELSESLAG_GRASVA, LocalDate.now(), wantedFiles),
+					tuple(2, HANDELSETYP_GRANHO, HANDELSESLAG_GRAUTS, LocalDate.now(), Map.of()));
+			errand.getEvents().forEach(this::assertEventStakeholders);
 		});
 	}
 
