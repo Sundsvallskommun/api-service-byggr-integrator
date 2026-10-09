@@ -79,6 +79,7 @@ class ByggrIntegratorServiceTest {
 	private static final String MUNICIPALITY_ID = "2281";
 	private static final String REFERRAL_REFERENCE = "1234567890";
 	private static final String CASE_NUMBER = "caseNumber";
+	private static final String PROPERTY_DESIGNATION = "TESTÖN 1:123";
 
 	@Mock
 	private ByggrIntegrationMapper mockByggrIntegrationMapper;
@@ -839,8 +840,6 @@ class ByggrIntegratorServiceTest {
 		verifyNoInteractions(mockDecisionMapper);
 	}
 
-	private static final String PROPERTY_DESIGNATION = "TESTÖN 1:123";
-
 	@Test
 	void getOVKprotocols_filtersDeduplicatesSortsAndAddsUrl() {
 		// Arrange
@@ -857,7 +856,7 @@ class ByggrIntegratorServiceTest {
 					"1234567", ovkDocument("Testön 1.123 - luft", "OVK")))));
 
 		when(mockByggrIntegration.getErrandByAreaAndPropertyId(PROPERTY_DESIGNATION)).thenReturn(response);
-		when(mockByggrIntegrationMapper.mapRelatedErrandsByFastighetToByggrErrandDtos(response)).thenReturn(errands);
+		when(mockByggrIntegrationMapper.mapRelateradeArendenByFastighetToByggrErrandDtos(response)).thenReturn(errands);
 		when(mockFileUrlService.parseFileUrl(MUNICIPALITY_ID, 3456789)).thenReturn("url-3456789");
 		when(mockFileUrlService.parseFileUrl(MUNICIPALITY_ID, 1234567)).thenReturn("url-1234567");
 
@@ -870,7 +869,7 @@ class ByggrIntegratorServiceTest {
 			new OVKProtocol("OVK 2026-222222", "Funktionskontroll", LocalDate.of(2022, 4, 5), "Testön 1.123 - luft", "1234567", "url-1234567"));
 
 		verify(mockByggrIntegration).getErrandByAreaAndPropertyId(PROPERTY_DESIGNATION);
-		verify(mockByggrIntegrationMapper).mapRelatedErrandsByFastighetToByggrErrandDtos(response);
+		verify(mockByggrIntegrationMapper).mapRelateradeArendenByFastighetToByggrErrandDtos(response);
 		verify(mockFileUrlService, times(2)).parseFileUrl(eq(MUNICIPALITY_ID), anyInt());
 		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockFileUrlService);
 
@@ -881,7 +880,7 @@ class ByggrIntegratorServiceTest {
 		// Arrange
 		final var response = new GetRelateradeArendenByFastighetResponse();
 		when(mockByggrIntegration.getErrandByAreaAndPropertyId(PROPERTY_DESIGNATION)).thenReturn(response);
-		when(mockByggrIntegrationMapper.mapRelatedErrandsByFastighetToByggrErrandDtos(response)).thenReturn(List.of(
+		when(mockByggrIntegrationMapper.mapRelateradeArendenByFastighetToByggrErrandDtos(response)).thenReturn(List.of(
 			ovkErrand("OVK 2025-111111", "Old", ovkEvent(LocalDate.of(2020, 1, 1), Map.of("1", ovkDocument("Old", "OVK")))),
 			ovkErrand("OVK 2026-222222", "New", ovkEvent(LocalDate.of(2024, 1, 1), Map.of("2", ovkDocument("New", "OVK"))))));
 		when(mockFileUrlService.parseFileUrl(MUNICIPALITY_ID, 2)).thenReturn("url-2");
@@ -899,11 +898,37 @@ class ByggrIntegratorServiceTest {
 	}
 
 	@Test
+	void getOVKprotocols_duplicateWithEarlierDateInLaterEvent_keepsEarliestDate() {
+		// Arrange
+		final var response = new GetRelateradeArendenByFastighetResponse();
+		final var errands = List.of(
+			ovkErrand("OVK 2026-222222", "Funktionskontroll",
+				ovkEvent(LocalDate.of(2026, 6, 1), Map.of("1234567", ovkDocument("OVK-protokoll", "OVK"))),
+				ovkEvent(LocalDate.of(2026, 2, 5), Map.of("1234567", ovkDocument("OVK-protokoll", "OVK")))));
+
+		when(mockByggrIntegration.getErrandByAreaAndPropertyId(PROPERTY_DESIGNATION)).thenReturn(response);
+		when(mockByggrIntegrationMapper.mapRelateradeArendenByFastighetToByggrErrandDtos(response)).thenReturn(errands);
+		when(mockFileUrlService.parseFileUrl(MUNICIPALITY_ID, 1234567)).thenReturn("url-1234567");
+
+		// Act
+		final var result = service.getOVKprotocols(MUNICIPALITY_ID, PROPERTY_DESIGNATION);
+
+		// Assert
+		assertThat(result).containsExactly(
+			new OVKProtocol("OVK 2026-222222", "Funktionskontroll", LocalDate.of(2026, 2, 5), "OVK-protokoll", "1234567", "url-1234567"));
+
+		verify(mockByggrIntegration).getErrandByAreaAndPropertyId(PROPERTY_DESIGNATION);
+		verify(mockByggrIntegrationMapper).mapRelateradeArendenByFastighetToByggrErrandDtos(response);
+		verify(mockFileUrlService).parseFileUrl(MUNICIPALITY_ID, 1234567);
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockFileUrlService);
+	}
+
+	@Test
 	void getLatestOVKprotocol_returnsNewestAndOnlyCreatesOneUrl() {
 		// Arrange
 		final var response = new GetRelateradeArendenByFastighetResponse();
 		when(mockByggrIntegration.getErrandByAreaAndPropertyId(PROPERTY_DESIGNATION)).thenReturn(response);
-		when(mockByggrIntegrationMapper.mapRelatedErrandsByFastighetToByggrErrandDtos(response)).thenReturn(emptyList());
+		when(mockByggrIntegrationMapper.mapRelateradeArendenByFastighetToByggrErrandDtos(response)).thenReturn(emptyList());
 
 		// Act & Assert
 		assertThatExceptionOfType(ThrowableProblem.class)
@@ -921,7 +946,7 @@ class ByggrIntegratorServiceTest {
 		// Arrange
 		final var response = new GetRelateradeArendenByFastighetResponse();
 		when(mockByggrIntegration.getErrandByAreaAndPropertyId(PROPERTY_DESIGNATION)).thenReturn(response);
-		when(mockByggrIntegrationMapper.mapRelatedErrandsByFastighetToByggrErrandDtos(response)).thenReturn(emptyList());
+		when(mockByggrIntegrationMapper.mapRelateradeArendenByFastighetToByggrErrandDtos(response)).thenReturn(emptyList());
 
 		// Act & Assert
 		assertThatExceptionOfType(ThrowableProblem.class)

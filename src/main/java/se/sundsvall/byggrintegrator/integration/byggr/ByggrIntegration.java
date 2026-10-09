@@ -94,18 +94,7 @@ public class ByggrIntegration {
 	}
 
 	public GetRelateradeArendenByFastighetResponse getErrandByAreaAndPropertyId(final String propertyDesignation) {
-		try {
-			return byggrClient.getRelateradeArendenByFastighet(byggrIntegrationMapper.mapToGetRelateradeArendenByFastighetRequest(propertyDesignation));
-		} catch (final SOAPFaultException e) {
-			var faultString = extractFaultString(e);
-			if (Strings.CI.startsWith(faultString, SOAP_FAULT_PREFIX_ERRAND_NOT_FOUND)) {
-				LOG.warn(faultString);
-
-				return null;
-			}
-
-			throw e;
-		}
+		return byggrClient.getRelateradeArendenByFastighet(byggrIntegrationMapper.mapToGetRelateradeArendenByFastighetRequest(propertyDesignation));
 	}
 
 	@Cacheable("getDocumentCache")

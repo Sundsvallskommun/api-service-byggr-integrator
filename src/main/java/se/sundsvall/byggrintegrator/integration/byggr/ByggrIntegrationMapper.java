@@ -110,7 +110,7 @@ public class ByggrIntegrationMapper {
 			.toList();
 	}
 
-	public List<ByggrErrandDto> mapRelatedErrandsByFastighetToByggrErrandDtos(final GetRelateradeArendenByFastighetResponse response) {
+	public List<ByggrErrandDto> mapRelateradeArendenByFastighetToByggrErrandDtos(final GetRelateradeArendenByFastighetResponse response) {
 		return ofNullable(response)
 			.map(GetRelateradeArendenByFastighetResponse::getGetRelateradeArendenByFastighetResult)
 			.map(result -> ofNullable(result.getArende()).orElse(emptyList()))

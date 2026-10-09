@@ -1,5 +1,7 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
+import generated.se.sundsvall.arendeexport.v8.Arende;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfArende1;
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByFastighetResponse;
 import generated.se.sundsvall.arendeexport.v8.RollTyp;
 import generated.se.sundsvall.arendeexport.v8.StatusFilter;
@@ -249,11 +251,34 @@ class ByggrIntegrationMapperTest {
 	}
 
 	@Test
-	void testMapRelatedErrandsByFastighetToByggrErrandDtos_emptyResponse() {
+	void testMapRelateradeArendenByFastighetToByggrErrandDtos() {
+		// Arrange
+		final var arende = new Arende();
+		arende.setDnr("OVK 2026-222222");
+		arende.setBeskrivning("Funktionskontroll");
+
+		final var result = new ArrayOfArende1();
+		result.getArende().add(arende);
+
+		final var response = new GetRelateradeArendenByFastighetResponse();
+		response.setGetRelateradeArendenByFastighetResult(result);
+
 		// Act
-		final var result = mapper.mapRelatedErrandsByFastighetToByggrErrandDtos(new GetRelateradeArendenByFastighetResponse());
+		final var dtos = mapper.mapRelateradeArendenByFastighetToByggrErrandDtos(response);
+
+		// Assert
+		assertThat(dtos).hasSize(1);
+		assertThat(dtos.getFirst().getByggrCaseNumber()).isEqualTo("OVK 2026-222222");
+		assertThat(dtos.getFirst().getDescription()).isEqualTo("Funktionskontroll");
+	}
+
+	@Test
+	void testMapRelateradeArendenByFastighetToByggrErrandDtos_emptyResponse() {
+		// Act
+		final var result = mapper.mapRelateradeArendenByFastighetToByggrErrandDtos(new GetRelateradeArendenByFastighetResponse());
 
 		// Assert
 		assertThat(result).isEmpty();
 	}
+
 }

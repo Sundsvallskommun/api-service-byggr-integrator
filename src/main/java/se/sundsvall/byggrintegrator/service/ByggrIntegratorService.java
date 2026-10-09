@@ -253,7 +253,7 @@ public class ByggrIntegratorService {
 
 	private List<OVKProtocol> findOVKprotocols(final String propertyDesignation) {
 		final var response = byggrIntegration.getErrandByAreaAndPropertyId(propertyDesignation);
-		final var errands = byggrIntegrationMapper.mapRelatedErrandsByFastighetToByggrErrandDtos(response);
+		final var errands = byggrIntegrationMapper.mapRelateradeArendenByFastighetToByggrErrandDtos(response);
 
 		return errands.stream()
 			.flatMap(errand -> ofNullable(errand.getEvents()).orElse(emptyList()).stream()
