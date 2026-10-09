@@ -48,8 +48,8 @@ class PropertyResource {
 			@ApiResponse(responseCode = "404", description = "Not Found", content = @Content(mediaType = APPLICATION_PROBLEM_JSON_VALUE, schema = @Schema(implementation = Problem.class)))
 		})
 	ResponseEntity<OVKProtocol> getLatestOVKProtocol(
-		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable @ValidMunicipalityId String municipalityId,
-		@Parameter(name = "propertyDesignation", description = "Property designation", example = "TESTÖN 1:123") @ValidPropertyDesignation @PathVariable String propertyDesignation) {
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @PathVariable @ValidMunicipalityId final String municipalityId,
+		@Parameter(name = "propertyDesignation", description = "Property designation", example = "TESTÖN 1:123") @ValidPropertyDesignation @PathVariable final String propertyDesignation) {
 		return ResponseEntity.ok(byggrIntegratorService.getLatestOVKprotocol(municipalityId, propertyDesignation));
 	}
 
@@ -61,7 +61,7 @@ class PropertyResource {
 		})
 	ResponseEntity<List<OVKProtocol>> getAllOVKProtocols(
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
-		@Parameter(name = "propertyDesignation", description = "Property designation", example = "TESTÖN 1:123") @ValidPropertyDesignation @PathVariable String propertyDesignation) {
+		@Parameter(name = "propertyDesignation", description = "Property designation", example = "TESTÖN 1:123") @ValidPropertyDesignation @PathVariable final String propertyDesignation) {
 		return ResponseEntity.ok(byggrIntegratorService.getOVKprotocols(municipalityId, propertyDesignation));
 
 	}
