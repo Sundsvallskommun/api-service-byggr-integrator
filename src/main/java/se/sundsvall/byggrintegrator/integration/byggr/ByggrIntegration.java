@@ -4,6 +4,7 @@ import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfString;
 import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.v8.GetDocumentResponse;
+import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByFastighetResponse;
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.v8.HandlingTyp;
 import generated.se.sundsvall.arendeexport.v8.Roll;
@@ -90,6 +91,10 @@ public class ByggrIntegration {
 
 			throw e;
 		}
+	}
+
+	public GetRelateradeArendenByFastighetResponse getErrandByAreaAndPropertyId(final String propertyDesignation) {
+		return byggrClient.getRelateradeArendenByFastighet(byggrIntegrationMapper.mapToGetRelateradeArendenByFastighetRequest(propertyDesignation));
 	}
 
 	@Cacheable("getDocumentCache")

@@ -1,0 +1,18 @@
+[
+	{
+		"caseNumber": "OVK 2026-222222",
+		"description": "Funktionskontroll av ventilationssystem Protokoll",
+		"date": "2026-02-05",
+		"documentName": "Testön 1.123 - luft",
+		"fileId": "1234567",
+		"downloadUrl": "http://localhost/2.6/2281/files/1234567?token=b0000000-a7b1-4c45-9cbb-000000000001"
+	},
+	{
+		"caseNumber": "BYGG 2025-111111",
+		"description": "Bygglov för nybyggnad av kontorslokal",
+		"date": "2025-04-19",
+		"documentName": "OVK_Luftflöden",
+		"fileId": "3456789",
+		"downloadUrl": "http://localhost/2.6/2281/files/3456789?token=b0000000-a7b1-4c45-9cbb-000000000001"
+	}
+]

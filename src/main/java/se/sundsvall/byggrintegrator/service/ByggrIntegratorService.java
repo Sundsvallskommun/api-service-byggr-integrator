@@ -8,11 +8,14 @@ import generated.se.sundsvall.arendeexport.v8.GetDocumentResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -22,9 +25,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import se.sundsvall.byggrintegrator.api.model.ErrandDecisions;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
+import se.sundsvall.byggrintegrator.api.model.OVKProtocol;
 import se.sundsvall.byggrintegrator.api.model.Weight;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegration;
 import se.sundsvall.byggrintegrator.integration.byggr.ByggrIntegrationMapper;
+import se.sundsvall.byggrintegrator.service.template.FileUrlService;
 import se.sundsvall.byggrintegrator.service.template.TemplateService;
 import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 import se.sundsvall.dept44.problem.Problem;
@@ -54,6 +59,8 @@ public class ByggrIntegratorService {
 
 	private static final List<String> SUPPRESSED_HANDELSE_HANDLING_TYPE = List.of("GRA", "REMISS", "UNDUT");
 	private static final Pattern REFERRAL_REFERENCE_ID_PATTERN = Pattern.compile("\\[(\\d+)]");
+	private static final String DOCUMENT_TYPE_OVK = "OVK";
+	private static final String ERROR_OVK_NOT_FOUND = "No OVK was found for: %s";
 
 	private final ByggrIntegrationMapper byggrIntegrationMapper;
 	private final ByggrIntegration byggrIntegration;
@@ -62,9 +69,10 @@ public class ByggrIntegratorService {
 	private final ByggrFilterUtility filterUtility;
 	private final FileAccessTokenService fileAccessTokenService;
 	private final DecisionMapper decisionMapper;
+	private final FileUrlService fileUrlService;
 
 	public ByggrIntegratorService(final ByggrIntegrationMapper byggrIntegrationMapper, final ByggrIntegration byggrIntegration, final ApiResponseMapper apiResponseMapper, TemplateService templateService, final ByggrFilterUtility filterUtility,
-		final FileAccessTokenService fileAccessTokenService, final DecisionMapper decisionMapper) {
+		final FileAccessTokenService fileAccessTokenService, final DecisionMapper decisionMapper, FileUrlService fileUrlService) {
 		this.byggrIntegrationMapper = byggrIntegrationMapper;
 		this.byggrIntegration = byggrIntegration;
 		this.apiResponseMapper = apiResponseMapper;
@@ -72,6 +80,7 @@ public class ByggrIntegratorService {
 		this.filterUtility = filterUtility;
 		this.fileAccessTokenService = fileAccessTokenService;
 		this.decisionMapper = decisionMapper;
+		this.fileUrlService = fileUrlService;
 	}
 
 	@Cacheable("findNeighborhoodNotificationsCache")
@@ -229,6 +238,43 @@ public class ByggrIntegratorService {
 		return apiResponseMapper.mapToKeyValue(propertyDesignationAndRemissIdMap);
 	}
 
+	public OVKProtocol getLatestOVKprotocol(final String municipalityID, final String propertyDesignation) {
+		return findOVKprotocols(propertyDesignation).stream()
+			.findFirst()
+			.map(protocol -> withUrl(municipalityID, protocol))
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_OVK_NOT_FOUND.formatted(propertyDesignation)));
+	}
+
+	public List<OVKProtocol> getOVKprotocols(final String municipalityID, final String propertyDesignation) {
+		return findOVKprotocols(propertyDesignation).stream()
+			.map(protocol -> withUrl(municipalityID, protocol))
+			.toList();
+	}
+
+	private List<OVKProtocol> findOVKprotocols(final String propertyDesignation) {
+		final var response = byggrIntegration.getErrandByAreaAndPropertyId(propertyDesignation);
+		final var errands = byggrIntegrationMapper.mapRelateradeArendenByFastighetToByggrErrandDtos(response);
+
+		return errands.stream()
+			.flatMap(errand -> ofNullable(errand.getEvents()).orElse(emptyList()).stream()
+				.flatMap(event -> ofNullable(event.getFiles()).orElse(Map.of()).entrySet().stream()
+					.filter(file -> DOCUMENT_TYPE_OVK.equalsIgnoreCase(file.getValue().getDocumentType()))
+					.map(file -> new OVKProtocol(
+						errand.getByggrCaseNumber(),
+						errand.getDescription(),
+						event.getEventDate(),
+						file.getValue().getDocumentName(),
+						file.getKey(),
+						null))))
+			// Same document can be referenced multiple times by several events (example: Decision, Archive), only return the first
+			// instance
+			.collect(Collectors.toMap(OVKProtocol::fileId, Function.identity(),
+				(a, b) -> Comparator.nullsLast(Comparator.<LocalDate>naturalOrder()).compare(a.date(), b.date()) <= 0 ? a : b))
+			.values().stream()
+			.sorted(Comparator.comparing(OVKProtocol::date, Comparator.nullsLast(Comparator.reverseOrder())))
+			.toList();
+	}
+
 	private static int extractReferralReferenceId(final String referralReference) {
 		return Optional.ofNullable(referralReference)
 			.map(REFERRAL_REFERENCE_ID_PATTERN::matcher)
@@ -284,5 +330,10 @@ public class ByggrIntegratorService {
 			.withTitle(status.getReasonPhrase())
 			.withDetail(detail)
 			.build();
+	}
+
+	private OVKProtocol withUrl(final String municipalityId, final OVKProtocol protocol) {
+		final var url = fileUrlService.parseFileUrl(municipalityId, Integer.parseInt(protocol.fileId()));
+		return new OVKProtocol(protocol.caseNumber(), protocol.description(), protocol.date(), protocol.documentName(), protocol.fileId(), url);
 	}
 }
