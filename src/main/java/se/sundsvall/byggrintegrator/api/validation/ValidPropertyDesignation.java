@@ -5,8 +5,6 @@ import jakarta.validation.Payload;
 import jakarta.validation.ReportAsSingleViolation;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,12 +15,12 @@ import java.lang.annotation.Target;
 @NotBlank
 @Constraint(validatedBy = {})
 @Target({
-		ElementType.FIELD, ElementType.PARAMETER
+	ElementType.FIELD, ElementType.PARAMETER
 })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidPropertyDesignation {
 
-	String message() default "must be a property designation(fastighetsbeteckning), e.g. 'HÖGOM 3:194'";
+	String message() default "must be a property designation(fastighetsbeteckning), e.g. 'TESTÖN 1:123'";
 
 	Class<?>[] groups() default {};
 

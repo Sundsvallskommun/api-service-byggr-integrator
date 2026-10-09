@@ -60,7 +60,7 @@ public interface ByggrClient {
 	GetRemisserByPersOrgNrResponse getRemisserByPersOrgNr(GetRemisserByPersOrgNr getRemisserByPersOrgNr);
 
 	@PostMapping(consumes = TEXT_XML_UTF8, headers = {
-			VERSION_8 + "GetRelateradeArendenByFastighet"
+		VERSION_8 + "GetRelateradeArendenByFastighet"
 	})
 	GetRelateradeArendenByFastighetResponse getRelateradeArendenByFastighet(GetRelateradeArendenByFastighet request);
 }

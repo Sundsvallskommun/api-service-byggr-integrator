@@ -5,6 +5,7 @@ import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
 import generated.se.sundsvall.arendeexport.v4.RemissStatusFilter;
 import generated.se.sundsvall.arendeexport.v8.GetArende;
 import generated.se.sundsvall.arendeexport.v8.GetDocument;
+import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByFastighet;
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRole;
 import generated.se.sundsvall.arendeexport.v8.GetRoller;
 import generated.se.sundsvall.arendeexport.v8.ObjectFactory;
@@ -44,6 +45,9 @@ class ByggrIntegrationTest {
 
 	@Captor
 	private ArgumentCaptor<GetRelateradeArendenByPersOrgNrAndRole> getRelateradeArendenByPersOrgNrAndRoleCaptor;
+
+	@Captor
+	private ArgumentCaptor<GetRelateradeArendenByFastighet> getRelateradeArendenByFastighetCaptor;
 
 	@Captor
 	private ArgumentCaptor<GetArende> getArendeCaptor;
@@ -191,6 +195,28 @@ class ByggrIntegrationTest {
 		assertThat(getArendeCaptor.getValue().getDnr()).isEqualTo(dnr);
 		assertThat(exception).isInstanceOf(SOAPFaultException.class);
 		assertThat(exception.getFault().getFaultReasonText(Locale.ENGLISH)).isEqualTo(reasonText);
+	}
+
+	@Test
+	void testGetErrandByAreaAndPropertyId() {
+		// Arrange
+		final var propertyDesignation = "TESTÖN 1:123";
+		final var response = OBJECT_FACTORY.createGetRelateradeArendenByFastighetResponse();
+
+		when(mockByggrIntegrationMapper.mapToGetRelateradeArendenByFastighetRequest(propertyDesignation)).thenCallRealMethod();
+		when(mockByggrClient.getRelateradeArendenByFastighet(any(GetRelateradeArendenByFastighet.class))).thenReturn(response);
+
+		// Act
+		final var result = integration.getErrandByAreaAndPropertyId(propertyDesignation);
+
+		// Verify and assert
+		verify(mockByggrIntegrationMapper).mapToGetRelateradeArendenByFastighetRequest(propertyDesignation);
+		verify(mockByggrClient).getRelateradeArendenByFastighet(getRelateradeArendenByFastighetCaptor.capture());
+		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrClient);
+
+		assertThat(getRelateradeArendenByFastighetCaptor.getValue().getTrakt()).isEqualTo("TESTÖN");
+		assertThat(getRelateradeArendenByFastighetCaptor.getValue().getFBetNr()).isEqualTo("1:123");
+		assertThat(result).isEqualTo(response);
 	}
 
 	@Test

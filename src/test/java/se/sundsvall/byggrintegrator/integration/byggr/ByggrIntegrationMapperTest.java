@@ -1,5 +1,6 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
+import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByFastighetResponse;
 import generated.se.sundsvall.arendeexport.v8.RollTyp;
 import generated.se.sundsvall.arendeexport.v8.StatusFilter;
 import java.time.LocalDate;
@@ -12,9 +13,12 @@ import org.springframework.test.context.ActiveProfiles;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
+import se.sundsvall.dept44.problem.ThrowableProblem;
 
 import static generated.se.sundsvall.arendeexport.v4.RemissStatusFilter.EJ_BESVARAD;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.APPLICANT_ROLE;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.BYGGR_ARENDE_NR_1;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.BYGGR_ARENDE_NR_2;
@@ -201,5 +205,55 @@ class ByggrIntegrationMapperTest {
 
 		assertThat(request.getPersOrgNr()).isEqualTo(identifier);
 		assertThat(request.getStatusFilter()).isEqualTo(EJ_BESVARAD);
+	}
+
+	@Test
+	void testMapToGetRelateradeArendenByFastighetRequest() {
+		// Arrange
+		var propertyDesignation = "TESTÖN 1:123";
+
+		// Act
+		var request = mapper.mapToGetRelateradeArendenByFastighetRequest(propertyDesignation);
+
+		// Assert
+		assertThat(request.getTrakt()).isEqualTo("TESTÖN");
+		assertThat(request.getFBetNr()).isEqualTo("1:123");
+		assertThat(request.getFnr()).isNull();
+		assertThat(request.isArHuvudObjekt()).isNull();
+		assertThat(request.getStatusFilter()).isEqualTo(StatusFilter.NONE);
+	}
+
+	@Test
+	void testMapToGetRelateradeArendenByFastighetRequest_traktWithSpaces() {
+		// Arrange
+		var propertyDesignation = "NORRA TESTBERGET 1:1";
+
+		// Act
+		var request = mapper.mapToGetRelateradeArendenByFastighetRequest(propertyDesignation);
+
+		// Assert
+		assertThat(request.getTrakt()).isEqualTo("NORRA TESTBERGET");
+		assertThat(request.getFBetNr()).isEqualTo("1:1");
+	}
+
+	@Test
+	void testMapToGetRelateradeArendenByFastighetRequest_invalidPropertyDesignation() {
+		// Arrange
+		var propertyDesignation = "TESTÖN";
+		// Act
+		var exception = assertThrows(ThrowableProblem.class, () -> mapper.mapToGetRelateradeArendenByFastighetRequest(propertyDesignation));
+
+		// Assert
+		assertThat(exception.getStatus()).isEqualTo(BAD_REQUEST);
+		assertThat(exception.getDetail()).isEqualTo("Invalid property designation: " + propertyDesignation);
+	}
+
+	@Test
+	void testMapRelatedErrandsByFastighetToByggrErrandDtos_emptyResponse() {
+		// Act
+		final var result = mapper.mapRelatedErrandsByFastighetToByggrErrandDtos(new GetRelateradeArendenByFastighetResponse());
+
+		// Assert
+		assertThat(result).isEmpty();
 	}
 }

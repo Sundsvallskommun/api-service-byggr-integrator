@@ -1,0 +1,30 @@
+{
+	"request": {
+		"headers": {
+			"Content-Type": {
+				"equalTo": "text/xml;charset=UTF-8"
+			},
+			"SOAPAction": {
+				"contains": "GetRelateradeArendenByFastighet"
+			}
+		},
+		"method": "POST",
+		"bodyPatterns": [
+			{
+				"contains": "<trakt>OKÄND</trakt>"
+			},
+			{
+				"contains": "<fBetNr>1:1</fBetNr>"
+			}
+		],
+		"urlPath": "/api-byggr/endpoint"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/xml"
+		},
+		"bodyFileName": "test04_getLatestOvkProtocolForUnknownProperty/responses/api-byggr-get-errands-by-property-response.xml",
+		"status": 200
+	},
+	"name": "api-byggr-get-errands-by-property"
+}

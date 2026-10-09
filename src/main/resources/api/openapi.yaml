@@ -1,15 +1,17 @@
 openapi: 3.1.0
 info:
   title: api-service-byggr-integrator
-  contact: { }
+  contact: {}
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
   version: "2.5"
 servers:
-  - url: http://localhost:57665
+  - url: http://localhost:59473
     description: Generated server url
 tags:
+  - name: Property
+    description: Property resources
   - name: Open-E
     description: ByggR Integrator Open-E resources
   - name: Neighborhood notifications
@@ -19,6 +21,185 @@ tags:
   - name: Applicant
     description: Applicant resources
 paths:
+  /{municipalityId}/properties/{propertyDesignation}/errands/ovk:
+    get:
+      tags:
+        - Property
+      summary: Lists all OVK protocols for the property matching the provided property
+        designation
+      description: "Returns documents of type OVK found on errands connected to the\
+        \ property, including closed errands. A document referenced by several events\
+        \ on the same errand is only returned once, with the date of the earliest\
+        \ event"
+      operationId: getAllOVKProtocols
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: propertyDesignation
+          in: path
+          description: Property designation
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            pattern: ^\s*\S.*\s+\S+\s*$
+          example: TESTÖN 1:123
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OVKProtocol"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/properties/{propertyDesignation}/errands/ovk/latest:
+    get:
+      tags:
+        - Property
+      summary: Returns the latest OVK protocol for the property matching the provided
+        property designation
+      description: Returns the OVK protocol with the most recent date among all OVK
+        documents found on errands connected to the property. Returns 404 if no OVK
+        protocol is found
+      operationId: getLatestOVKProtocol
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: propertyDesignation
+          in: path
+          description: Property designation
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            pattern: ^\s*\S.*\s+\S+\s*$
+          example: TESTÖN 1:123
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OVKProtocol"
+        "404":
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+  /{municipalityId}/opene/referrals/type:
+    get:
+      tags:
+        - Open-E
+      summary: Return xml structure with the referral recipient role weight for the
+        matching referral
+      operationId: getReferralTypeWithRequestParameter
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: identifier
+          in: query
+          description: Personal or organization number
+          required: true
+          schema:
+            type: string
+            minLength: 1
+          example: 190102031234
+        - name: referralReference
+          in: query
+          description: Referral reference from ByggR to match
+          required: true
+          schema:
+            type: string
+            minLength: 1
+          example: "SILJE 2:65 – Lämna svar som fastighetsägare [188115]"
+      responses:
+        "200":
+          description: Successful Operation
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Weight"
+        "400":
+          description: Bad Request
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Weight"
+        "404":
+          description: Not Found
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Weight"
+        "500":
+          description: Internal Server Error
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Weight"
+        "502":
+          description: Bad Gateway
+          content:
+            application/xml:
+              schema:
+                $ref: "#/components/schemas/Weight"
   /{municipalityId}/opene/neighborhood-notifications/filenames:
     get:
       tags:
@@ -112,68 +293,6 @@ paths:
             type: string
             minLength: 1
           example: BYGG 2001-123456
-      responses:
-        "200":
-          description: Successful Operation
-          content:
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/Weight"
-        "400":
-          description: Bad Request
-          content:
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/Weight"
-        "404":
-          description: Not Found
-          content:
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/Weight"
-        "500":
-          description: Internal Server Error
-          content:
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/Weight"
-        "502":
-          description: Bad Gateway
-          content:
-            application/xml:
-              schema:
-                $ref: "#/components/schemas/Weight"
-  /{municipalityId}/opene/referrals/type:
-    get:
-      tags:
-        - Open-E
-      summary: Return xml structure with the referral recipient role weight for the
-        matching referral
-      operationId: getReferralTypeWithRequestParameter
-      parameters:
-        - name: municipalityId
-          in: path
-          description: Municipality ID
-          required: true
-          schema:
-            type: string
-          example: 2281
-        - name: identifier
-          in: query
-          description: Personal or organization number
-          required: true
-          schema:
-            type: string
-            minLength: 1
-          example: 190102031234
-        - name: referralReference
-          in: query
-          description: Referral reference from ByggR to match
-          required: true
-          schema:
-            type: string
-            minLength: 1
-          example: "SILJE 2:65 – Lämna svar som fastighetsägare [188115]"
       responses:
         "200":
           description: Successful Operation
@@ -420,6 +539,12 @@ paths:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/Problem"
+        "410":
+          description: Token has expired
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
         "400":
           description: Bad request
           content:
@@ -428,12 +553,6 @@ paths:
                 oneOf:
                   - $ref: "#/components/schemas/Problem"
                   - $ref: "#/components/schemas/ConstraintViolationProblem"
-        "410":
-          description: Token has expired
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/Problem"
         "500":
           description: Internal Server error
           content:
@@ -504,8 +623,12 @@ paths:
     get:
       tags:
         - Applicant
-      summary: Lists all decisions with decision documents for the errand matching the provided case number where the provided identifier is applicant
-      description: "Returns decisions filtered by: events with configured decision event types that are neither cancelled nor secret, containing documents with configured decision document types. Document urls are valid for a limited time"
+      summary: Lists all decisions with decision documents for the errand matching
+        the provided case number where the provided identifier is applicant
+      description: "Returns decisions filtered by: events with configured decision\
+        \ event types that are neither cancelled nor secret, containing documents\
+        \ with configured decision document types. Document urls are valid for a limited\
+        \ time"
       operationId: findApplicantErrandDecisions
       parameters:
         - name: municipalityId
@@ -582,24 +705,19 @@ paths:
       x-wso2-mutual-ssl: Optional
 components:
   schemas:
-    Weight:
-      type: object
-      properties:
-        value:
-          type: string
     Problem:
       type: object
       properties:
-        title:
-          type: string
-        detail:
-          type: string
         instance:
           type: string
           format: uri
         type:
           type: string
           format: uri
+        detail:
+          type: string
+        title:
+          type: string
         status:
           type: integer
           format: int32
@@ -618,13 +736,13 @@ components:
             $ref: "#/components/schemas/Violation"
         title:
           type: string
+        instance:
+          type: string
+          format: uri
         detail:
           type: string
         causeAsProblem:
           $ref: "#/components/schemas/ThrowableProblem"
-        instance:
-          type: string
-          format: uri
     ThrowableProblem:
       type: object
       properties:
@@ -650,6 +768,36 @@ components:
           type: string
         message:
           type: string
+    OVKProtocol:
+      type: object
+      description: OVK protocols registerd to property
+      properties:
+        caseNumber:
+          type: string
+          description: Byggr casenumber
+        description:
+          type: string
+          description: Description of the document
+          examples:
+            - OVK-protokoll
+        date:
+          type: string
+          format: date
+          description: Date of event the document is attached to
+        documentName:
+          type: string
+          description: File name of document
+        fileId:
+          type: string
+          description: Id of document file
+        downloadUrl:
+          type: string
+          description: "Link to download document, valid for a limited time"
+    Weight:
+      type: object
+      properties:
+        value:
+          type: string
     KeyValue:
       type: object
       properties:
@@ -659,30 +807,6 @@ components:
         value:
           type: string
           description: The value of the key-value pair
-    ErrandDecisions:
-      type: object
-      description: Decisions with decision documents for a ByggR errand
-      properties:
-        caseNumber:
-          type: string
-          description: ByggR case number (diary number) that the decisions belong to
-          examples:
-            - BYGG 2024-000666
-        description:
-          type: string
-          description: Description of the errand
-          examples:
-            - Nybyggnad av garage
-        propertyDesignation:
-          type: string
-          description: Property designation of the errand
-          examples:
-            - SUNDSVALL 2:55
-        decisions:
-          type: array
-          description: "Decisions on the errand, newest first"
-          items:
-            $ref: "#/components/schemas/Decision"
     Decision:
       type: object
       description: Decision on a ByggR errand
@@ -772,7 +896,33 @@ components:
             - 2024-09-03
         url:
           type: string
-          description: Url for downloading the document. The url is valid for a limited time
+          description: Url for downloading the document. The url is valid for a limited
+            time
           examples:
             - https://api.sundsvall.se/byggr-integrator/2.5/2281/files/470583
-  securitySchemes: { }
+    ErrandDecisions:
+      type: object
+      description: Decisions with decision documents for a ByggR errand
+      properties:
+        caseNumber:
+          type: string
+          description: ByggR case number (diary number) that the decisions belong
+            to
+          examples:
+            - BYGG 2024-000666
+        description:
+          type: string
+          description: Description of the errand
+          examples:
+            - Nybyggnad av garage
+        propertyDesignation:
+          type: string
+          description: Property designation of the errand
+          examples:
+            - SUNDSVALL 2:55
+        decisions:
+          type: array
+          description: "Decisions on the errand, newest first"
+          items:
+            $ref: "#/components/schemas/Decision"
+  securitySchemes: {}

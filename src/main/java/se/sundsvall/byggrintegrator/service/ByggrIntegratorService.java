@@ -72,7 +72,7 @@ public class ByggrIntegratorService {
 	private final FileUrlService fileUrlService;
 
 	public ByggrIntegratorService(final ByggrIntegrationMapper byggrIntegrationMapper, final ByggrIntegration byggrIntegration, final ApiResponseMapper apiResponseMapper, TemplateService templateService, final ByggrFilterUtility filterUtility,
-	                              final FileAccessTokenService fileAccessTokenService, final DecisionMapper decisionMapper, FileUrlService fileUrlService) {
+		final FileAccessTokenService fileAccessTokenService, final DecisionMapper decisionMapper, FileUrlService fileUrlService) {
 		this.byggrIntegrationMapper = byggrIntegrationMapper;
 		this.byggrIntegration = byggrIntegration;
 		this.apiResponseMapper = apiResponseMapper;
@@ -238,20 +238,20 @@ public class ByggrIntegratorService {
 		return apiResponseMapper.mapToKeyValue(propertyDesignationAndRemissIdMap);
 	}
 
-	public OVKProtocol getLatestOVKprotocol(final String municipalityID, final String propertyDesignation){
+	public OVKProtocol getLatestOVKprotocol(final String municipalityID, final String propertyDesignation) {
 		return findOVKprotocols(propertyDesignation).stream()
-				.findFirst()
-				.map(protocol -> withUrl(municipalityID, protocol))
-				.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_OVK_NOT_FOUND.formatted(propertyDesignation)));
+			.findFirst()
+			.map(protocol -> withUrl(municipalityID, protocol))
+			.orElseThrow(() -> Problem.valueOf(NOT_FOUND, ERROR_OVK_NOT_FOUND.formatted(propertyDesignation)));
 	}
 
-	public List<OVKProtocol> getOVKprotocols(final String municipalityID, final String propertyDesignation){
+	public List<OVKProtocol> getOVKprotocols(final String municipalityID, final String propertyDesignation) {
 		return findOVKprotocols(propertyDesignation).stream()
-				.map(protocol -> withUrl(municipalityID, protocol))
-				.toList();
+			.map(protocol -> withUrl(municipalityID, protocol))
+			.toList();
 	}
 
-	private List<OVKProtocol> findOVKprotocols(final String propertyDesignation){
+	private List<OVKProtocol> findOVKprotocols(final String propertyDesignation) {
 		final var response = byggrIntegration.getErrandByAreaAndPropertyId(propertyDesignation);
 		final var errands = byggrIntegrationMapper.mapRelatedErrandsByFastighetToByggrErrandDtos(response);
 
@@ -259,20 +259,20 @@ public class ByggrIntegratorService {
 			.flatMap(errand -> ofNullable(errand.getEvents()).orElse(emptyList()).stream()
 				.flatMap(event -> ofNullable(event.getFiles()).orElse(Map.of()).entrySet().stream()
 					.filter(file -> DOCUMENT_TYPE_OVK.equalsIgnoreCase(file.getValue().getDocumentType()))
-						.map(file -> new OVKProtocol(
-								errand.getByggrCaseNumber(),
-								errand.getDescription(),
-								event.getEventDate(),
-								file.getValue().getDocumentName(),
-								file.getKey(),
-								null
-						))))
-				// Same document can be referenced multiple times by several events (example: Decision, Archive), only return the first instance
-				.collect(Collectors.toMap(OVKProtocol::fileId, Function.identity(),
-						(a, b) -> Comparator.nullsLast(Comparator.<LocalDate>naturalOrder()).compare(a.date(), b.date()) <= 0 ? a : b))
-				.values().stream()
-				.sorted(Comparator.comparing(OVKProtocol::date, Comparator.nullsLast(Comparator.reverseOrder())))
-				.toList();
+					.map(file -> new OVKProtocol(
+						errand.getByggrCaseNumber(),
+						errand.getDescription(),
+						event.getEventDate(),
+						file.getValue().getDocumentName(),
+						file.getKey(),
+						null))))
+			// Same document can be referenced multiple times by several events (example: Decision, Archive), only return the first
+			// instance
+			.collect(Collectors.toMap(OVKProtocol::fileId, Function.identity(),
+				(a, b) -> Comparator.nullsLast(Comparator.<LocalDate>naturalOrder()).compare(a.date(), b.date()) <= 0 ? a : b))
+			.values().stream()
+			.sorted(Comparator.comparing(OVKProtocol::date, Comparator.nullsLast(Comparator.reverseOrder())))
+			.toList();
 	}
 
 	private static int extractReferralReferenceId(final String referralReference) {
