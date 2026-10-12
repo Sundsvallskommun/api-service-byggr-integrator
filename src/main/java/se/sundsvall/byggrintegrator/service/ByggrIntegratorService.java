@@ -23,6 +23,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 import se.sundsvall.byggrintegrator.api.model.ErrandDecisions;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.api.model.OVKProtocol;
@@ -249,6 +250,11 @@ public class ByggrIntegratorService {
 		return findOVKprotocols(propertyDesignation).stream()
 			.map(protocol -> withUrl(municipalityID, protocol))
 			.toList();
+	}
+
+	public String createOVKErrand(String municipalityId, String uploaderIdentity, String propertyDesignation, MultipartFile file) throws IOException {
+		final var response = byggrIntegration.saveNewErrand(municipalityId, uploaderIdentity, propertyDesignation, file);
+		return response.getSaveNewArendeResult().getDnr();
 	}
 
 	private List<OVKProtocol> findOVKprotocols(final String propertyDesignation) {

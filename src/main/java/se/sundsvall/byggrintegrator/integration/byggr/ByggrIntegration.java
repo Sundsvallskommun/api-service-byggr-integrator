@@ -1,6 +1,7 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
 import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
+import generated.se.sundsvall.arendeexport.v4.SaveNewArendeResponse;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfString;
 import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.v8.GetDocumentResponse;
@@ -10,6 +11,7 @@ import generated.se.sundsvall.arendeexport.v8.HandlingTyp;
 import generated.se.sundsvall.arendeexport.v8.Roll;
 import jakarta.xml.soap.SOAPFault;
 import jakarta.xml.ws.soap.SOAPFaultException;
+import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toMap;
@@ -112,6 +115,10 @@ public class ByggrIntegration {
 
 			throw e;
 		}
+	}
+
+	public SaveNewArendeResponse saveNewErrand(String municipalityId, String propertyDesignation, String description, MultipartFile pdf) throws IOException {
+		return byggrClient.saveNewArende(byggrIntegrationMapper.mapToSaveOVKArendeRequest(municipalityId, propertyDesignation, description, pdf));
 	}
 
 	@Cacheable("getHandlingTyperCache")

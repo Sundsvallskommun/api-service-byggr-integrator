@@ -6,13 +6,16 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.IOException;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import se.sundsvall.byggrintegrator.api.model.OVKProtocol;
 import se.sundsvall.byggrintegrator.api.validation.ValidPropertyDesignation;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
@@ -63,6 +66,14 @@ class PropertyResource {
 		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
 		@Parameter(name = "propertyDesignation", description = "Property designation", example = "TESTÖN 1:123") @ValidPropertyDesignation @PathVariable String propertyDesignation) {
 		return ResponseEntity.ok(byggrIntegratorService.getOVKprotocols(municipalityId, propertyDesignation));
+	}
 
+	@PostMapping(path = "/properties/{propertyDesignation}/errands/ovk/createErrand")
+	ResponseEntity<String> createOvkErrand(
+		@PathVariable final String municipalityId,
+		@PathVariable final String propertyDesignation,
+		final String uploaderIdentity,
+		final MultipartFile file) throws IOException {
+		return ResponseEntity.ok(byggrIntegratorService.createOVKErrand(municipalityId, propertyDesignation, uploaderIdentity, file));
 	}
 }
