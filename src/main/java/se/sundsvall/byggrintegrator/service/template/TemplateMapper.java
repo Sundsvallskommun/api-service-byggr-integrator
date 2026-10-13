@@ -35,7 +35,7 @@ public class TemplateMapper {
 			.toList();
 	}
 
-	private FileTemplateDto mapToFileTemplateDto(final String municipalityId, final int fileId, final HandelseHandling documentNameAndType, final Map<String, String> handlingtyper) {
+	private FileTemplateDto mapToFileTemplateDto(final String municipalityId, final String fileId, final HandelseHandling documentNameAndType, final Map<String, String> handlingtyper) {
 		return FileTemplateDto.builder()
 			.withFileUrl(fileUrlService.parseFileUrl(municipalityId, fileId))
 			.withFileName(parseFileName(documentNameAndType, handlingtyper))
@@ -49,11 +49,10 @@ public class TemplateMapper {
 			documentNameAndType.getDokument().getNamn());
 	}
 
-	private int parseDokId(final HandelseHandling handelseHandling) {
+	private String parseDokId(final HandelseHandling handelseHandling) {
 		return Optional.ofNullable(handelseHandling.getDokument().getDokId())
 			.filter(Objects::nonNull)
 			.filter(id -> id.matches("\\d+"))
-			.map(Integer::parseInt)
-			.orElse(-1);
+			.orElse("-1");
 	}
 }

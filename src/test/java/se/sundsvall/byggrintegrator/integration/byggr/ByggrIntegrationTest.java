@@ -198,7 +198,7 @@ class ByggrIntegrationTest {
 	}
 
 	@Test
-	void testGetErrandByAreaAndPropertyId() {
+	void testGetErrandsByAreaAndPropertyId() {
 		// Arrange
 		final var propertyDesignation = "TESTÖN 1:123";
 		final var response = OBJECT_FACTORY.createGetRelateradeArendenByFastighetResponse();
@@ -207,7 +207,7 @@ class ByggrIntegrationTest {
 		when(mockByggrClient.getRelateradeArendenByFastighet(any(GetRelateradeArendenByFastighet.class))).thenReturn(response);
 
 		// Act
-		final var result = integration.getErrandByAreaAndPropertyId(propertyDesignation);
+		final var result = integration.getErrandsByAreaAndPropertyId(propertyDesignation);
 
 		// Verify and assert
 		verify(mockByggrIntegrationMapper).mapToGetRelateradeArendenByFastighetRequest(propertyDesignation);

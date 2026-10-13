@@ -30,8 +30,8 @@ class TemplateMapperTest {
 
 	@Test
 	void testMapByggrFilesToList_duplicateRemovedAndSorts() {
-		when(mockFileUrlService.parseFileUrl(VALID_MUNICIPALITY_ID, 1)).thenReturn("Url1");
-		when(mockFileUrlService.parseFileUrl(VALID_MUNICIPALITY_ID, 2)).thenReturn("Url2");
+		when(mockFileUrlService.parseFileUrl(VALID_MUNICIPALITY_ID, "1")).thenReturn("Url1");
+		when(mockFileUrlService.parseFileUrl(VALID_MUNICIPALITY_ID, "2")).thenReturn("Url2");
 
 		final var handlingTyper = Map.of("PLAN", "Planer", "RIT", "Ritningar");
 		final var handling = List.of(
@@ -47,14 +47,14 @@ class TemplateMapperTest {
 		assertThat(result).hasSize(2);
 		assertThat(result).extracting(FileTemplateDto::getFileName).containsExactly("Ritningar (FileName2)", "Planer (FileName1)");
 
-		verify(mockFileUrlService, times(2)).parseFileUrl(VALID_MUNICIPALITY_ID, 1);
-		verify(mockFileUrlService).parseFileUrl(VALID_MUNICIPALITY_ID, 2);
+		verify(mockFileUrlService, times(2)).parseFileUrl(VALID_MUNICIPALITY_ID, "1");
+		verify(mockFileUrlService).parseFileUrl(VALID_MUNICIPALITY_ID, "2");
 		verifyNoMoreInteractions(mockFileUrlService);
 	}
 
 	@Test
 	void testMapByggrFilesToList_withNullId_parseDokIdFallback() {
-		when(mockFileUrlService.parseFileUrl(VALID_MUNICIPALITY_ID, -1)).thenReturn("Url");
+		when(mockFileUrlService.parseFileUrl(VALID_MUNICIPALITY_ID, "-1")).thenReturn("Url");
 
 		final var handlingTyper = Map.of("PLAN", "Planer", "RIT", "Ritningar");
 		final var handling = List.of(
@@ -66,13 +66,13 @@ class TemplateMapperTest {
 		assertThat(result).hasSize(1);
 		assertThat(result.getFirst().getFileName()).isEqualTo("Planer (FileName)");
 
-		verify(mockFileUrlService).parseFileUrl(VALID_MUNICIPALITY_ID, -1);
+		verify(mockFileUrlService).parseFileUrl(VALID_MUNICIPALITY_ID, "-1");
 		verifyNoMoreInteractions(mockFileUrlService);
 	}
 
 	@Test
 	void testMapByggrFilesToList_withStringId_parseDokIdFallback() {
-		when(mockFileUrlService.parseFileUrl(VALID_MUNICIPALITY_ID, -1)).thenReturn("Url");
+		when(mockFileUrlService.parseFileUrl(VALID_MUNICIPALITY_ID, "-1")).thenReturn("Url");
 
 		final var handlingTyper = Map.of("PLAN", "Planer", "RIT", "Ritningar");
 		final var handling = List.of(
@@ -84,7 +84,7 @@ class TemplateMapperTest {
 		assertThat(result).hasSize(1);
 		assertThat(result.getFirst().getFileName()).isEqualTo("Planer (FileName)");
 
-		verify(mockFileUrlService).parseFileUrl(VALID_MUNICIPALITY_ID, -1);
+		verify(mockFileUrlService).parseFileUrl(VALID_MUNICIPALITY_ID, "-1");
 		verifyNoMoreInteractions(mockFileUrlService);
 	}
 }
