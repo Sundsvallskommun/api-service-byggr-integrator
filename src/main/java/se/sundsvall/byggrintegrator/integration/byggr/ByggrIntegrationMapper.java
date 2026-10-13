@@ -42,6 +42,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
@@ -53,6 +54,7 @@ import static generated.se.sundsvall.arendeexport.v4.RemissStatusFilter.EJ_BESVA
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 /**
  * Mapper for handling mappings between ByggR responses and the internal dto class used in the service layer
@@ -114,7 +116,7 @@ public class ByggrIntegrationMapper {
 			.withDnr(dnr);
 	}
 
-	public SaveNewArende mapToSaveOVKArendeRequest(final String municipalityId, final String propertyDesignation, final String description, final MultipartFile file) throws IOException {
+	public SaveNewArende mapToSaveOVKArendeRequest(final String municipalityId, final String propertyDesignation, final String description, final MultipartFile file) {
 		final var datatypeFactory = DatatypeFactory.newDefaultInstance();
 		final var today = datatypeFactory.newXMLGregorianCalendar(LocalDate.now().toString());
 		final var now = datatypeFactory.newXMLGregorianCalendar(GregorianCalendar.from(ZonedDateTime.now()));
@@ -305,7 +307,7 @@ public class ByggrIntegrationMapper {
 				.withFbetNr(fBetNr));
 	}
 
-	private ArrayOfHandling createHandlingar(MultipartFile file, XMLGregorianCalendar today) throws IOException {
+	private ArrayOfHandling createHandlingar(MultipartFile file, XMLGregorianCalendar today) {
 		return OBJECT_FACTORY.createArrayOfHandling()
 			.withHandling(OBJECT_FACTORY.createHandelseHandling()
 				.withTyp(DOCUMENT_TYPE_OVK)
@@ -315,13 +317,15 @@ public class ByggrIntegrationMapper {
 				.withDokument(createOVKDokument(file)));
 	}
 
-	private Dokument createOVKDokument(MultipartFile file) throws IOException {
+	private Dokument createOVKDokument(MultipartFile file) {
+		final var filename = file.getOriginalFilename();
+
 		return OBJECT_FACTORY.createDokument()
-			.withNamn(file.getOriginalFilename())
+			.withNamn(filename)
 			.withBeskrivning(OVK_DOCUMENT_DESCRIPTION)
 			.withFil(OBJECT_FACTORY.createDokumentFil()
-				.withFilBuffer(file.getBytes())
-				.withFilAndelse(file.getContentType()));
+				.withFilBuffer(readContent(file))
+				.withFilAndelse(StringUtils.getFilenameExtension(filename)));
 	}
 
 	private Handelse createOVKHandelse(final XMLGregorianCalendar now) {
@@ -331,6 +335,14 @@ public class ByggrIntegrationMapper {
 			.withHandelsetyp(EVENT_TYPE_OVK)
 			.withHandelseslag(EVENT_SUBTYPE_PROTOCOL)
 			.withStartDatum(now);
+	}
+
+	private static byte[] readContent(final MultipartFile file) {
+		try {
+			return file.getBytes();
+		} catch (final IOException e) {
+			throw Problem.valueOf(INTERNAL_SERVER_ERROR, "could not read uploaded file");
+		}
 	}
 
 }

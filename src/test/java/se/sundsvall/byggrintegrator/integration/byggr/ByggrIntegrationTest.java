@@ -25,6 +25,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -309,7 +310,7 @@ class ByggrIntegrationTest {
 
 	@Test
 	void getsHandlingTyper() {
-		// arrange
+		// Arrange
 		final var request = OBJECT_FACTORY.createGetHandlingTyper();
 
 		final var handling1 = OBJECT_FACTORY.createHandlingTyp().withTyp("Type 1").withBeskrivning("Handling of type 1");
@@ -323,15 +324,36 @@ class ByggrIntegrationTest {
 		when(mockByggrIntegrationMapper.createGetHandlingTyperRequest()).thenReturn(request);
 		when(mockByggrClient.getHandlingTyper(request)).thenReturn(response);
 
-		// act
+		// Act
 		final var result = integration.getHandlingTyper();
-		// assert
+		// Assert
 		assertThat(result).hasSize(2)
 			.containsEntry("Type 1", "Handling of type 1")
 			.containsEntry("Type 2", "Handling of type 2");
 
 		verify(mockByggrIntegrationMapper).createGetHandlingTyperRequest();
 		verify(mockByggrClient).getHandlingTyper(request);
+	}
+
+	@Test
+	void testSaveNewErrand() {
+		// Arrange
+		final var file = new MockMultipartFile("file", "protokoll.pdf", "application/pdf", "%PDF-1.7".getBytes());
+		final var request = OBJECT_FACTORY.createSaveNewArende();
+		final var response = OBJECT_FACTORY.createSaveNewArendeResponse()
+			.withSaveNewArendeResult(OBJECT_FACTORY.createSaveNewArendeResponse2().withDnr("OVK 2026-000001"));
+
+		when(mockByggrIntegrationMapper.mapToSaveOVKArendeRequest("2281", "TESTÖN 1:123", "description", file)).thenReturn(request);
+		when(mockByggrClient.saveNewArende(request)).thenReturn(response);
+
+		// Act
+		final var result = integration.saveNewErrand("2281", "TESTÖN 1:123", "description", file);
+
+		// Assert
+		assertThat(result).isEqualTo(response);
+		verify(mockByggrIntegrationMapper).mapToSaveOVKArendeRequest("2281", "TESTÖN 1:123", "description", file);
+		verify(mockByggrClient).saveNewArende(request);
+		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrClient);
 	}
 
 }

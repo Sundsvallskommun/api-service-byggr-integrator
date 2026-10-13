@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.io.IOException;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,12 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import se.sundsvall.byggrintegrator.api.model.OVKProtocol;
+import se.sundsvall.byggrintegrator.api.validation.ValidPdf;
 import se.sundsvall.byggrintegrator.api.validation.ValidPropertyDesignation;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
 import se.sundsvall.dept44.common.validators.annotation.ValidMunicipalityId;
 import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
 
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
 
@@ -68,12 +69,14 @@ class PropertyResource {
 		return ResponseEntity.ok(byggrIntegratorService.getOVKprotocols(municipalityId, propertyDesignation));
 	}
 
-	@PostMapping(path = "/properties/{propertyDesignation}/errands/ovk/createErrand")
+	@Operation(summary = "Creates a new OVK Errand in Byggr with the provided OVK protocol",
+		responses = @ApiResponse(responseCode = "201", description = "Created", useReturnTypeSchema = true))
+	@PostMapping(path = "/properties/{propertyDesignation}/errands/ovk")
 	ResponseEntity<String> createOvkErrand(
-		@PathVariable final String municipalityId,
-		@PathVariable final String propertyDesignation,
-		final String uploaderIdentity,
-		final MultipartFile file) throws IOException {
-		return ResponseEntity.ok(byggrIntegratorService.createOVKErrand(municipalityId, propertyDesignation, uploaderIdentity, file));
+		@Parameter(name = "municipalityId", description = "Municipality ID", example = "2281") @ValidMunicipalityId @PathVariable final String municipalityId,
+		@Parameter(name = "propertyDesignation", description = "Property designation", example = "TESTÖN 1:123") @ValidPropertyDesignation @PathVariable final String propertyDesignation,
+		@Parameter(name = "description", description = "description of errand") final String description,
+		@Parameter(name = "file", description = "OVK-protocol in PDF-format") @ValidPdf final MultipartFile file) {
+		return ResponseEntity.status(CREATED).body(byggrIntegratorService.createOVKErrand(municipalityId, propertyDesignation, description, file));
 	}
 }

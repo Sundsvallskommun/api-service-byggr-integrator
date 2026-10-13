@@ -252,8 +252,8 @@ public class ByggrIntegratorService {
 			.toList();
 	}
 
-	public String createOVKErrand(String municipalityId, String uploaderIdentity, String propertyDesignation, MultipartFile file) throws IOException {
-		final var response = byggrIntegration.saveNewErrand(municipalityId, uploaderIdentity, propertyDesignation, file);
+	public String createOVKErrand(String municipalityId, String propertyDesignation, String description, MultipartFile file) {
+		final var response = byggrIntegration.saveNewErrand(municipalityId, propertyDesignation, description, file);
 		return response.getSaveNewArendeResult().getDnr();
 	}
 

@@ -14,10 +14,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
 
 @WireMockAppTestSuite(files = "classpath:/propertyIT/", classes = Application.class)
 @ActiveProfiles("it")
@@ -77,4 +80,17 @@ class PropertyIT extends AbstractAppTest {
 			.withExpectedResponse(RESPONSE_FILE)
 			.sendRequestAndVerifyResponse();
 	}
+
+	@Test
+	void test05_createOvkErrand() throws Exception {
+		setupCall()
+			.withServicePath("/2281/properties/TESTÖN 1:123/errands/ovk")
+			.withHttpMethod(POST)
+			.withContentType(MULTIPART_FORM_DATA)
+			.withRequestFile("file", "protokoll.pdf")
+			.withExpectedResponseStatus(CREATED)
+			.withExpectedResponse("OVK 2026-000001")
+			.sendRequestAndVerifyResponse();
+	}
+
 }

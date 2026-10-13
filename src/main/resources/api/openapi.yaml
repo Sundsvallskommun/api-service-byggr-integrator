@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "2.6"
 servers:
-  - url: http://localhost:50697
+  - url: http://localhost:59254
     description: Generated server url
 tags:
   - name: Property
@@ -58,6 +58,68 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/OVKProtocol"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    post:
+      tags:
+        - Property
+      summary: Creates a new OVK Errand in Byggr with the provided OVK protocol
+      operationId: createOvkErrand
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: propertyDesignation
+          in: path
+          description: Property designation
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            pattern: ^\s*\S.*\s+\S+\s*$
+          example: TESTÖN 1:123
+        - name: description
+          in: query
+          description: description of errand
+          required: true
+          schema:
+            type: string
+        - name: file
+          in: query
+          description: OVK-protocol in PDF-format
+          required: true
+          schema:
+            type: string
+            format: binary
+      responses:
+        "201":
+          description: Created
+          content:
+            '*/*':
+              schema:
+                type: string
         "400":
           description: Bad request
           content:
@@ -714,9 +776,9 @@ components:
         type:
           type: string
           format: uri
-        title:
-          type: string
         detail:
+          type: string
+        title:
           type: string
         status:
           type: integer

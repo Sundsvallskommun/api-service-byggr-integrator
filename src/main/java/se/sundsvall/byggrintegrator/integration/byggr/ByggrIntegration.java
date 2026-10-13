@@ -1,7 +1,6 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
 import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
-import generated.se.sundsvall.arendeexport.v4.SaveNewArendeResponse;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfString;
 import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.v8.GetDocumentResponse;
@@ -9,9 +8,9 @@ import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByFastighetRes
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.v8.HandlingTyp;
 import generated.se.sundsvall.arendeexport.v8.Roll;
+import generated.se.sundsvall.arendeexport.v8.SaveNewArendeResponse;
 import jakarta.xml.soap.SOAPFault;
 import jakarta.xml.ws.soap.SOAPFaultException;
-import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +116,7 @@ public class ByggrIntegration {
 		}
 	}
 
-	public SaveNewArendeResponse saveNewErrand(String municipalityId, String propertyDesignation, String description, MultipartFile pdf) throws IOException {
+	public SaveNewArendeResponse saveNewErrand(String municipalityId, String propertyDesignation, String description, MultipartFile pdf) {
 		return byggrClient.saveNewArende(byggrIntegrationMapper.mapToSaveOVKArendeRequest(municipalityId, propertyDesignation, description, pdf));
 	}
 

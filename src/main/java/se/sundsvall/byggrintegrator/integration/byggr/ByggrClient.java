@@ -2,7 +2,6 @@ package se.sundsvall.byggrintegrator.integration.byggr;
 
 import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNr;
 import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNrResponse;
-import generated.se.sundsvall.arendeexport.v4.SaveNewArendeResponse;
 import generated.se.sundsvall.arendeexport.v8.GetArende;
 import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.v8.GetDocument;
@@ -16,6 +15,7 @@ import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAnd
 import generated.se.sundsvall.arendeexport.v8.GetRoller;
 import generated.se.sundsvall.arendeexport.v8.GetRollerResponse;
 import generated.se.sundsvall.arendeexport.v8.SaveNewArende;
+import generated.se.sundsvall.arendeexport.v8.SaveNewArendeResponse;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;

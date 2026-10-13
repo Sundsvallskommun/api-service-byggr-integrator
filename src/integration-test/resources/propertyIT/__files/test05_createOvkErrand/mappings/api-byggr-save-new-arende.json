@@ -1,0 +1,33 @@
+{
+	"request": {
+		"headers": {
+			"Content-Type": {
+				"equalTo": "text/xml;charset=UTF-8"
+			},
+			"SOAPAction": {
+				"contains": "SaveNewArende"
+			}
+		},
+		"method": "POST",
+		"bodyPatterns": [
+			{
+				"contains": "TESTÖN"
+			},
+			{
+				"contains": "1:123"
+			},
+			{
+				"contains": "filAndelse=\"pdf\""
+			}
+		],
+		"urlPath": "/api-byggr/endpoint"
+	},
+	"response": {
+		"headers": {
+			"Content-Type": "application/xml"
+		},
+		"bodyFileName": "test05_createOvkErrand/responses/api-byggr-save-new-arende-response.xml",
+		"status": 200
+	},
+	"name": "api-byggr-save-new-arende"
+}
