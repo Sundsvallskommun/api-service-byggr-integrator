@@ -70,12 +70,13 @@ public class ByggrIntegrationMapper {
 	}
 
 	public GetRelateradeArendenByFastighet mapToGetRelateradeArendenByFastighetRequest(final String propertyDesignation) {
-		final var indexOfSpace = propertyDesignation.lastIndexOf(" ");
+		final var normalizedString = propertyDesignation.strip().replaceAll("\\s+", " ");
+		final var indexOfSpace = normalizedString.lastIndexOf(" ");
 		if (indexOfSpace < 1) {
 			throw Problem.valueOf(BAD_REQUEST, "Invalid property designation: %s".formatted(propertyDesignation));
 		}
-		final var area = propertyDesignation.substring(0, indexOfSpace).trim();
-		final var propertyId = propertyDesignation.substring(indexOfSpace + 1).trim();
+		final var area = normalizedString.substring(0, indexOfSpace).strip();
+		final var propertyId = normalizedString.substring(indexOfSpace + 1).strip();
 
 		return OBJECT_FACTORY.createGetRelateradeArendenByFastighet()
 			.withTrakt(area)
