@@ -43,6 +43,8 @@ public class ByggrErrandDto {
 		private Map<String, DocumentNameAndType> files; // Map<dokumentId, documentName + Type>
 		private List<Stakeholder> stakeholders;
 		private String heading;     // Used as heading in the template
+		private boolean confidential;
+		private boolean cancelled;
 
 		@Getter
 		@Setter

@@ -180,6 +180,8 @@ public class ByggrIntegrationMapper {
 			.withFiles(toFiles(handelse.getHandlingLista()))
 			.withStakeholders(toStakeholders(handelse.getIntressentLista()))
 			.withHeading(handelse.getRubrik())
+			.withConfidential(handelse.isSekretess())
+			.withCancelled(handelse.isMakulerad())
 			.build();
 	}
 

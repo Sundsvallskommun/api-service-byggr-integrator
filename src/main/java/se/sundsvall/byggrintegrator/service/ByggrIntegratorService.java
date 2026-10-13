@@ -257,6 +257,8 @@ public class ByggrIntegratorService {
 
 		return errands.stream()
 			.flatMap(errand -> ofNullable(errand.getEvents()).orElse(emptyList()).stream()
+				.filter(event -> !event.isConfidential())
+				.filter(event -> !event.isCancelled())
 				.flatMap(event -> ofNullable(event.getFiles()).orElse(Map.of()).entrySet().stream()
 					.filter(file -> DOCUMENT_TYPE_OVK.equalsIgnoreCase(file.getValue().getDocumentType()))
 					.map(file -> new OVKProtocol(

@@ -960,6 +960,87 @@ class ByggrIntegratorServiceTest {
 		verifyNoInteractions(mockFileUrlService);
 	}
 
+	@Test
+	void getOVKprotocols_confidentialAndCancelledGetsFiltered() {
+		// Arrange
+		final var response = new GetRelateradeArendenByFastighetResponse();
+		final var confidential = ovkEvent(LocalDate.of(2026, Month.MARCH, 1), Map.of("1111111", ovkDocument("secret.pdf", "OVK")));
+		confidential.setConfidential(true);
+		final var cancelled = ovkEvent(LocalDate.of(2026, Month.APRIL, 1), Map.of("2222222", ovkDocument("cancelled.pdf", "OVK")));
+		cancelled.setCancelled(true);
+		final var visible = ovkEvent(LocalDate.of(2026, Month.FEBRUARY, 5), Map.of("1234567", ovkDocument("ovk.pdf", "OVK")));
+
+		when(mockByggrIntegration.getErrandsByAreaAndPropertyId(PROPERTY_DESIGNATION)).thenReturn(response);
+		when(mockByggrIntegrationMapper.mapRelateradeArendenByFastighetToByggrErrandDtos(response))
+			.thenReturn(List.of(ovkErrand("OVK 2026-222222", "Funktionskontroll", confidential, cancelled, visible)));
+		when(mockFileUrlService.parseFileUrl(MUNICIPALITY_ID, "1234567")).thenReturn("url-1234567");
+
+		// Act
+		final var result = service.getOVKprotocols(MUNICIPALITY_ID, PROPERTY_DESIGNATION);
+
+		// Assert
+		assertThat(result).extracting(OVKProtocol::fileId).containsExactly("1234567");
+		verify(mockByggrIntegration).getErrandsByAreaAndPropertyId(PROPERTY_DESIGNATION);
+		verify(mockByggrIntegrationMapper).mapRelateradeArendenByFastighetToByggrErrandDtos(response);
+		verify(mockFileUrlService).parseFileUrl(MUNICIPALITY_ID, "1234567");
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockFileUrlService);
+
+	}
+
+	@Test
+	void getLatestOVKprotocol_confidentialAndCancelledGetsFiltered() {
+		// Arrange
+		final var response = new GetRelateradeArendenByFastighetResponse();
+		final var newestButConfidential = ovkEvent(LocalDate.of(2026, Month.JUNE, 1), Map.of("2", ovkDocument("Hemlig", "OVK")));
+		newestButConfidential.setConfidential(true);
+
+		when(mockByggrIntegration.getErrandsByAreaAndPropertyId(PROPERTY_DESIGNATION)).thenReturn(response);
+		when(mockByggrIntegrationMapper.mapRelateradeArendenByFastighetToByggrErrandDtos(response)).thenReturn(List.of(
+			ovkErrand("OVK 2025-111111", "Old", ovkEvent(LocalDate.of(2024, Month.JANUARY, 1), Map.of("1", ovkDocument("Old", "OVK")))),
+			ovkErrand("OVK 2026-222222", "New", newestButConfidential)));
+		when(mockFileUrlService.parseFileUrl(MUNICIPALITY_ID, "1")).thenReturn("url-1");
+
+		// Act
+		final var result = service.getLatestOVKprotocol(MUNICIPALITY_ID, PROPERTY_DESIGNATION);
+
+		// Assert
+		assertThat(result.caseNumber()).isEqualTo("OVK 2025-111111");
+		assertThat(result.fileId()).isEqualTo("1");
+		assertThat(result.downloadUrl()).isEqualTo("url-1");
+		verify(mockByggrIntegration).getErrandsByAreaAndPropertyId(PROPERTY_DESIGNATION);
+		verify(mockByggrIntegrationMapper).mapRelateradeArendenByFastighetToByggrErrandDtos(response);
+		verify(mockFileUrlService).parseFileUrl(MUNICIPALITY_ID, "1");
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper, mockFileUrlService);
+
+	}
+
+	@Test
+	void getLatestOVKprotocol_onlyConfidentialOrCancelledThrowsNotFound() {
+		// Arrange
+		final var response = new GetRelateradeArendenByFastighetResponse();
+		final var confidential = ovkEvent(LocalDate.of(2026, Month.MARCH, 1), Map.of("1", ovkDocument("Hemlig", "OVK")));
+		confidential.setConfidential(true);
+		final var cancelled = ovkEvent(LocalDate.of(2026, Month.APRIL, 1), Map.of("2", ovkDocument("Makulerad", "OVK")));
+		cancelled.setCancelled(true);
+
+		when(mockByggrIntegration.getErrandsByAreaAndPropertyId(PROPERTY_DESIGNATION)).thenReturn(response);
+		when(mockByggrIntegrationMapper.mapRelateradeArendenByFastighetToByggrErrandDtos(response))
+			.thenReturn(List.of(ovkErrand("OVK 2026-222222", "Funktionskontroll", confidential, cancelled)));
+
+		// Act & Assert
+		assertThatExceptionOfType(ThrowableProblem.class)
+			.isThrownBy(() -> service.getLatestOVKprotocol(MUNICIPALITY_ID, PROPERTY_DESIGNATION))
+			.satisfies(problem -> {
+				assertThat(problem.getStatus()).isEqualTo(NOT_FOUND);
+				assertThat(problem.getDetail()).isEqualTo("No OVK was found for: " + PROPERTY_DESIGNATION);
+			});
+
+		verify(mockByggrIntegration).getErrandsByAreaAndPropertyId(PROPERTY_DESIGNATION);
+		verify(mockByggrIntegrationMapper).mapRelateradeArendenByFastighetToByggrErrandDtos(response);
+		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper);
+		verifyNoInteractions(mockFileUrlService);
+	}
+
 	private static ByggrErrandDto ovkErrand(final String caseNumber, final String description, final ByggrErrandDto.Event... events) {
 		return ByggrErrandDto.builder()
 			.withByggrCaseNumber(caseNumber)

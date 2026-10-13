@@ -2,7 +2,9 @@ package se.sundsvall.byggrintegrator.integration.byggr;
 
 import generated.se.sundsvall.arendeexport.v8.Arende;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfArende1;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfHandelse;
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByFastighetResponse;
+import generated.se.sundsvall.arendeexport.v8.Handelse;
 import generated.se.sundsvall.arendeexport.v8.RollTyp;
 import generated.se.sundsvall.arendeexport.v8.StatusFilter;
 import java.time.LocalDate;
