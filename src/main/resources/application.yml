@@ -53,6 +53,9 @@ cache:
     - name: getDecisionsCache
       maximum-size: 100
       expire-after-write: PT5M
+    - name: getRelatedErrandsCache
+      maximum-size: 100
+      expire-after-write: PT5M
 
 logging:
   level:

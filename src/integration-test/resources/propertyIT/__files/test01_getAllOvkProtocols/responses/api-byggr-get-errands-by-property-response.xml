@@ -1,0 +1,85 @@
+<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">
+    <s:Body xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+        <GetRelateradeArendenByFastighetResponse xmlns="www.tekis.se/ServiceContract">
+            <GetRelateradeArendenByFastighetResult>
+                <arende arendeId="1" dnr="BYGG 2025-111111">
+                    <beskrivning xmlns="www.tekis.se/arende">Bygglov för nybyggnad av kontorslokal</beskrivning>
+                    <ankomstDatum xmlns="www.tekis.se/arende">2025-03-01</ankomstDatum>
+                    <handelseLista xmlns="www.tekis.se/arende">
+                        <handelse handelseId="100">
+                            <riktning>In</riktning>
+                            <rubrik>OVK-protokoll inkommit</rubrik>
+                            <startDatum>2025-04-19T00:00:00+02:00</startDatum>
+                            <handelsetyp>HANDLING</handelsetyp>
+                            <sekretess>false</sekretess>
+                            <makulerad>false</makulerad>
+                            <handlingLista>
+                                <handling handlingId="1">
+                                    <typ>OVK</typ>
+                                    <handlingDatum>2025-04-19</handlingDatum>
+                                    <makulerad>false</makulerad>
+                                    <dokument dokId="3456789">
+                                        <namn>OVK_Luftflöden</namn>
+                                    </dokument>
+                                </handling>
+                                <handling handlingId="2">
+                                    <typ>RITNING</typ>
+                                    <handlingDatum>2025-04-19</handlingDatum>
+                                    <makulerad>false</makulerad>
+                                    <dokument dokId="111">
+                                        <namn>Ritning</namn>
+                                    </dokument>
+                                </handling>
+                            </handlingLista>
+                            <arbetsmaterial>false</arbetsmaterial>
+                        </handelse>
+                        <handelse handelseId="101">
+                            <riktning>Ut</riktning>
+                            <rubrik>Beslut</rubrik>
+                            <startDatum>2025-06-01T00:00:00+02:00</startDatum>
+                            <handelsetyp>BESLUT</handelsetyp>
+                            <sekretess>false</sekretess>
+                            <makulerad>false</makulerad>
+                            <handlingLista>
+                                <handling handlingId="1">
+                                    <typ>OVK</typ>
+                                    <handlingDatum>2025-04-19</handlingDatum>
+                                    <makulerad>false</makulerad>
+                                    <dokument dokId="3456789">
+                                        <namn>OVK_Luftflöden</namn>
+                                    </dokument>
+                                </handling>
+                            </handlingLista>
+                            <arbetsmaterial>false</arbetsmaterial>
+                        </handelse>
+                    </handelseLista>
+                </arende>
+                <arende arendeId="2" dnr="OVK 2026-222222">
+                    <beskrivning xmlns="www.tekis.se/arende">Funktionskontroll av ventilationssystem Protokoll</beskrivning>
+                    <ankomstDatum xmlns="www.tekis.se/arende">2026-02-05</ankomstDatum>
+                    <handelseLista xmlns="www.tekis.se/arende">
+                        <handelse handelseId="200">
+                            <riktning>In</riktning>
+                            <rubrik>OVK-protokoll</rubrik>
+                            <startDatum>2026-02-05T00:00:00+01:00</startDatum>
+                            <handelsetyp>OVK</handelsetyp>
+                            <sekretess>false</sekretess>
+                            <makulerad>false</makulerad>
+                            <handlingLista>
+                                <handling handlingId="3">
+                                    <typ>OVK</typ>
+                                    <handlingDatum>2026-02-05</handlingDatum>
+                                    <makulerad>false</makulerad>
+                                    <dokument dokId="1234567">
+                                        <namn>Testön 1.123 - luft</namn>
+                                    </dokument>
+                                </handling>
+                            </handlingLista>
+                            <arbetsmaterial>false</arbetsmaterial>
+                        </handelse>
+                    </handelseLista>
+                </arende>
+            </GetRelateradeArendenByFastighetResult>
+        </GetRelateradeArendenByFastighetResponse>
+    </s:Body>
+</s:Envelope>

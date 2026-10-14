@@ -21,7 +21,7 @@ class FileUrlServiceTest {
 	private static final String VERSION = "2.4";
 	private static final String DIRECTORY = "/files/";
 	private static final String FORMATTED_URL = "http://somewhere.com/2.4/2281/files/123?token=valid-token";
-	private static final int FILE_ID = 123;
+	private static final String FILE_ID = "123";
 
 	@Mock
 	private TemplateProperties mockProperties;
@@ -35,7 +35,7 @@ class FileUrlServiceTest {
 	@Test
 	void testParseFileURL() {
 
-		when(mockTokenService.createToken(VALID_MUNICIPALITY_ID, String.valueOf(FILE_ID))).thenReturn(VALID_TOKEN);
+		when(mockTokenService.createToken(VALID_MUNICIPALITY_ID, FILE_ID)).thenReturn(VALID_TOKEN);
 		when(mockProperties.domain()).thenReturn(DOMAIN);
 		when(mockProperties.version()).thenReturn(VERSION);
 		when(mockProperties.subDirectory()).thenReturn(DIRECTORY);
@@ -43,7 +43,7 @@ class FileUrlServiceTest {
 		var result = fileUrlService.parseFileUrl(VALID_MUNICIPALITY_ID, FILE_ID);
 
 		assertThat(result).isEqualTo(FORMATTED_URL);
-		verify(mockTokenService).createToken(VALID_MUNICIPALITY_ID, String.valueOf(FILE_ID));
+		verify(mockTokenService).createToken(VALID_MUNICIPALITY_ID, FILE_ID);
 		verify(mockProperties).domain();
 		verify(mockProperties).version();
 		verify(mockProperties).subDirectory();

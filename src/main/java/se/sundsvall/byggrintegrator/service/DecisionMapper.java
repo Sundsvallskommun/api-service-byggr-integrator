@@ -107,7 +107,7 @@ public class DecisionMapper {
 			document.getTyp(),
 			ofNullable(handlingtyper).map(types -> types.get(document.getTyp())).orElse(null),
 			toLocalDate(document.getHandlingDatum()),
-			fileUrlService.parseFileUrl(municipalityId, Integer.parseInt(dokument.getDokId())));
+			fileUrlService.parseFileUrl(municipalityId, dokument.getDokId()));
 	}
 
 	private static LocalDate toLocalDate(final XMLGregorianCalendar calendar) {

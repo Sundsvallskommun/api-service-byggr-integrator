@@ -17,5 +17,5 @@ public record DecisionDocument(
 
 	@Schema(description = "Date of the document", examples = "2024-09-03") LocalDate documentDate,
 
-	@Schema(description = "Url for downloading the document. The url is valid for a limited time", examples = "https://api.sundsvall.se/byggr-integrator/2.5/2281/files/470583") String url) {
+	@Schema(description = "Url for downloading the document. The url is valid for a limited time", examples = "https://api.sundsvall.se/byggr-integrator/2.6/2281/files/470583") String url) {
 }
