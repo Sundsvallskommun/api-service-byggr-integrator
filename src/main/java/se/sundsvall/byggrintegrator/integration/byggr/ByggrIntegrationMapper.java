@@ -31,6 +31,7 @@ import generated.se.sundsvall.arendeexport.v8.SaveNewArende;
 import generated.se.sundsvall.arendeexport.v8.StatusFilter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -118,8 +119,8 @@ public class ByggrIntegrationMapper {
 
 	public SaveNewArende mapToSaveOVKArendeRequest(final String municipalityId, final String propertyDesignation, final String description, final MultipartFile file) {
 		final var datatypeFactory = DatatypeFactory.newDefaultInstance();
-		final var today = datatypeFactory.newXMLGregorianCalendar(LocalDate.now().toString());
-		final var now = datatypeFactory.newXMLGregorianCalendar(GregorianCalendar.from(ZonedDateTime.now()));
+		final var today = datatypeFactory.newXMLGregorianCalendar(LocalDate.now(ZoneId.systemDefault()).toString());
+		final var now = datatypeFactory.newXMLGregorianCalendar(GregorianCalendar.from(ZonedDateTime.now(ZoneId.systemDefault())));
 
 		return OBJECT_FACTORY.createSaveNewArende().withMessage(OBJECT_FACTORY.createSaveNewArendeMessage()
 			.withArende(createArende(municipalityId, description, today, propertyDesignation))
