@@ -135,7 +135,10 @@ class ByggrErrandDtoTest {
 
 	@Test
 	void testNoDirtOnCreatedInnerBeans() {
-		assertThat(ByggrErrandDto.Event.builder().build()).isNotNull().hasAllNullFieldsOrPropertiesExcept("id").hasFieldOrPropertyWithValue("id", 0);
+		assertThat(ByggrErrandDto.Event.builder().build()).isNotNull().hasAllNullFieldsOrPropertiesExcept("id", "confidential", "cancelled")
+			.hasFieldOrPropertyWithValue("id", 0)
+			.hasFieldOrPropertyWithValue("confidential", false)
+			.hasFieldOrPropertyWithValue("cancelled", false);
 		assertThat(ByggrErrandDto.Stakeholder.builder().build()).isNotNull().hasAllNullFieldsOrProperties();
 	}
 }

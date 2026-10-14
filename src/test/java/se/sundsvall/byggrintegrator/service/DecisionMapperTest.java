@@ -19,7 +19,7 @@ import se.sundsvall.byggrintegrator.service.util.ByggrFilterUtility;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -78,7 +78,7 @@ class DecisionMapperTest {
 		// Arrange
 		final var errand = generateArendeResponseWithDecisions(DNR).getGetArendeResult().withBeskrivning("description");
 		final var decisionEvents = createFilteredDecisionEvents();
-		when(mockFileUrlService.parseFileUrl(eq(MUNICIPALITY_ID), anyInt())).thenAnswer(invocation -> URL_TEMPLATE.formatted(invocation.getArgument(1, Integer.class)));
+		when(mockFileUrlService.parseFileUrl(eq(MUNICIPALITY_ID), anyString())).thenAnswer(invocation -> URL_TEMPLATE.formatted(invocation.getArgument(1, String.class)));
 
 		// Act
 		final var result = mapper.toErrandDecisions(MUNICIPALITY_ID, errand, decisionEvents, HANDLINGTYPER);
@@ -115,8 +115,8 @@ class DecisionMapperTest {
 				.containsExactly(tuple(OLDER_DECISION_DOCUMENT_ID, URL_TEMPLATE.formatted(OLDER_DECISION_DOCUMENT_ID)));
 		});
 
-		verify(mockFileUrlService).parseFileUrl(MUNICIPALITY_ID, Integer.parseInt(DECISION_DOCUMENT_ID));
-		verify(mockFileUrlService).parseFileUrl(MUNICIPALITY_ID, Integer.parseInt(OLDER_DECISION_DOCUMENT_ID));
+		verify(mockFileUrlService).parseFileUrl(MUNICIPALITY_ID, DECISION_DOCUMENT_ID);
+		verify(mockFileUrlService).parseFileUrl(MUNICIPALITY_ID, OLDER_DECISION_DOCUMENT_ID);
 		verifyNoMoreInteractions(mockFileUrlService);
 	}
 
@@ -125,7 +125,7 @@ class DecisionMapperTest {
 		// Arrange
 		final var errand = new Arende().withDnr(DNR);
 		final var decisionEvents = createFilteredDecisionEvents();
-		when(mockFileUrlService.parseFileUrl(eq(MUNICIPALITY_ID), anyInt())).thenReturn("url");
+		when(mockFileUrlService.parseFileUrl(eq(MUNICIPALITY_ID), anyString())).thenReturn("url");
 
 		// Act
 		final var result = mapper.toErrandDecisions(MUNICIPALITY_ID, errand, decisionEvents, null);

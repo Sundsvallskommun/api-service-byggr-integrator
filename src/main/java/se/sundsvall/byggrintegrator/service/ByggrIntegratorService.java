@@ -258,11 +258,13 @@ public class ByggrIntegratorService {
 	}
 
 	private List<OVKProtocol> findOVKprotocols(final String propertyDesignation) {
-		final var response = byggrIntegration.getErrandByAreaAndPropertyId(propertyDesignation);
+		final var response = byggrIntegration.getErrandsByAreaAndPropertyId(propertyDesignation);
 		final var errands = byggrIntegrationMapper.mapRelateradeArendenByFastighetToByggrErrandDtos(response);
 
 		return errands.stream()
 			.flatMap(errand -> ofNullable(errand.getEvents()).orElse(emptyList()).stream()
+				.filter(event -> !event.isConfidential())
+				.filter(event -> !event.isCancelled())
 				.flatMap(event -> ofNullable(event.getFiles()).orElse(Map.of()).entrySet().stream()
 					.filter(file -> DOCUMENT_TYPE_OVK.equalsIgnoreCase(file.getValue().getDocumentType()))
 					.map(file -> new OVKProtocol(
@@ -339,7 +341,7 @@ public class ByggrIntegratorService {
 	}
 
 	private OVKProtocol withUrl(final String municipalityId, final OVKProtocol protocol) {
-		final var url = fileUrlService.parseFileUrl(municipalityId, Integer.parseInt(protocol.fileId()));
+		final var url = fileUrlService.parseFileUrl(municipalityId, protocol.fileId());
 		return new OVKProtocol(protocol.caseNumber(), protocol.description(), protocol.date(), protocol.documentName(), protocol.fileId(), url);
 	}
 }

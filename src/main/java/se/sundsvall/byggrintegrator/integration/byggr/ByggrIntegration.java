@@ -95,7 +95,8 @@ public class ByggrIntegration {
 		}
 	}
 
-	public GetRelateradeArendenByFastighetResponse getErrandByAreaAndPropertyId(final String propertyDesignation) {
+	@Cacheable("getRelatedErrandsCache")
+	public GetRelateradeArendenByFastighetResponse getErrandsByAreaAndPropertyId(final String propertyDesignation) {
 		return byggrClient.getRelateradeArendenByFastighet(byggrIntegrationMapper.mapToGetRelateradeArendenByFastighetRequest(propertyDesignation));
 	}
 

@@ -14,10 +14,10 @@ public class FileUrlService {
 		this.fileAccessTokenService = fileAccessTokenService;
 	}
 
-	public String parseFileUrl(final String municipalityId, final int fileId) {
+	public String parseFileUrl(final String municipalityId, final String fileId) {
 		// String content is divided into the following: [domain][version]/[municipalityid][subdirectory][file
 		// identificator]?token=[uuid]
-		final var token = fileAccessTokenService.createToken(municipalityId, String.valueOf(fileId));
+		final var token = fileAccessTokenService.createToken(municipalityId, fileId);
 		return "%s%s/%s%s%s?token=%s".formatted(
 			templateProperties.domain(),
 			templateProperties.version(),

@@ -4,6 +4,7 @@ import generated.se.sundsvall.arendeexport.v8.Arende;
 import generated.se.sundsvall.arendeexport.v8.ArendeFastighet;
 import generated.se.sundsvall.arendeexport.v8.ArkiveringStatus;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfArende1;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfHandelse;
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByFastighetResponse;
 import generated.se.sundsvall.arendeexport.v8.Handelse;
 import generated.se.sundsvall.arendeexport.v8.RollTyp;
@@ -271,6 +272,43 @@ class ByggrIntegrationMapperTest {
 
 		// Assert
 		assertThat(result).isEmpty();
+	}
+
+	@Test
+	void testMapRelateradeArendenByFastighetToByggrErrandDtos_mapsConfidentialAndCancelled() {
+		// Arrange
+		final var arende = new Arende()
+			.withDnr("OVK 2026-222222")
+			.withHandelseLista(new ArrayOfHandelse().withHandelse(
+				new Handelse().withHandelseId(1).withSekretess(true),
+				new Handelse().withHandelseId(2).withMakulerad(true),
+				new Handelse().withHandelseId(3)));
+		final var response = new GetRelateradeArendenByFastighetResponse()
+			.withGetRelateradeArendenByFastighetResult(new ArrayOfArende1().withArende(arende));
+
+		// Act
+		final var dtos = mapper.mapRelateradeArendenByFastighetToByggrErrandDtos(response);
+
+		// Assert
+		assertThat(dtos.getFirst().getEvents())
+			.extracting(Event::getId, Event::isConfidential, Event::isCancelled)
+			.containsExactly(
+				tuple(1, true, false),
+				tuple(2, false, true),
+				tuple(3, false, false));
+	}
+
+	@Test
+	void testMapToGetRelateradeArendenByFastighetRequest_extraWhitespacesIsRemoved() {
+		// Arrange
+		final var propertyDesignation = "  NORRA   TESTBERGET  1:1  ";
+
+		// Act
+		final var request = mapper.mapToGetRelateradeArendenByFastighetRequest(propertyDesignation);
+
+		// Assert
+		assertThat(request.getTrakt()).isEqualTo("NORRA TESTBERGET");
+		assertThat(request.getFBetNr()).isEqualTo("1:1");
 	}
 
 	@Test
