@@ -286,7 +286,7 @@ public class ByggrIntegrationMapper {
 			.withStatusFilter(EJ_BESVARAD);
 	}
 
-	private Arende createArende(String municipalityId, String description, XMLGregorianCalendar today, String propertyDesignation) {
+	private Arende createArende(String municipalityId, String description, XMLGregorianCalendar uploadDate, String propertyDesignation) {
 		return OBJECT_FACTORY.createArende()
 			.withKomkod(municipalityId)
 			.withDiarieprefix(CASE_PREFIX_OVK)
@@ -296,7 +296,7 @@ public class ByggrIntegrationMapper {
 			.withArendetyp(ERRAND_TYPE_FUNCTIONAL_CONTROL)
 			.withArendeslag(ERRAND_SUBTYPE_PROTOCOL)
 			.withBeskrivning(description)
-			.withAnkomstDatum(today)
+			.withAnkomstDatum(uploadDate)
 			.withHandlaggare(OBJECT_FACTORY.createHandlaggareBas().withSignatur(ERRAND_SIGNER))
 			.withObjektLista(OBJECT_FACTORY.createArrayOfAbstractArendeObjekt2()
 				.withAbstractArendeObjekt(createArendeFastighet(propertyDesignation)));
@@ -314,12 +314,12 @@ public class ByggrIntegrationMapper {
 				.withFbetNr(fBetNr));
 	}
 
-	private ArrayOfHandling createHandlingar(MultipartFile file, XMLGregorianCalendar today) {
+	private ArrayOfHandling createHandlingar(MultipartFile file, XMLGregorianCalendar uploadDate) {
 		return OBJECT_FACTORY.createArrayOfHandling()
 			.withHandling(OBJECT_FACTORY.createHandelseHandling()
 				.withTyp(DOCUMENT_TYPE_OVK)
 				.withStatus(DOCUMENT_STATUS_RECIEVED)
-				.withHandlingDatum(today)
+				.withHandlingDatum(uploadDate)
 				.withArkivStatus(ArkiveringStatus.ARKIVERAS)
 				.withDokument(createOVKDokument(file)));
 	}
@@ -335,13 +335,13 @@ public class ByggrIntegrationMapper {
 				.withFilAndelse(StringUtils.getFilenameExtension(filename)));
 	}
 
-	private Handelse createOVKHandelse(final XMLGregorianCalendar now) {
+	private Handelse createOVKHandelse(final XMLGregorianCalendar uploadDateTime) {
 		return OBJECT_FACTORY.createHandelse()
 			.withRiktning(DIRECTION_INCOMING)
 			.withRubrik(ERRAND_PROTOCOL_RUBRICATION)
 			.withHandelsetyp(EVENT_TYPE_OVK)
 			.withHandelseslag(EVENT_SUBTYPE_PROTOCOL)
-			.withStartDatum(now);
+			.withStartDatum(uploadDateTime);
 	}
 
 	private static byte[] readContent(final MultipartFile file) {
