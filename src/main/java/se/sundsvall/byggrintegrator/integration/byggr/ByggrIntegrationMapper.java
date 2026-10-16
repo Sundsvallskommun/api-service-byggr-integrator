@@ -30,7 +30,6 @@ import generated.se.sundsvall.arendeexport.v8.RollTyp;
 import generated.se.sundsvall.arendeexport.v8.SaveNewArende;
 import generated.se.sundsvall.arendeexport.v8.StatusFilter;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
@@ -63,8 +62,10 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 @Component
 public class ByggrIntegrationMapper {
 	private static final ObjectFactory OBJECT_FACTORY = new ObjectFactory();
+	private static final DatatypeFactory DATATYPE_FACTORY = DatatypeFactory.newDefaultInstance();
 	private final ByggrFilterUtility filterUtility;
 
+	private static final String ERRAND_SIGNER = "SYSTEM";
 	private static final String CASE_PREFIX_OVK = "OVK";
 	private static final String ERRAND_GROUP_OVK = "OVK";
 	private static final String UNIT_CODE_OVK = "OVK";
@@ -119,14 +120,15 @@ public class ByggrIntegrationMapper {
 	}
 
 	public SaveNewArende mapToSaveOVKArendeRequest(final String municipalityId, final String propertyDesignation, final String description, final MultipartFile file) {
-		final var datatypeFactory = DatatypeFactory.newDefaultInstance();
-		final var today = datatypeFactory.newXMLGregorianCalendar(LocalDate.now(ZoneId.systemDefault()).toString());
-		final var now = datatypeFactory.newXMLGregorianCalendar(GregorianCalendar.from(ZonedDateTime.now(ZoneId.systemDefault())));
+		final var now = ZonedDateTime.now(ZoneId.systemDefault());
+		final var uploadDate = DATATYPE_FACTORY.newXMLGregorianCalendar(now.toLocalDate().toString());
+		final var uploadDateTime = DATATYPE_FACTORY.newXMLGregorianCalendar(GregorianCalendar.from(now));
 
 		return OBJECT_FACTORY.createSaveNewArende().withMessage(OBJECT_FACTORY.createSaveNewArendeMessage()
-			.withArende(createArende(municipalityId, description, today, propertyDesignation))
-			.withHandelse(createOVKHandelse(now))
-			.withHandlingar(createHandlingar(file, today))
+			.withArende(createArende(municipalityId, description, uploadDate, propertyDesignation))
+			.withHandelse(createOVKHandelse(uploadDateTime))
+			.withHandlingar(createHandlingar(file, uploadDate))
+			.withHandlaggarSign(ERRAND_SIGNER)
 			.withAnkomststamplaHandlingar(true));
 	}
 
@@ -295,6 +297,7 @@ public class ByggrIntegrationMapper {
 			.withArendeslag(ERRAND_SUBTYPE_PROTOCOL)
 			.withBeskrivning(description)
 			.withAnkomstDatum(today)
+			.withHandlaggare(OBJECT_FACTORY.createHandlaggareBas().withSignatur(ERRAND_SIGNER))
 			.withObjektLista(OBJECT_FACTORY.createArrayOfAbstractArendeObjekt2()
 				.withAbstractArendeObjekt(createArendeFastighet(propertyDesignation)));
 	}
