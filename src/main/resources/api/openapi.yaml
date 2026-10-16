@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "2.6"
 servers:
-  - url: http://localhost:50697
+  - url: http://localhost:64212
     description: Generated server url
 tags:
   - name: Property
@@ -58,6 +58,71 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/OVKProtocol"
+        "400":
+          description: Bad request
+          content:
+            application/problem+json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Problem"
+                  - $ref: "#/components/schemas/ConstraintViolationProblem"
+        "500":
+          description: Internal Server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+        "502":
+          description: Bad Gateway
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/Problem"
+    post:
+      tags:
+        - Property
+      summary: Creates a new OVK errand in ByggR with the provided OVK protocol
+      operationId: createOvkErrand
+      parameters:
+        - name: municipalityId
+          in: path
+          description: Municipality ID
+          required: true
+          schema:
+            type: string
+          example: 2281
+        - name: propertyDesignation
+          in: path
+          description: Property designation
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            pattern: ^\s*\S.*\s+\S+\s*$
+          example: TESTÖN 1:123
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  description: description of errand
+                file:
+                  type: string
+                  format: binary
+                  description: OVK-protocol in PDF-format
+              required:
+                - file
+      responses:
+        "201":
+          description: Created
+          headers:
+            Location:
+              style: simple
+              schema:
+                type: string
         "400":
           description: Bad request
           content:

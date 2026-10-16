@@ -1,15 +1,19 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
 import generated.se.sundsvall.arendeexport.v4.GetRemisserByPersOrgNr;
+import generated.se.sundsvall.arendeexport.v8.AbstractArendeFastighet;
 import generated.se.sundsvall.arendeexport.v8.Arende;
 import generated.se.sundsvall.arendeexport.v8.ArendeFastighet;
 import generated.se.sundsvall.arendeexport.v8.ArendeIntressent;
+import generated.se.sundsvall.arendeexport.v8.ArkiveringStatus;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfAbstractArendeObjekt2;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfArendeIntressent2;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfHandelse;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfHandelseHandling;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfHandelseIntressent2;
+import generated.se.sundsvall.arendeexport.v8.ArrayOfHandling;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfString2;
+import generated.se.sundsvall.arendeexport.v8.Dokument;
 import generated.se.sundsvall.arendeexport.v8.GetArende;
 import generated.se.sundsvall.arendeexport.v8.GetArendeResponse;
 import generated.se.sundsvall.arendeexport.v8.GetDocument;
@@ -23,7 +27,10 @@ import generated.se.sundsvall.arendeexport.v8.Handelse;
 import generated.se.sundsvall.arendeexport.v8.HandelseIntressent;
 import generated.se.sundsvall.arendeexport.v8.ObjectFactory;
 import generated.se.sundsvall.arendeexport.v8.RollTyp;
+import generated.se.sundsvall.arendeexport.v8.SaveNewArende;
 import generated.se.sundsvall.arendeexport.v8.StatusFilter;
+import java.io.IOException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -31,9 +38,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Stakeholder;
@@ -44,6 +54,7 @@ import static generated.se.sundsvall.arendeexport.v4.RemissStatusFilter.EJ_BESVA
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 /**
  * Mapper for handling mappings between ByggR responses and the internal dto class used in the service layer
@@ -51,7 +62,23 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @Component
 public class ByggrIntegrationMapper {
 	private static final ObjectFactory OBJECT_FACTORY = new ObjectFactory();
+	private static final DatatypeFactory DATATYPE_FACTORY = DatatypeFactory.newDefaultInstance();
 	private final ByggrFilterUtility filterUtility;
+
+	private static final String ERRAND_SIGNER = "SYSTEM";
+	private static final String CASE_PREFIX_OVK = "OVK";
+	private static final String ERRAND_GROUP_OVK = "OVK";
+	private static final String UNIT_CODE_OVK = "OVK";
+	private static final String EVENT_TYPE_OVK = "OVK";
+	private static final String DOCUMENT_TYPE_OVK = "OVK";
+	private static final String ERRAND_TYPE_FUNCTIONAL_CONTROL = "Funk";
+	private static final String ERRAND_SUBTYPE_PROTOCOL = "PRT";
+	private static final String EVENT_SUBTYPE_PROTOCOL = "PROT";
+	private static final String NAME_CODE_STADBYGGNADSNAMDEN = "SBN";
+	private static final String DIRECTION_INCOMING = "In";
+	private static final String ERRAND_PROTOCOL_RUBRICATION = "Protokoll";
+	private static final String DOCUMENT_STATUS_RECIEVED = "Inkommen";
+	private static final String OVK_DOCUMENT_DESCRIPTION = "OVK-protokoll";
 
 	public ByggrIntegrationMapper(final ByggrFilterUtility filterUtility) {
 		this.filterUtility = filterUtility;
@@ -90,6 +117,19 @@ public class ByggrIntegrationMapper {
 	public GetArende mapToGetArendeRequest(final String dnr) {
 		return OBJECT_FACTORY.createGetArende()
 			.withDnr(dnr);
+	}
+
+	public SaveNewArende mapToSaveOVKArendeRequest(final String municipalityId, final String propertyDesignation, final String description, final MultipartFile file) {
+		final var now = ZonedDateTime.now(ZoneId.systemDefault());
+		final var uploadDate = DATATYPE_FACTORY.newXMLGregorianCalendar(now.toLocalDate().toString());
+		final var uploadDateTime = DATATYPE_FACTORY.newXMLGregorianCalendar(GregorianCalendar.from(now));
+
+		return OBJECT_FACTORY.createSaveNewArende().withMessage(OBJECT_FACTORY.createSaveNewArendeMessage()
+			.withArende(createArende(municipalityId, description, uploadDate, propertyDesignation))
+			.withHandelse(createOVKHandelse(uploadDateTime))
+			.withHandlingar(createHandlingar(file, uploadDate))
+			.withHandlaggarSign(ERRAND_SIGNER)
+			.withAnkomststamplaHandlingar(true));
 	}
 
 	public GetDocument mapToGetDocumentRequest(final String documentId) {
@@ -245,4 +285,71 @@ public class ByggrIntegrationMapper {
 			.withPersOrgNr(identifier)
 			.withStatusFilter(EJ_BESVARAD);
 	}
+
+	private Arende createArende(String municipalityId, String description, XMLGregorianCalendar uploadDate, String propertyDesignation) {
+		return OBJECT_FACTORY.createArende()
+			.withKomkod(municipalityId)
+			.withDiarieprefix(CASE_PREFIX_OVK)
+			.withEnhetkod(UNIT_CODE_OVK)
+			.withNamndkod(NAME_CODE_STADBYGGNADSNAMDEN)
+			.withArendegrupp(ERRAND_GROUP_OVK)
+			.withArendetyp(ERRAND_TYPE_FUNCTIONAL_CONTROL)
+			.withArendeslag(ERRAND_SUBTYPE_PROTOCOL)
+			.withBeskrivning(description)
+			.withAnkomstDatum(uploadDate)
+			.withHandlaggare(OBJECT_FACTORY.createHandlaggareBas().withSignatur(ERRAND_SIGNER))
+			.withObjektLista(OBJECT_FACTORY.createArrayOfAbstractArendeObjekt2()
+				.withAbstractArendeObjekt(createArendeFastighet(propertyDesignation)));
+	}
+
+	private AbstractArendeFastighet createArendeFastighet(String propertyDesignation) {
+		final var trimmed = propertyDesignation.trim();
+		final var indexOfSpace = trimmed.lastIndexOf(" ");
+		final var trakt = trimmed.substring(0, indexOfSpace).trim();
+		final var fBetNr = trimmed.substring(indexOfSpace + 1).trim();
+		return OBJECT_FACTORY.createArendeFastighet()
+			.withArHuvudObjekt(true)
+			.withFastighet(OBJECT_FACTORY.createFastighet()
+				.withTrakt(trakt)
+				.withFbetNr(fBetNr));
+	}
+
+	private ArrayOfHandling createHandlingar(MultipartFile file, XMLGregorianCalendar uploadDate) {
+		return OBJECT_FACTORY.createArrayOfHandling()
+			.withHandling(OBJECT_FACTORY.createHandelseHandling()
+				.withTyp(DOCUMENT_TYPE_OVK)
+				.withStatus(DOCUMENT_STATUS_RECIEVED)
+				.withHandlingDatum(uploadDate)
+				.withArkivStatus(ArkiveringStatus.ARKIVERAS)
+				.withDokument(createOVKDokument(file)));
+	}
+
+	private Dokument createOVKDokument(MultipartFile file) {
+		final var filename = file.getOriginalFilename();
+
+		return OBJECT_FACTORY.createDokument()
+			.withNamn(filename)
+			.withBeskrivning(OVK_DOCUMENT_DESCRIPTION)
+			.withFil(OBJECT_FACTORY.createDokumentFil()
+				.withFilBuffer(readContent(file))
+				.withFilAndelse(StringUtils.getFilenameExtension(filename)));
+	}
+
+	private Handelse createOVKHandelse(final XMLGregorianCalendar uploadDateTime) {
+		return OBJECT_FACTORY.createHandelse()
+			.withRiktning(DIRECTION_INCOMING)
+			.withRubrik(ERRAND_PROTOCOL_RUBRICATION)
+			.withHandelsetyp(EVENT_TYPE_OVK)
+			.withHandelseslag(EVENT_SUBTYPE_PROTOCOL)
+			.withStartDatum(uploadDateTime);
+	}
+
+	private static byte[] readContent(final MultipartFile file) {
+		try {
+			return file.getBytes();
+		} catch (final IOException e) {
+			throw Problem.valueOf(INTERNAL_SERVER_ERROR, "could not read uploaded file");
+		}
+	}
+
 }

@@ -1,19 +1,25 @@
 package se.sundsvall.byggrintegrator.integration.byggr;
 
 import generated.se.sundsvall.arendeexport.v8.Arende;
+import generated.se.sundsvall.arendeexport.v8.ArendeFastighet;
+import generated.se.sundsvall.arendeexport.v8.ArkiveringStatus;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfArende1;
 import generated.se.sundsvall.arendeexport.v8.ArrayOfHandelse;
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByFastighetResponse;
 import generated.se.sundsvall.arendeexport.v8.Handelse;
 import generated.se.sundsvall.arendeexport.v8.RollTyp;
 import generated.se.sundsvall.arendeexport.v8.StatusFilter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.multipart.MultipartFile;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
@@ -23,7 +29,10 @@ import static generated.se.sundsvall.arendeexport.v4.RemissStatusFilter.EJ_BESVA
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.APPLICANT_ROLE;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.BYGGR_ARENDE_NR_1;
 import static se.sundsvall.byggrintegrator.TestObjectFactory.BYGGR_ARENDE_NR_2;
@@ -300,6 +309,68 @@ class ByggrIntegrationMapperTest {
 		// Assert
 		assertThat(request.getTrakt()).isEqualTo("NORRA TESTBERGET");
 		assertThat(request.getFBetNr()).isEqualTo("1:1");
+	}
+
+	@Test
+	void testMapToSaveOVKArendeRequest() {
+		// Arrange
+		final var content = "%PDF-1.7 test".getBytes(StandardCharsets.US_ASCII);
+		final var file = new MockMultipartFile("file", "protokoll.pdf", "application/pdf", content);
+		final var today = LocalDate.now().toString();
+
+		// Act
+		final var request = mapper.mapToSaveOVKArendeRequest("2281", "NORRA TESTBERGET 1:1", "Uppdatering OVK", file);
+
+		// Assert
+		final var message = request.getMessage();
+		assertThat(message.isAnkomststamplaHandlingar()).isTrue();
+		assertThat(message.getHandlaggarSign()).isEqualTo("SYSTEM");
+		assertThat(message.getArende().getHandlaggare().getSignatur()).isEqualTo("SYSTEM");
+
+		assertThat(message.getArende())
+			.extracting(Arende::getKomkod, Arende::getDiarieprefix, Arende::getEnhetkod, Arende::getNamndkod,
+				Arende::getArendegrupp, Arende::getArendetyp, Arende::getArendeslag, Arende::getBeskrivning)
+			.containsExactly("2281", "OVK", "OVK", "SBN", "OVK", "Funk", "PRT", "Uppdatering OVK");
+		assertThat(message.getArende().getAnkomstDatum().toXMLFormat()).isEqualTo(today);
+		assertThat(message.getArende().getObjektLista().getAbstractArendeObjekt())
+			.singleElement()
+			.isInstanceOfSatisfying(ArendeFastighet.class, objekt -> {
+				assertThat(objekt.isArHuvudObjekt()).isTrue();
+				assertThat(objekt.getFastighet().getTrakt()).isEqualTo("NORRA TESTBERGET");
+				assertThat(objekt.getFastighet().getFbetNr()).isEqualTo("1:1");
+			});
+
+		assertThat(message.getHandelse())
+			.extracting(Handelse::getRiktning, Handelse::getRubrik, Handelse::getHandelsetyp, Handelse::getHandelseslag)
+			.containsExactly("In", "Protokoll", "OVK", "PROT");
+		assertThat(message.getHandelse().getStartDatum()).isNotNull();
+
+		assertThat(message.getHandlingar().getHandling()).singleElement().satisfies(handling -> {
+			assertThat(handling.getTyp()).isEqualTo("OVK");
+			assertThat(handling.getStatus()).isEqualTo("Inkommen");
+			assertThat(handling.getHandlingDatum().toXMLFormat()).isEqualTo(today);
+			assertThat(handling.getArkivStatus()).isEqualTo(ArkiveringStatus.ARKIVERAS);
+			assertThat(handling.getDokument().getNamn()).isEqualTo("protokoll.pdf");
+			assertThat(handling.getDokument().getBeskrivning()).isEqualTo("OVK-protokoll");
+			assertThat(handling.getDokument().getFil().getFilBuffer()).isEqualTo(content);
+			assertThat(handling.getDokument().getFil().getFilAndelse()).isEqualTo("pdf");
+		});
+	}
+
+	@Test
+	void testMapToSaveOVKArendeRequest_unreadableFile() throws IOException {
+		// Arrange
+		final var file = mock(MultipartFile.class);
+		when(file.getOriginalFilename()).thenReturn("protokoll.pdf");
+		when(file.getBytes()).thenThrow(new IOException("disk error"));
+
+		// Act
+		final var exception = assertThrows(ThrowableProblem.class,
+			() -> mapper.mapToSaveOVKArendeRequest("2281", "TESTÖN 1:123", "description", file));
+
+		// Assert
+		assertThat(exception.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
+		assertThat(exception.getDetail()).isEqualTo("could not read uploaded file");
 	}
 
 }
