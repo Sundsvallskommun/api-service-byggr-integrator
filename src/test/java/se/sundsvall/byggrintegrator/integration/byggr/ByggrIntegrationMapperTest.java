@@ -324,6 +324,8 @@ class ByggrIntegrationMapperTest {
 		// Assert
 		final var message = request.getMessage();
 		assertThat(message.isAnkomststamplaHandlingar()).isTrue();
+		assertThat(message.getHandlaggarSign()).isEqualTo("SYSTEM");
+		assertThat(message.getArende().getHandlaggare().getSignatur()).isEqualTo("SYSTEM");
 
 		assertThat(message.getArende())
 			.extracting(Arende::getKomkod, Arende::getDiarieprefix, Arende::getEnhetkod, Arende::getNamndkod,
