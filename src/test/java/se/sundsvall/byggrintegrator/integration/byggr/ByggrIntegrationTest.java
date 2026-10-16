@@ -350,7 +350,7 @@ class ByggrIntegrationTest {
 		final var result = integration.saveNewErrand("2281", "TESTÖN 1:123", "description", file);
 
 		// Assert
-		assertThat(result).isEqualTo(response);
+		assertThat(result).isEqualTo(response.getSaveNewArendeResult().getDnr());
 		verify(mockByggrIntegrationMapper).mapToSaveOVKArendeRequest("2281", "TESTÖN 1:123", "description", file);
 		verify(mockByggrClient).saveNewArende(request);
 		verifyNoMoreInteractions(mockByggrIntegrationMapper, mockByggrClient);

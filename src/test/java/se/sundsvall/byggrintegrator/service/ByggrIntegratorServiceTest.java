@@ -28,6 +28,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 import se.sundsvall.byggrintegrator.api.model.ErrandDecisions;
 import se.sundsvall.byggrintegrator.api.model.KeyValue;
 import se.sundsvall.byggrintegrator.api.model.OVKProtocol;
@@ -1039,6 +1040,21 @@ class ByggrIntegratorServiceTest {
 		verify(mockByggrIntegrationMapper).mapRelateradeArendenByFastighetToByggrErrandDtos(response);
 		verifyNoMoreInteractions(mockByggrIntegration, mockByggrIntegrationMapper);
 		verifyNoInteractions(mockFileUrlService);
+	}
+
+	@Test
+	void createOVKErrand() {
+		// Arrange
+		final var file = new MockMultipartFile("file", "protokoll.pdf", "application/pdf", "%PDF-1.7".getBytes());
+		when(mockByggrIntegration.saveNewErrand(MUNICIPALITY_ID, PROPERTY_DESIGNATION, "Uppdatering OVK", file)).thenReturn("OVK 2026-000001");
+
+		// Act
+		service.createOVKErrand(MUNICIPALITY_ID, PROPERTY_DESIGNATION, "Uppdatering OVK", file);
+
+		// Assert
+		verify(mockByggrIntegration).saveNewErrand(MUNICIPALITY_ID, PROPERTY_DESIGNATION, "Uppdatering OVK", file);
+		verifyNoMoreInteractions(mockByggrIntegration);
+		verifyNoInteractions(mockByggrIntegrationMapper, mockFileUrlService);
 	}
 
 	private static ByggrErrandDto ovkErrand(final String caseNumber, final String description, final ByggrErrandDto.Event... events) {

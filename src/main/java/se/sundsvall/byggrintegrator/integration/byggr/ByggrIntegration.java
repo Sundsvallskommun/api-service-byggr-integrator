@@ -8,13 +8,11 @@ import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByFastighetRes
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.v8.HandlingTyp;
 import generated.se.sundsvall.arendeexport.v8.Roll;
-import generated.se.sundsvall.arendeexport.v8.SaveNewArendeResponse;
 import jakarta.xml.soap.SOAPFault;
 import jakarta.xml.ws.soap.SOAPFaultException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
@@ -24,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toMap;
 
 @Component
@@ -63,7 +62,7 @@ public class ByggrIntegration {
 	}
 
 	private ArrayOfString rolesToArrayOfString(final List<String> roles) {
-		return Optional.ofNullable(roles)
+		return ofNullable(roles)
 			.map(list -> new ArrayOfString().withString(list))
 			.orElse(null);
 	}
@@ -72,7 +71,7 @@ public class ByggrIntegration {
 	public List<String> getRoles() {
 		var roller = byggrClient.getRoller(byggrIntegrationMapper.createGetRolesRequest());
 
-		return Optional.ofNullable(roller.getGetRollerResult())
+		return ofNullable(roller.getGetRollerResult())
 			.map(result -> result.getRoll().stream()
 				.filter(Roll::isArAktiv)
 				.map(Roll::getRollKod)
@@ -117,8 +116,10 @@ public class ByggrIntegration {
 		}
 	}
 
-	public SaveNewArendeResponse saveNewErrand(String municipalityId, String propertyDesignation, String description, MultipartFile pdf) {
-		return byggrClient.saveNewArende(byggrIntegrationMapper.mapToSaveOVKArendeRequest(municipalityId, propertyDesignation, description, pdf));
+	public String saveNewErrand(String municipalityId, String propertyDesignation, String description, MultipartFile pdf) {
+		return byggrClient.saveNewArende(byggrIntegrationMapper.mapToSaveOVKArendeRequest(municipalityId, propertyDesignation, description, pdf))
+			.getSaveNewArendeResult()
+			.getDnr();
 	}
 
 	@Cacheable("getHandlingTyperCache")
@@ -134,7 +135,7 @@ public class ByggrIntegration {
 	}
 
 	private String extractFaultString(final SOAPFaultException e) {
-		return Optional.ofNullable(e.getFault())
+		return ofNullable(e.getFault())
 			.map(SOAPFault::getFaultString)
 			.orElse(EMPTY_STRING);
 	}

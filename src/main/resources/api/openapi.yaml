@@ -7,7 +7,7 @@ info:
     url: https://opensource.org/licenses/MIT
   version: "2.6"
 servers:
-  - url: http://localhost:59254
+  - url: http://localhost:64212
     description: Generated server url
 tags:
   - name: Property
@@ -81,7 +81,7 @@ paths:
     post:
       tags:
         - Property
-      summary: Creates a new OVK Errand in Byggr with the provided OVK protocol
+      summary: Creates a new OVK errand in ByggR with the provided OVK protocol
       operationId: createOvkErrand
       parameters:
         - name: municipalityId
@@ -100,24 +100,27 @@ paths:
             minLength: 1
             pattern: ^\s*\S.*\s+\S+\s*$
           example: TESTÖN 1:123
-        - name: description
-          in: query
-          description: description of errand
-          required: true
-          schema:
-            type: string
-        - name: file
-          in: query
-          description: OVK-protocol in PDF-format
-          required: true
-          schema:
-            type: string
-            format: binary
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                description:
+                  type: string
+                  description: description of errand
+                file:
+                  type: string
+                  format: binary
+                  description: OVK-protocol in PDF-format
+              required:
+                - file
       responses:
         "201":
           description: Created
-          content:
-            '*/*':
+          headers:
+            Location:
+              style: simple
               schema:
                 type: string
         "400":
@@ -776,9 +779,9 @@ components:
         type:
           type: string
           format: uri
-        detail:
-          type: string
         title:
+          type: string
+        detail:
           type: string
         status:
           type: integer

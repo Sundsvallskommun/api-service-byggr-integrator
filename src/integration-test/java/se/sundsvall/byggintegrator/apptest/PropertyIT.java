@@ -13,6 +13,7 @@ import se.sundsvall.dept44.test.annotation.wiremock.WireMockAppTestSuite;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -89,7 +90,8 @@ class PropertyIT extends AbstractAppTest {
 			.withContentType(MULTIPART_FORM_DATA)
 			.withRequestFile("file", "protokoll.pdf")
 			.withExpectedResponseStatus(CREATED)
-			.withExpectedResponse("OVK 2026-000001")
+			.withExpectedResponseHeader(LOCATION, List.of("/2281/properties/TEST%C3%96N%201:123/errands/ovk"))
+			.withExpectedResponseBodyIsNull()
 			.sendRequestAndVerifyResponse();
 	}
 

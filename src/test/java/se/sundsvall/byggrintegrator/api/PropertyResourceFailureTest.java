@@ -14,6 +14,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
+import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.dept44.problem.violations.Violation;
 
@@ -138,7 +139,7 @@ class PropertyResourceFailureTest {
 	@Test
 	void createOvkErrand_notAPdf() {
 		final var body = new MultipartBodyBuilder();
-		body.part("file", "test".getBytes());
+		body.part("file", "test".getBytes()).filename("protokoll.txt").contentType(MediaType.TEXT_PLAIN);
 		body.part("description", DESCRIPTION);
 
 		final var response = webTestClient.post()
@@ -210,12 +211,19 @@ class PropertyResourceFailureTest {
 		final var body = new MultipartBodyBuilder();
 		body.part("description", DESCRIPTION);
 
-		webTestClient.post()
+		final var response = webTestClient.post()
 			.uri(OVK_URL, "2281", PROPERTY_DESIGNATION)
 			.body(BodyInserters.fromMultipartData(body.build()))
 			.exchange()
-			.expectStatus().isBadRequest();
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(Problem.class)
+			.returnResult()
+			.getResponseBody();
 
+		assertThat(response).isNotNull();
+		assertThat(response.getDetail()).isEqualTo("Required part 'file' is not present.");
 		verifyNoInteractions(mockByggrIntegratorService);
 	}
+
 }

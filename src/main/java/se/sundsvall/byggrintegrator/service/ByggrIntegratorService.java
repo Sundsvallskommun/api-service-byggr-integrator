@@ -252,9 +252,8 @@ public class ByggrIntegratorService {
 			.toList();
 	}
 
-	public String createOVKErrand(String municipalityId, String propertyDesignation, String description, MultipartFile file) {
-		final var response = byggrIntegration.saveNewErrand(municipalityId, propertyDesignation, description, file);
-		return response.getSaveNewArendeResult().getDnr();
+	public void createOVKErrand(String municipalityId, String propertyDesignation, String description, MultipartFile file) {
+		byggrIntegration.saveNewErrand(municipalityId, propertyDesignation, description, file);
 	}
 
 	private List<OVKProtocol> findOVKprotocols(final String propertyDesignation) {
