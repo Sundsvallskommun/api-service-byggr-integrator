@@ -19,7 +19,7 @@ class TemplatePropertiesTest {
 	@Test
 	void testProperties() {
 		assertThat(properties.domain()).isEqualTo("http://somewhere.com/");
-		assertThat(properties.version()).isEqualTo("2.6");
+		assertThat(properties.version()).isEqualTo("2.7");
 		assertThat(properties.subDirectory()).isEqualTo("/files/");
 	}
 }

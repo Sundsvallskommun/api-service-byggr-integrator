@@ -5,7 +5,7 @@ info:
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
-  version: "2.6"
+  version: "2.7"
 servers:
   - url: http://localhost:64212
     description: Generated server url
@@ -944,7 +944,7 @@ components:
           description: Url for downloading the document. The url is valid for a limited
             time
           examples:
-            - https://api.sundsvall.se/byggr-integrator/2.6/2281/files/470583
+            - https://api.sundsvall.se/byggr-integrator/2.7/2281/files/470583
     ErrandDecisions:
       type: object
       description: Decisions with decision documents for a ByggR errand
