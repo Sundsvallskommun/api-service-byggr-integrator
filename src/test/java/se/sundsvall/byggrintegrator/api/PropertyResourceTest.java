@@ -31,6 +31,7 @@ import static org.springframework.http.HttpHeaders.LOCATION;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.ALL;
 import static org.springframework.http.MediaType.MULTIPART_FORM_DATA;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.readPdf;
 
 @ActiveProfiles("junit")
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -50,7 +51,7 @@ class PropertyResourceTest {
 	private static final String FILE_URL = "http://test.se/2.6/2281/files/1234567?token=abc";
 	private static final String NO_OVK_FOUND = "No OVK was found for :" + PROPERTY_DESIGNATION;
 	private static final String DESCRIPTION = "Uppdatering OVK";
-	private static final byte[] PDF_CONTENT = "%PDF-1.7\n%%EOF".getBytes();
+	private static final byte[] PDF_CONTENT = readPdf();
 
 	@Test
 	void getAllOVKProtocols() {

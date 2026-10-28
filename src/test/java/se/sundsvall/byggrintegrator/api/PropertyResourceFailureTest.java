@@ -23,6 +23,7 @@ import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.readPdf;
 
 @ActiveProfiles("junit")
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -40,7 +41,7 @@ class PropertyResourceFailureTest {
 	private static final String OVK_URL = "/{municipalityId}/properties/{propertyDesignation}/errands/ovk";
 	private static final String OVK_LATEST_URL = OVK_URL + "/latest";
 	private static final String DESCRIPTION = "Uppdatering OVK";
-	private static final byte[] PDF_CONTENT = "%PDF-1.7\n%%EOF".getBytes();
+	private static final byte[] PDF_CONTENT = readPdf();
 
 	@Test
 	void getAllOVKProtocols_invalidMunicipalityId() {
