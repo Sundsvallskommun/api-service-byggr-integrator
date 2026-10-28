@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -116,6 +117,7 @@ public class ByggrIntegration {
 		}
 	}
 
+	@CacheEvict(cacheNames = "getRelatedErrandsCache", allEntries = true)
 	public String saveNewErrand(String municipalityId, String propertyDesignation, String description, MultipartFile pdf) {
 		return byggrClient.saveNewArende(byggrIntegrationMapper.mapToSaveOVKArendeRequest(municipalityId, propertyDesignation, description, pdf))
 			.getSaveNewArendeResult()
