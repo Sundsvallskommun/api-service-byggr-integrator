@@ -42,7 +42,6 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
@@ -79,6 +78,7 @@ public class ByggrIntegrationMapper {
 	private static final String ERRAND_PROTOCOL_RUBRICATION = "Protokoll";
 	private static final String DOCUMENT_STATUS_RECIEVED = "Inkommen";
 	private static final String OVK_DOCUMENT_DESCRIPTION = "OVK-protokoll";
+	private static final String FILE_EXTENSION_PDF = "pdf";
 
 	public ByggrIntegrationMapper(final ByggrFilterUtility filterUtility) {
 		this.filterUtility = filterUtility;
@@ -332,7 +332,7 @@ public class ByggrIntegrationMapper {
 			.withBeskrivning(OVK_DOCUMENT_DESCRIPTION)
 			.withFil(OBJECT_FACTORY.createDokumentFil()
 				.withFilBuffer(readContent(file))
-				.withFilAndelse(StringUtils.getFilenameExtension(filename)));
+				.withFilAndelse(FILE_EXTENSION_PDF));
 	}
 
 	private Handelse createOVKHandelse(final XMLGregorianCalendar uploadDateTime) {
