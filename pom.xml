@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>se.sundsvall</groupId>
 	<artifactId>api-service-byggr-integrator</artifactId>
-	<version>2.6</version>
+	<version>2.7</version>
 	<name>api-service-byggr-integrator</name>
 	<properties>
 		<generated-sources-path>${project.build.directory}/generated-sources</generated-sources-path>
@@ -18,6 +18,7 @@
 		<overviewproject.mimetypes.version>2.0.0</overviewproject.mimetypes.version>
 		<jaxb2-fluent-api.version>3.0</jaxb2-fluent-api.version>
 		<jaxb2-maven-plugin.version>4.2.0</jaxb2-maven-plugin.version>
+		<pdfbox.version>3.0.8</pdfbox.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -68,6 +69,11 @@
 		<dependency>
 			<groupId>tools.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.pdfbox</groupId>
+			<artifactId>pdfbox</artifactId>
+			<version>${pdfbox.version}</version>
 		</dependency>
 		<!-- Test -->
 		<dependency>

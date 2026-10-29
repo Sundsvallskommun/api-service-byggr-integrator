@@ -14,6 +14,8 @@ import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAnd
 import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAndRoleResponse;
 import generated.se.sundsvall.arendeexport.v8.GetRoller;
 import generated.se.sundsvall.arendeexport.v8.GetRollerResponse;
+import generated.se.sundsvall.arendeexport.v8.SaveNewArende;
+import generated.se.sundsvall.arendeexport.v8.SaveNewArendeResponse;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +44,11 @@ public interface ByggrClient {
 		VERSION_8 + "GetArende"
 	})
 	GetArendeResponse getArende(GetArende request);
+
+	@PostMapping(consumes = TEXT_XML_UTF8, produces = TEXT_XML_UTF8, headers = {
+		VERSION_8 + "SaveNewArende"
+	})
+	SaveNewArendeResponse saveNewArende(SaveNewArende request);
 
 	@PostMapping(consumes = TEXT_XML_UTF8, produces = TEXT_XML_UTF8, headers = {
 		VERSION_8 + "GetDocument"

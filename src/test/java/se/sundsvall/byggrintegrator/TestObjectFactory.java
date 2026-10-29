@@ -14,6 +14,9 @@ import generated.se.sundsvall.arendeexport.v8.GetRelateradeArendenByPersOrgNrAnd
 import generated.se.sundsvall.arendeexport.v8.Handelse;
 import generated.se.sundsvall.arendeexport.v8.HandelseHandling;
 import generated.se.sundsvall.arendeexport.v8.ObjectFactory;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -21,6 +24,7 @@ import java.util.List;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.springframework.core.io.ClassPathResource;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto;
 import se.sundsvall.byggrintegrator.model.ByggrErrandDto.Event;
 
@@ -303,5 +307,13 @@ public final class TestObjectFactory {
 				.withEvents(List.of(
 					Event.builder().withId(345).build(),
 					Event.builder().withId(456).build())).build());
+	}
+
+	public static byte[] readPdf() {
+		try {
+			return new ClassPathResource("mimetype_files/document.pdf").getContentAsByteArray();
+		} catch (final IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 }

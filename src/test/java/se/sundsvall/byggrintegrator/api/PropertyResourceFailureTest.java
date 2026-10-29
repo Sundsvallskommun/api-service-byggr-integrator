@@ -6,11 +6,15 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
 import se.sundsvall.byggrintegrator.Application;
 import se.sundsvall.byggrintegrator.service.ByggrIntegratorService;
+import se.sundsvall.dept44.problem.Problem;
 import se.sundsvall.dept44.problem.violations.ConstraintViolationProblem;
 import se.sundsvall.dept44.problem.violations.Violation;
 
@@ -19,6 +23,7 @@ import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.MediaType.APPLICATION_PROBLEM_JSON;
+import static se.sundsvall.byggrintegrator.TestObjectFactory.readPdf;
 
 @ActiveProfiles("junit")
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -35,6 +40,8 @@ class PropertyResourceFailureTest {
 	private static final String PROPERTY_DESIGNATION = "TESTÖN 1:123";
 	private static final String OVK_URL = "/{municipalityId}/properties/{propertyDesignation}/errands/ovk";
 	private static final String OVK_LATEST_URL = OVK_URL + "/latest";
+	private static final String DESCRIPTION = "Uppdatering OVK";
+	private static final byte[] PDF_CONTENT = readPdf();
 
 	@Test
 	void getAllOVKProtocols_invalidMunicipalityId() {
@@ -129,4 +136,95 @@ class PropertyResourceFailureTest {
 
 		verifyNoInteractions(mockByggrIntegratorService);
 	}
+
+	@Test
+	void createOvkErrand_notAPdf() {
+		final var body = new MultipartBodyBuilder();
+		body.part("file", "test".getBytes()).filename("protokoll.txt").contentType(MediaType.TEXT_PLAIN);
+		body.part("description", DESCRIPTION);
+
+		final var response = webTestClient.post()
+			.uri(OVK_URL, "2281", PROPERTY_DESIGNATION)
+			.body(BodyInserters.fromMultipartData(body.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::field, Violation::message)
+			.containsExactly(tuple("createOvkErrand.file", "must be a non-empty PDF"));
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void createOvkErrand_invalidMunicipalityId() {
+		final var body = new MultipartBodyBuilder();
+		body.part("file", PDF_CONTENT).filename("protokoll.pdf").contentType(MediaType.APPLICATION_PDF);
+		body.part("description", DESCRIPTION);
+
+		final var response = webTestClient.post()
+			.uri(OVK_URL, INVALID_MUNICIPALITY_ID, PROPERTY_DESIGNATION)
+			.body(BodyInserters.fromMultipartData(body.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::message)
+			.containsExactly("not a valid municipality ID");
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {
+		"TESTÖN", "TESTÖN1:123", " "
+	})
+	void createOvkErrand_invalidPropertyDesignation(final String propertyDesignation) {
+		final var body = new MultipartBodyBuilder();
+		body.part("file", PDF_CONTENT).filename("protokoll.pdf").contentType(MediaType.APPLICATION_PDF);
+		body.part("description", DESCRIPTION);
+
+		final var response = webTestClient.post()
+			.uri(OVK_URL, "2281", propertyDesignation)
+			.body(BodyInserters.fromMultipartData(body.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectBody(ConstraintViolationProblem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(response).isNotNull();
+		assertThat(response.getViolations())
+			.extracting(Violation::field, Violation::message)
+			.containsExactly(tuple("createOvkErrand.propertyDesignation", "must be a property designation(fastighetsbeteckning), e.g. 'TESTÖN 1:123'"));
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
+	@Test
+	void createOvkErrand_missingFile() {
+		final var body = new MultipartBodyBuilder();
+		body.part("description", DESCRIPTION);
+
+		final var response = webTestClient.post()
+			.uri(OVK_URL, "2281", PROPERTY_DESIGNATION)
+			.body(BodyInserters.fromMultipartData(body.build()))
+			.exchange()
+			.expectStatus().isBadRequest()
+			.expectHeader().contentType(APPLICATION_PROBLEM_JSON)
+			.expectBody(Problem.class)
+			.returnResult()
+			.getResponseBody();
+
+		assertThat(response).isNotNull();
+		assertThat(response.getDetail()).isEqualTo("Required part 'file' is not present.");
+		verifyNoInteractions(mockByggrIntegratorService);
+	}
+
 }
